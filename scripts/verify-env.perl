@@ -3,11 +3,19 @@
 use strict;
 use warnings;
 
-use Cwd;
+# use Cwd;
 use FindBin;
 use Getopt::Long;
 use IPC::Open3;
 use JSON;
+use Path::Tiny;
+
+# ------------------------------------------------------------
+# Constant values
+
+my $CONFIG_GIT_REPOS_KEY = "git_repos";
+
+my $NEED_CLONE = "need-clone";
 
 # ------------------------------------------------------------
 # Global Variables
@@ -15,8 +23,11 @@ use JSON;
 # Set to enable verbose (debugging) output.
 my $verbose = 0;
 
+# Base location of cwc-integ stuff.
+my $base_dir = path($FindBin::Bin . "/..")->realpath();
+
 # Location of conf file.
-my $local_conf_filename = $FindBin::Bin . "/../etc/local-conf.json";
+my $local_conf_filename = path($base_dir . "/etc/local-conf.json")->realpath();
 
 # We populate this from the config file(s).
 my %git_repos = ();
@@ -31,6 +42,11 @@ GetOptions('v|verbose'          => \$verbose,
 
 # ------------------------------------------------------------
 # Perform any one-time setup.
+
+# By default, do everything from the cwc-integ root dir.
+chdir($base_dir);
+$verbose and
+  print("Running in: " . Path::Tiny->cwd() . "\n");
 
 # FIXME First load the default config.
 
@@ -88,15 +104,14 @@ sub load_config {
 sub config_git_repos {
   my $config_ref = shift();
 
-  my $repos_key = "git_repos";
   if(not (defined($config_ref) and
-          exists($config_ref->{$repos_key}))) {
+          exists($config_ref->{$CONFIG_GIT_REPOS_KEY}))) {
     $verbose and
-      print("Config did not have a \"$repos_key\" field, skipping it.\n");
+      print("Config did not have a \"$CONFIG_GIT_REPOS_KEY\" field, skipping it.\n");
     return;
   }
 
-  my $repos_ref = $config_ref->{$repos_key};
+  my $repos_ref = $config_ref->{$CONFIG_GIT_REPOS_KEY};
   foreach my $repo_ref (@$repos_ref) {
     if (not exists($repo_ref->{name})) {
       warn("Config contained repo without \"name\" field, skipping repo entry.");
@@ -114,9 +129,10 @@ sub config_git_repos {
 
     # If the dir is set, use it.
     if (exists($repo_ref->{dir})) {
-      my $dir = $repo_ref->{dir};
+      my $reldir = $repo_ref->{dir};
       $verbose and
-        print("  Directory: $dir\n");
+        print("  Directory: $reldir\n");
+      my $dir = path($reldir)->realpath();
       $git_repos{$name}->{dir} = $dir;
     }
   }
@@ -134,6 +150,24 @@ sub summarize_config {
 # ------------------------------------------------------------
 # Git Interaction
 
+# FIXME Basically, we want to verify that status like this:
+#
+# 1. Check for directory.
+#    not exists -> need clone
+#    DONE
+# 2. Get ls-remote hashes.
+#    no remotes -> need clone
+#    DONE
+# 3. Get local hash.
+#    doesn't match remote -> need fetch
+# 4. Get local status
+#    behind -> need merge
+#    ahead -> pushable
+# DONE
+#
+# If each of the above results are returned in a list, we should loop
+# over the list of actions, performing each.
+
 sub verify_git_repo {
   my $repo_name = shift();
 
@@ -141,31 +175,48 @@ sub verify_git_repo {
     print("Verifying status of git repo: $repo_name\n");
 
   my $repo_ref = $git_repos{$repo_name};
-  my $result = "error";
+  my @results = ();
 
-  if (defined($repo_ref)) {
+  defined($repo_ref) or
+    die("The repo ref was undefined for: $repo_name");
 
-    my $repo_dir = $repo_ref->{dir};
-    if (not (-d $repo_dir)) {
-      $result = "need-clone";
+  my $repo_dir = $repo_ref->{dir};
+  $verbose and
+    print("  repo dir: $repo_dir\n");
+
+  if (not (-d $repo_dir)) {
+    push(@results, $NEED_CLONE);
+  }
+  else {
+    # Go to the repo dir and figure out what the status is.
+
+    # We're going to change dirs, keep this so we can go back.
+    my $cwd = Path::Tiny->cwd();
+    chdir($repo_dir);
+
+    my $local_checksum = get_local_checksum();
+    if (not defined($local_checksum)) {
+      push(@results, $NEED_CLONE);
     }
     else {
-      $result = check_git_repo_dir($repo_dir);
+      my $result = check_git_repo_dir($repo_dir);
+      push(@results, $result);
     }
+    
+    # Go back to where we were.
+    chdir($cwd);
   }
-  printf("%-25s ... $result\n", $repo_name);
+  my $result_str = "OK";
+  if (0 < scalar(@results)) {
+    $result_str = join(", ", @results);
+  }
+  printf("%-25s ... $result_str\n", $repo_name);
+  # FIXME If "fix" flag is set, try to fix the results.
 }
 
 sub check_git_repo_dir {
   my $repo_dir = shift();
   my $status = "UNKNOWN";
-  
-  $verbose and
-    print("  repo dir: $repo_dir\n");
-
-  # We're going to change dirs, keep this so we can go back.
-  my $cwd = getcwd();
-  chdir($repo_dir);
 
   # Get the checksums for the remote.
   my ($remote_loc, $remote_checksum) = get_remote_info();
@@ -199,8 +250,6 @@ sub check_git_repo_dir {
     $status = "need-clone";
   }
 
-  # Go back to where we were.
-  chdir($cwd);
 
   return $status;
 }
