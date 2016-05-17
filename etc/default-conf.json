@@ -1,0 +1,31 @@
+# Comments can start with #
+// or can start with //
+{
+    "git_repos": [
+        // Top level
+        { "name": "cwc-integ",
+          "dir": "." },
+
+        // TRIPS
+        { "name": "trips-cabot",
+          "dir": "trips/cabot" },
+        { "name": "trips-bob",
+          "dir": "trips/bob" },
+
+        // HMS
+        { "name": "hms-bioagents",
+          "dir": "hms/bioagents" },
+        { "name": "hms-indra",
+          "dir": "hms/indra" },
+        { "name": "hms-pysb",
+          "dir": "hms/pysb" },
+
+        // SIFT
+        { "name": "sparser",
+          "dir": "sparser" },
+        { "name": "spire",
+          "dir": "spire" },
+        { "name": "clic",
+          "dir": "clic" }
+    ]
+}

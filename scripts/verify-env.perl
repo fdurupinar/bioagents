@@ -3,12 +3,11 @@
 use strict;
 use warnings;
 
-# use Cwd;
 use FindBin;
 use Getopt::Long;
 use IPC::Open3;
 use JSON;
-use Path::Tiny;
+use Path::Class;
 
 # ------------------------------------------------------------
 # Constant values
@@ -28,10 +27,12 @@ my $NEED_MERGE = "need merge";
 my $verbose = 0;
 
 # Base location of cwc-integ stuff.
-my $base_dir = path($FindBin::Bin . "/..")->realpath();
+my $base_dir = dir($FindBin::Bin, "..")->absolute();
 
-# Location of conf file.
-my $local_conf_filename = path($base_dir . "/etc/local-conf.json")->realpath();
+# Location of conf files.
+my $etc_dir = $base_dir->subdir("/etc/")->absolute();
+my $default_conf_filename = $etc_dir->file("default-conf.json")->absolute();
+my $local_conf_filename = $etc_dir->file("local-conf.json")->absolute();
 
 # We populate this from the config file(s).
 my %git_repos = ();
@@ -52,9 +53,10 @@ chdir($base_dir);
 $verbose and
   print("Running in: " . Path::Tiny->cwd() . "\n");
 
-# FIXME First load the default config.
+# First load the default config.
+load_config($default_conf_filename);
 
-# FIXME Then load the local config.
+# Then load the local config.
 load_config($local_conf_filename);
 
 # Summarize the config.
@@ -136,7 +138,7 @@ sub config_git_repos {
       my $reldir = $repo_ref->{dir};
       $verbose and
         print("  Directory: $reldir\n");
-      my $dir = path($reldir)->realpath();
+      my $dir = dir($reldir)->absolute();
       $git_repos{$name}->{dir} = $dir;
     }
   }
@@ -196,7 +198,7 @@ sub verify_git_repo {
     # Go to the repo dir and figure out what the status is.
 
     # We're going to change dirs, keep this so we can go back.
-    my $cwd = Path::Tiny->cwd();
+    my $cwd = dir(".");
     chdir($repo_dir);
 
     my $local_checksum = get_local_checksum();
