@@ -96,7 +96,7 @@ sub load_config {
   while(my $line = <$fh>) {
     chomp($line);
     # Remove comment-like things.
-    $line =~ s/(?:#|\/\/|;).*//;
+    $line =~ s/^\s*(?:#|\/\/|;).*//;
     $json_text .= $line;
   }
 
