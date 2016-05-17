@@ -59,7 +59,7 @@ GetOptions('v|verbose'          => \$verbose,
 # By default, do everything from the cwc-integ root dir.
 chdir($base_dir);
 $verbose and
-  print("Running in: " . Path::Tiny->cwd() . "\n");
+  print("Running in: " . dir(".")->absolute . "\n");
 
 # First load the default config.
 load_config($default_conf_filename);
