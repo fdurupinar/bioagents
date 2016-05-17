@@ -184,7 +184,8 @@ sub verify_git_repo {
   $verbose and
     print("  repo dir: $repo_dir\n");
 
-  if (not (-d $repo_dir)) {
+  if (not ((-d $repo_dir) and
+           (-d "$repo_dir/.git"))) {
     push(@results, $NEED_CLONE);
   }
   else {
@@ -353,7 +354,7 @@ sub get_commit_date {
   $verbose and
     print("  Date for $checksum: $date\n");
 
-  if ($date =~ /bad object/) {
+  if ($date =~ /bad object|unknown revision/) {
     $date = undef;
   }
   elsif ($date =~ /^fatal/) {
