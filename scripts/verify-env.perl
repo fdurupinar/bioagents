@@ -20,12 +20,6 @@ my $NEED_FETCH = "need fetch";
 my $NO_REMOTE = "no remote";
 my $NEED_MERGE = "need merge";
 
-# ------------------------------------------------------------
-# Global Variables
-
-# Set to enable verbose (debugging) output.
-my $verbose = 0;
-
 # Base location of cwc-integ stuff.
 my $base_dir = dir($FindBin::Bin, "..")->absolute();
 
@@ -33,6 +27,18 @@ my $base_dir = dir($FindBin::Bin, "..")->absolute();
 my $etc_dir = $base_dir->subdir("/etc/")->absolute();
 my $default_conf_filename = $etc_dir->file("default-conf.json")->absolute();
 my $local_conf_filename = $etc_dir->file("local-conf.json")->absolute();
+
+# ------------------------------------------------------------
+# Global Variables
+
+# Set to enable verbose (debugging) output.
+my $verbose = 0;
+
+# If set, attempt to fix identified problems.
+my $fix = 0;
+
+# If set, print the fix commands instead of running them.
+my $dryrun = 0;
 
 # We populate this from the config file(s).
 my %git_repos = ();
@@ -42,6 +48,8 @@ my @git_repo_names = ();
 # Parse Arguments
 
 GetOptions('v|verbose'          => \$verbose,
+           'f|fix'              => \$fix,
+           'n|dry-run'          => \$dryrun,
           )
   or die("Error parsing arguments.");
 
@@ -65,11 +73,23 @@ summarize_config();
 # ------------------------------------------------------------
 # Check each of the git repos to see if they need to be updated.
 
+my $pass = 1;
 foreach my $repo_name (@git_repo_names) {
-  verify_git_repo($repo_name);
+  my $verified_repo = verify_git_repo($repo_name);
+  if (not $verified_repo) {
+    $pass = 0;
+  }
 }
 
-exit(0);
+# Make the exit code reflect success/failure.
+if ($pass) {
+  print("SUCCESS\n");
+  exit(0);
+}
+else {
+  print("FAILURE -- there are unresolved problems\n");
+  exit(1);
+}
 
 # End of main script
 # ------------------------------------------------------------
@@ -156,7 +176,7 @@ sub summarize_config {
 # ------------------------------------------------------------
 # Git Interaction
 
-# FIXME Basically, we want to verify that status like this:
+# Basically, we want to verify that status like this:
 #
 # 1. Check for directory.
 #    not exists -> need clone
@@ -228,12 +248,25 @@ sub verify_git_repo {
     # Go back to where we were.
     chdir($cwd);
   }
+
+  # If "fix" flag is set, try to fix the results.
+  my $success = 0;
+  if (0 == scalar(@results)) {
+    $success = 1;
+  }
+  elsif ($fix) {
+    $verbose and
+      print("  Attempting to fix problems.\n");
+    $success = fix($repo_dir, \@results);
+  }
+
   my $result_str = "OK";
   if (0 < scalar(@results)) {
     $result_str = join(", ", @results);
   }
   printf("%-25s ... $result_str\n", $repo_name);
-  # FIXME If "fix" flag is set, try to fix the results.
+
+  return $success;
 }
 
 sub get_local_checksum {
@@ -446,3 +479,22 @@ sub check_for_local_changes {
 
   return $status;
 }
+
+# ------------------------------------------------------------
+# Support for fixing problems
+
+sub fix {
+  my $repo_dir = shift();
+  my $results_ref = shift();
+
+  if (not $dryrun) {
+    # FIXME Perform the fix.
+
+    # Fixed, return success.
+    return 1;
+  }
+
+  # Didn't fix it, do not return success.
+  return 0;
+}
+
