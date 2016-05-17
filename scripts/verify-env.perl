@@ -487,14 +487,32 @@ sub fix {
   my $repo_dir = shift();
   my $results_ref = shift();
 
-  if (not $dryrun) {
-    # FIXME Perform the fix.
+  # First, go to the repo directory.
+  my $cwd = dir(".");
+  chdir($repo_dir);
 
-    # Fixed, return success.
-    return 1;
+  $verbose and
+    print("    Fixing problems in: $repo_dir\n");
+
+  my $fixed_all = 1;
+  foreach my $result (@$results_ref) {
+    $verbose and
+      print("    Trying to fix: $result\n");
+
+    if ($dryrun) {
+      $fixed_all = 0;
+    }
+    else {
+      # FIXME Perform the fix.
+
+      # Didn't fix it.
+      $fixed_all = 0;
+    }
   }
 
-  # Didn't fix it, do not return success.
-  return 0;
+  # Go back to where we were.
+  chdir($cwd);
+
+  return $fixed_all;
 }
 
