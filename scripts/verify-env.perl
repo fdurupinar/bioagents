@@ -19,6 +19,7 @@ my $NEED_CLONE = "need clone";
 my $UNKNOWN = "unknown state";
 my $NEED_FETCH = "need fetch";
 my $NO_REMOTE = "no remote";
+my $NEED_MERGE = "need merge";
 
 # ------------------------------------------------------------
 # Global Variables
@@ -207,12 +208,21 @@ sub verify_git_repo {
     }
     else {
 
-      my $result = check_for_remote_changes();
-      if (defined($result)) {
-        push(@results, $result);
+      # Check to see if there are any remote changes to fetch.
+      my ($remote_loc, $remote_result) = check_for_remote_changes();
+      if (defined($remote_result)) {
+        push(@results, $remote_result);
+      }
+
+      # Check to see if we have any local changes to merge.
+      if (defined($remote_loc)) {
+        my $result = check_for_local_changes();
+        if (defined($result)) {
+          push(@results, $result);
+        }
       }
     }
-    
+
     # Go back to where we were.
     chdir($cwd);
   }
@@ -222,6 +232,36 @@ sub verify_git_repo {
   }
   printf("%-25s ... $result_str\n", $repo_name);
   # FIXME If "fix" flag is set, try to fix the results.
+}
+
+sub get_local_checksum {
+  my @git_cmd =
+    ( "git", "log",
+      "--pretty=format:'%H'",
+      "-n", "1"
+    );
+  my $in = '';
+  my $git_fh;
+  open3($in, $git_fh, $git_fh,
+        @git_cmd) or
+          die("Unable to run command: " . join(" ", @git_cmd));
+
+  my $local_checksum = <$git_fh>;
+  chomp($local_checksum);
+  $verbose and
+    print("  Local checksum: $local_checksum\n");
+
+  if ($local_checksum =~ /does not have any commits yet/) {
+    $local_checksum = undef;
+  }
+  elsif ($local_checksum =~ /^fatal/) {
+    die("Unexpected error from git: $local_checksum");
+  }
+  else {
+    # We've got it, leave the checksum alone.
+  }
+
+  return $local_checksum;
 }
 
 sub check_for_remote_changes {
@@ -252,8 +292,7 @@ sub check_for_remote_changes {
     $status = $NO_REMOTE;
   }
 
-
-  return $status;
+  return ($remote_loc, $status);
 }
 
 # Call and output look like:
@@ -305,36 +344,6 @@ sub get_remote_info {
   return ($source_loc, $target_checksum);
 }
 
-sub get_local_checksum {
-  my @git_cmd =
-    ( "git", "log",
-      "--pretty=format:'%H'",
-      "-n", "1"
-    );
-  my $in = '';
-  my $git_fh;
-  open3($in, $git_fh, $git_fh,
-        @git_cmd) or
-          die("Unable to run command: " . join(" ", @git_cmd));
-
-  my $local_checksum = <$git_fh>;
-  chomp($local_checksum);
-  $verbose and
-    print("  Local checksum: $local_checksum\n");
-
-  if ($local_checksum =~ /does not have any commits yet/) {
-    $local_checksum = undef;
-  }
-  elsif ($local_checksum =~ /^fatal/) {
-    die("Unexpected error from git: $local_checksum");
-  }
-  else {
-    # We've got it, leave the checksum alone.
-  }
-  
-  return $local_checksum;
-}
-
 sub get_commit_date {
   my $checksum = shift();
 
@@ -366,4 +375,72 @@ sub get_commit_date {
   }
 
   return $date;
+}
+
+sub check_for_local_changes {
+  $verbose and
+    print("  Checking for local changes.\n");
+
+  # Run 'git st', output is like:
+  # $ git st
+  # On branch master
+  # Your branch is up-to-date with 'origin/master'.
+  #
+  # or:
+  #   On branch master
+  # Your branch is behind 'origin/master' by 4 commits, and can be fast-forwarded.
+  #   (use "git pull" to update your local branch)
+
+  my @git_cmd = ( "git", "st" );
+  my $in = '';
+  my $git_fh;
+  open3($in, $git_fh, $git_fh,
+        @git_cmd) or
+          die("Unable to run command: " . join(" ", @git_cmd));
+
+  # First line is the current branch.
+  my $branch_line = <$git_fh>;
+  chomp($branch_line);
+  $verbose and
+    print("  Determining branch: $branch_line\n");
+
+  my $branch;
+  if ($branch_line =~ /On\s+branch\s+(.+)/) {
+    $branch = $1;
+  }
+
+  # Next line is the status.
+  my $status_line = <$git_fh>;
+  chomp($status_line);
+  $verbose and
+    print("  Determining status: $status_line\n");
+
+  my $remote_branch;
+  my $status;
+  # FIXME Make sure this works if we have unpushed local commits.
+  if ($status_line =~ /Your branch is behind '(.+?)' by (\d+) commits/) {
+    $remote_branch = $1;
+    my $behind_by = $2;
+    $verbose and
+      print("  Behind by $behind_by commits\n");
+
+    $status = $NEED_MERGE;
+  }
+  elsif ($status_line =~ /Your branch is up-to-date with '(.+?)'/) {
+    # Up to date, nothing to do.
+    $remote_branch = $1;
+  }
+  elsif ($status_line =~ /Changes not staged/) {
+    # No remote information, apparently.
+  }
+  else {
+    die("Unable to determine status from: $status_line");
+  }
+
+  # FIXME If we see this, we may want to return the remote branch to
+  # use for checking remote (instead of assuming HEAD).
+  ("origin/master" eq $remote_branch) or
+    die("Tracking something other than origin/master. Probably going to have inaccurate status.");
+
+  return $status;
 }
