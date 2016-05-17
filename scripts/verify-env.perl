@@ -15,7 +15,10 @@ use Path::Tiny;
 
 my $CONFIG_GIT_REPOS_KEY = "git_repos";
 
-my $NEED_CLONE = "need-clone";
+my $NEED_CLONE = "need clone";
+my $UNKNOWN = "unknown state";
+my $NEED_FETCH = "need fetch";
+my $NO_REMOTE = "no remote";
 
 # ------------------------------------------------------------
 # Global Variables
@@ -197,11 +200,17 @@ sub verify_git_repo {
 
     my $local_checksum = get_local_checksum();
     if (not defined($local_checksum)) {
-      push(@results, $NEED_CLONE);
+      # If we see this, we probably need to understand what is going
+      # on and update this code to handle the situation gracefully.
+      warn("Local repo (in $repo_dir) doesn't have any checksum, dunno how this is possible.");
+      push(@results, $UNKNOWN);
     }
     else {
-      my $result = check_git_repo_dir($repo_dir);
-      push(@results, $result);
+
+      my $result = check_for_remote_changes();
+      if (defined($result)) {
+        push(@results, $result);
+      }
     }
     
     # Go back to where we were.
@@ -215,9 +224,8 @@ sub verify_git_repo {
   # FIXME If "fix" flag is set, try to fix the results.
 }
 
-sub check_git_repo_dir {
-  my $repo_dir = shift();
-  my $status = "UNKNOWN";
+sub check_for_remote_changes {
+  my $status;
 
   # Get the checksums for the remote.
   my ($remote_loc, $remote_checksum) = get_remote_info();
@@ -226,29 +234,22 @@ sub check_git_repo_dir {
     $verbose and
       print("  Found remote checksum: $remote_checksum\n");
 
-    # Get the current checksum (locally).
-    # my $local_checksum = get_local_checksum();
-    #
-    # Nah, try to get the date for the local commit. If we find it, we
-    # have everything from the remote. If we don't find it, we are out
-    # of date (and need to update).
+    # Try to get the date for the local commit. If we find it, we have
+    # everything from the remote. If we don't find it, we are out of
+    # date (and need to update).
     my $commit_date = get_commit_date($remote_checksum);
 
     # If we have a date for the commit, we are at least as new as the
     # the remote.
-    #
-    # FIXME Do we need to check for any local changes that need
-    # committing?
     if (defined($commit_date)) {
-      $status = "current -- last commit: $commit_date";
+      # "current -- last commit: $commit_date";
     } else {
-      # But... is this because we are out of date? Or because we have
-      # local changes?
-      $status = "need-update";
+      # We don't have this commit, need to fetch from remote.
+      $status = $NEED_FETCH;
     }
   }
   else {
-    $status = "need-clone";
+    $status = $NO_REMOTE;
   }
 
 
@@ -293,9 +294,9 @@ sub get_remote_info {
   }
   elsif ($source_line =~ /No remote configured to list refs from/) {
     # No remotes at all.
-    $source_loc = "local";
     # FIXME What now? Should we get the local checksum?
-    $target_checksum = get_local_checksum();
+    # $source_loc = "local";
+    # $target_checksum = get_local_checksum();
   }
   else {
     die("Unable to parse remote location: $source_line");
