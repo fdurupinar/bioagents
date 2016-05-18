@@ -31,8 +31,8 @@
           "dir": "sparser",
           "remote_url": "https://github.com/ddmcdonald/sparser.git" },
         { "name": "spire",
-          "dir": "spire" },
-        { "name": "clic",
-          "dir": "clic" }
+          "dir": "spire" }
+        // { "name": "clic",
+        //   "dir": "clic" }
     ]
 }
