@@ -1,5 +1,6 @@
 # Comments can start with #
 // or can start with //
+// and are only counted on lines with whitespace ahead of them.
 {
     "git_repos": [
         // Top level
@@ -8,21 +9,27 @@
 
         // TRIPS
         { "name": "trips-cabot",
-          "dir": "trips/cabot" },
+          "dir": "trips/cabot",
+          "remote_url": "https://github.com/wdebeaum/cabot" },
         { "name": "trips-bob",
-          "dir": "trips/bob" },
+          "dir": "trips/bob",
+          "remote_url": "https://github.com/wdebeaum/bob" },
 
         // HMS
         { "name": "hms-bioagents",
-          "dir": "hms/bioagents" },
+          "dir": "hms/bioagents",
+          "remote_url": "https://github.com/bgyori/bioagents" },
         { "name": "hms-indra",
-          "dir": "hms/indra" },
+          "dir": "hms/indra",
+          "remote_url": "https://github.com/bgyori/indra" },
         { "name": "hms-pysb",
-          "dir": "hms/pysb" },
+          "dir": "hms/pysb",
+          "remote_url": "https://github.com/bgyori/pysb" },
 
         // SIFT
         { "name": "sparser",
-          "dir": "sparser" },
+          "dir": "sparser",
+          "remote_url": "https://github.com/ddmcdonald/sparser.git" },
         { "name": "spire",
           "dir": "spire" },
         { "name": "clic",

@@ -161,6 +161,14 @@ sub config_git_repos {
       my $dir = dir($reldir)->absolute();
       $git_repos{$name}->{dir} = $dir;
     }
+
+    # If the remote_url is set, use it.
+    if (exists($repo_ref->{remote_url})) {
+      my $remote_url = $repo_ref->{remote_url};
+      $verbose and
+        print("  Remote URL: $remote_url\n");
+      $git_repos{$name}->{remote_url} = $remote_url;
+    }
   }
 }
 
@@ -249,7 +257,13 @@ sub verify_git_repo {
     chdir($cwd);
   }
 
-  # If "fix" flag is set, try to fix the results.
+  my $result_str = "OK";
+  if (0 < scalar(@results)) {
+    $result_str = join(", ", @results);
+  }
+  printf("%-25s ... $result_str\n", $repo_name);
+
+   # If "fix" flag is set, try to fix the results.
   my $success = 0;
   if (0 == scalar(@results)) {
     $success = 1;
@@ -257,14 +271,14 @@ sub verify_git_repo {
   elsif ($fix) {
     $verbose and
       print("  Attempting to fix problems.\n");
-    $success = fix($repo_dir, \@results);
+    $success = fix($repo_ref, \@results);
+    if ($success) {
+      print("  FIXED\n");
+    }
+    else {
+      print("  NOT fixed\n");
+    }
   }
-
-  my $result_str = "OK";
-  if (0 < scalar(@results)) {
-    $result_str = join(", ", @results);
-  }
-  printf("%-25s ... $result_str\n", $repo_name);
 
   return $success;
 }
@@ -484,35 +498,102 @@ sub check_for_local_changes {
 # Support for fixing problems
 
 sub fix {
-  my $repo_dir = shift();
+  my $repo_ref = shift();
   my $results_ref = shift();
 
-  # First, go to the repo directory.
-  my $cwd = dir(".");
-  chdir($repo_dir);
+  exists($repo_ref->{dir}) or
+    die("For some reason we are trying to repair a repo that doesn't have a directory.");
 
-  $verbose and
-    print("    Fixing problems in: $repo_dir\n");
+  my $repo_dir = dir($repo_ref->{dir});
 
   my $fixed_all = 1;
   foreach my $result (@$results_ref) {
     $verbose and
-      print("    Trying to fix: $result\n");
+      print("  Trying to fix: $result\n");
 
-    if ($dryrun) {
+    if ($result eq $NEED_CLONE) {
+      # git clone
+      if (exists($repo_ref->{remote_url})) {
+        my $remote_url = $repo_ref->{remote_url};
+        my $success = run_fix_command($repo_dir->parent(),
+                                      ["git", "clone", $remote_url]);
+        if (not $success) {
+          $fixed_all = 0;
+        }
+      }
+      else {
+        warn("Cannot fix repo by cloning, no remote_url in config.");
+        $fixed_all = 0;
+      }
+    }
+    elsif ($result eq $NEED_FETCH) {
+      # FIXME git fetch -- and then merge. Or... do we need a pull
+      # instead?
+      if (not run_fix_command($repo_dir,
+                              ["git", "fetch"])) {
+        $fixed_all = 0;
+      }
+    }
+    elsif ($result eq $NO_REMOTE) {
+      # Unfixable... I think. Even if we have a URL in the config,
+      # what would we do here, git add the remote? Then what? Would we
+      # need to recheck the fixes?
       $fixed_all = 0;
+      warn("Unable to fix repo with no remote.");
+    }
+    elsif ($result eq $NEED_MERGE) {
+      # git merge --ff-only
+      if (not run_fix_command($repo_dir,
+                              ["git", "merge", "--ff-only"])) {
+        $fixed_all = 0;
+      }
     }
     else {
-      # FIXME Perform the fix.
-
-      # Didn't fix it.
+      # Dunno what to do. Warn the user and punt.
       $fixed_all = 0;
+      warn("Don't know how to fix problem: $result");
     }
+  }
+
+  return $fixed_all;
+}
+
+sub run_fix_command {
+  my $working_dir = shift();
+  my $cmd_ref = shift();
+
+  # First, make sure the directory exists. Call mkpath if necessary.
+  if (not (-e $working_dir)) {
+    print("  make directory: $working_dir\n");
+    if ($dryrun) {
+      # Don't do anything for the dry-run.
+    }
+    else {
+      $working_dir->mkpath();
+    }
+  }
+
+  # First, go to the working directory.
+  my $cwd = dir(".");
+  chdir($working_dir);
+
+  print("  cd $working_dir\n");
+  print("     " . dir(".")->absolute() . "\n");
+  print("  " . join(" ", @$cmd_ref) . "\n");
+  my $success;
+  if ($dryrun) {
+    $success = 0;
+  }
+  else {
+    # FIXME Run the command.
+    # Check that it succeeded.
+    $success = 0;
   }
 
   # Go back to where we were.
   chdir($cwd);
 
-  return $fixed_all;
+  # Let the caller know if this succeeded.
+  return $success;
 }
 
