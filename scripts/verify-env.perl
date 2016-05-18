@@ -580,14 +580,17 @@ sub run_fix_command {
   print("  cd $working_dir\n");
   print("     " . dir(".")->absolute() . "\n");
   print("  " . join(" ", @$cmd_ref) . "\n");
-  my $success;
+  my $success = 0;
   if ($dryrun) {
-    $success = 0;
+    # Don't do anything for the dry run.
   }
   else {
-    # FIXME Run the command.
-    # Check that it succeeded.
-    $success = 0;
+    # Run the command.
+    my $exit_code = system(@$cmd_ref);
+    if (0 == $exit_code) {
+      # Success.
+      $success = 1;
+    }
   }
 
   # Go back to where we were.
