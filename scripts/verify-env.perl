@@ -479,7 +479,7 @@ sub check_for_local_changes {
   my $remote_branch;
   my $status;
   # FIXME Make sure this works if we have unpushed local commits.
-  if ($status_line =~ /Your branch is behind '(.+?)' by (\d+) commits/) {
+  if ($status_line =~ /Your branch is behind '(.+?)' by (\d+)/) {
     $remote_branch = $1;
     my $behind_by = $2;
     $verbose and
@@ -498,7 +498,7 @@ sub check_for_local_changes {
     # Up to date, nothing to do.
     $remote_branch = $1;
   }
-  elsif ($status_line =~ /Your branch is ahead of '(.+?)' by (\d+) commits/) {
+  elsif ($status_line =~ /Your branch is ahead of '(.+?)' by (\d+)/) {
     $remote_branch = $1;
     my $ahead_by = $2;
     $verbose and
