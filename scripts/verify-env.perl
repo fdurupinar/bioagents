@@ -19,6 +19,7 @@ my $UNKNOWN = "unknown state";
 my $NEED_FETCH = "need fetch";
 my $NO_REMOTE = "no remote";
 my $NEED_MERGE = "need merge";
+my $AHEAD = "ahead";
 
 # Base location of cwc-integ stuff.
 my $base_dir = dir($FindBin::Bin, "..")->absolute();
@@ -436,11 +437,22 @@ sub check_for_local_changes {
   # Your branch is up-to-date with 'origin/master'.
   #
   # or:
-  #   On branch master
+  # On branch master
   # Your branch is behind 'origin/master' by 4 commits, and can be fast-forwarded.
   #   (use "git pull" to update your local branch)
+  #
+  # or:
+  # On branch master
+  # Your branch is ahead of 'origin/master' by 3 commits.
+  #   (use "git push" to publish your local commits)
+  #
+  # or:
+  # On branch master
+  # Your branch and 'origin/master' have diverged,
+  # and have 3 and 1 different commit each, respectively.
+  #   (use "git pull" to merge the remote branch into yours)
 
-  my @git_cmd = ( "git", "st" );
+  my @git_cmd = ( "git", "status" );
   my $in = '';
   my $git_fh;
   open3($in, $git_fh, $git_fh,
@@ -475,9 +487,24 @@ sub check_for_local_changes {
 
     $status = $NEED_MERGE;
   }
+  elsif ($status_line =~ /Your branch and '(.+?)' have diverged/) {
+    $remote_branch = $1;
+    $verbose and
+      print("  Diverged from remote\n");
+
+    $status = $NEED_MERGE;
+  }
   elsif ($status_line =~ /Your branch is up-to-date with '(.+?)'/) {
     # Up to date, nothing to do.
     $remote_branch = $1;
+  }
+  elsif ($status_line =~ /Your branch is ahead of '(.+?)' by (\d+) commits/) {
+    $remote_branch = $1;
+    my $ahead_by = $2;
+    $verbose and
+      print("  Ahead by $ahead_by commits\n");
+
+    $status = $AHEAD;
   }
   elsif ($status_line =~ /Changes not staged/) {
     # No remote information, apparently.
