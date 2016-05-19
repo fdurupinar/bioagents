@@ -25,11 +25,6 @@ my $AHEAD = "ahead";
 # Base location of cwc-integ stuff.
 my $base_dir = dir($FindBin::Bin, "..")->absolute();
 
-# Location of conf files.
-my $etc_dir = $base_dir->subdir("/etc/")->absolute();
-my $default_conf_filename = $etc_dir->file("default-conf.json")->absolute();
-my $local_conf_filename = $etc_dir->file("local-conf.json")->absolute();
-
 # ------------------------------------------------------------
 # Global Variables
 
@@ -59,14 +54,7 @@ chdir($base_dir);
 $verbose and
   print("Running in: " . dir(".")->absolute . "\n");
 
-# First load the default config.
-CwcConfig::load_config($default_conf_filename);
-
-# Then load the local config.
-CwcConfig::load_config($local_conf_filename);
-
-# Summarize the config.
-CwcConfig::summarize_config();
+CwcConfig::load_config(1);
 
 # ------------------------------------------------------------
 # Check each of the git repos to see if they need to be updated.

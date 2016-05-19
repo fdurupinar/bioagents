@@ -7,6 +7,14 @@ use Path::Class;
 
 my $CONFIG_GIT_REPOS_KEY = "git_repos";
 
+# Base location of cwc-integ stuff.
+my $base_dir = dir($FindBin::Bin, "..")->absolute();
+
+# Location of conf files.
+my $etc_dir = $base_dir->subdir("/etc/")->absolute();
+my $default_conf_filename = $etc_dir->file("default-conf.json")->absolute();
+my $local_conf_filename = $etc_dir->file("local-conf.json")->absolute();
+
 # ------------------------------------------------------------
 # Module variables
 
@@ -30,6 +38,21 @@ sub get_git_repo_config_ref {
 # Config loading functions
 
 sub load_config {
+  my $summarize = shift();
+
+  # First load the default config.
+  load_config_file($default_conf_filename);
+
+  # Then load the local config.
+  load_config_file($local_conf_filename);
+
+  if ($summarize) {
+    # Summarize the config.
+    summarize_config();
+  }
+}
+
+sub load_config_file {
   my $filename = shift();
 
   if(not (-e $filename)) {
