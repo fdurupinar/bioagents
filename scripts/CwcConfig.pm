@@ -108,21 +108,21 @@ sub config_git_repos {
       push(@git_repo_names, $name);
     }
 
-    # If the dir is set, use it.
-    if (exists($repo_ref->{dir})) {
-      my $reldir = $repo_ref->{dir};
-      $verbose and
-        print("  Directory: $reldir\n");
-      my $dir = dir($reldir)->absolute();
-      $git_repos{$name}->{dir} = $dir;
-    }
+    foreach my $key (keys(%$repo_ref)) {
+      my $val = $repo_ref->{$key};
 
-    # If the remote_url is set, use it.
-    if (exists($repo_ref->{remote_url})) {
-      my $remote_url = $repo_ref->{remote_url};
-      $verbose and
-        print("  Remote URL: $remote_url\n");
-      $git_repos{$name}->{remote_url} = $remote_url;
+      if ("dir" eq $key) {
+        # Treat this as a directory. Find it relative to the config
+        # file.
+        my $dir = dir($val)->absolute();
+        $verbose and
+          print("  Directory: $val => $dir\n");
+        $git_repos{$name}->{$key} = $dir;
+      }
+      else {
+        # Just store the value and be happy.
+        $git_repos{$name}->{$key} = $val;
+      }
     }
   }
 }
