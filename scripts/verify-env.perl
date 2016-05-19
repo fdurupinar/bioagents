@@ -186,7 +186,7 @@ sub verify_git_repo {
 
    # If "fix" flag is set, try to fix the results.
   my $success = 0;
-  if (0 == scalar(@results)) {
+  if (0 == $problem_count) {
     $success = 1;
   }
   elsif ($fix) {
