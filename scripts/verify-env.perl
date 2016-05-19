@@ -59,6 +59,7 @@ CwcConfig::load_config(1);
 # ------------------------------------------------------------
 # Check each of the git repos to see if they need to be updated.
 
+print("Verifying status of git repositories.\n");
 my $pass = 1;
 foreach my $repo_name (CwcConfig::get_git_repo_names()) {
   my $verified_repo = verify_git_repo($repo_name);
@@ -67,7 +68,21 @@ foreach my $repo_name (CwcConfig::get_git_repo_names()) {
   }
 }
 
+# ------------------------------------------------------------
+# Write the configuration.
+
+# FIXME Make this an option and/or move the config-generation code
+# into a module.
+my @make_config_cmd =
+  ( $FindBin::Bin . "/make-config.perl"
+  );
+print("Making config with command: " . join(" ", @make_config_cmd) . "\n");
+(0 == system(@make_config_cmd)) or
+  warn("Encountered an error while making config.");
+
+# ------------------------------------------------------------
 # Make the exit code reflect success/failure.
+
 if ($pass) {
   print("SUCCESS\n");
   exit(0);
