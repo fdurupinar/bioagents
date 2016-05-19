@@ -30,19 +30,71 @@
         { "name": "lisp-utils",
           "dir": "lisp-utils",
           "asd_search_type": ":tree" },
-        { "name": "fiveam",
-          "dir": "lisp-utils/fiveam",
-          "remote_url": "https://github.com/sionescu/fiveam.git" },
-        { "name": "fiveam-asdf",
-          "dir": "lisp-utils/fiveam-asdf"
-          // FIXME Add a remote_url once one exists.
-        },
-        { "name": "portableaserve",
-          "dir": "lisp-utils/portableaserve",
-          "remote_url": "https://github.com/mtravers/portableaserve.git" },
+
+        { "name": "alexandria",
+          "dir": "lisp-utils/alexandria",
+          "remote_url": "https://gitlab.common-lisp.net/alexandria/alexandria.git" },
+        { "name": "bordeaux-threads",
+          "dir": "lisp-utils/bordeaux-threads",
+          "remote_url": "https://github.com/sionescu/bordeaux-threads.git" },
+        { "name": "cl-dot",
+          "dir": "lisp-utils/cl-dot",
+          "remote_url": "https://github.com/michaelw/cl-dot.git" },
+        { "name": "cl-fad",
+          "dir": "lisp-utils/cl-fad",
+          "remote_url": "https://github.com/edicl/cl-fad.git" },
+        { "name": "cl-json",
+          "dir": "lisp-utils/cl-json",
+          "remote_url": "https://github.com/hankhero/cl-json" },
+        { "name": "cl-ppcre",
+          "dir": "lisp-utils/cl-ppcre",
+          "remote_url": "https://github.com/edicl/cl-ppcre" },
+        { "name": "ironclad",
+          "dir": "lisp-utils/ironclad",
+          "remote_url": "https://github.com/froydnj/ironclad.git" },
+        { "name": "nibbles",
+          "dir": "lisp-utils/nibbles",
+          "remote_url": "https://github.com/froydnj/nibbles.git" },
         { "name": "puri",
           "dir": "lisp-utils/com.b9.puri.ppcre",
           "remote_url": "https://github.com/lisp/com.b9.puri.ppcre.git" },
+
+        // SIFT versions of libraries without public repos.
+        { "name": "forbus-dekleer-libs",
+          "dir": "lisp-utils/forbus-dekleer-libs",
+          "remote_url": "https://gitlab.com/sift/forbus-dekleer-libs.git" },
+        { "name": "xmls",
+          "dir": "lisp-utils/xmls",
+          "remote_url": "https://gitlab.com/sift/xmls.git" },
+        { "name": "portableaserve",
+          "dir": "lisp-utils/portableaserve",
+          // This is available publicly, but is ancient. We have fixes.
+          // "remote_url": "https://github.com/mtravers/portableaserve.git"
+          "remote_url": "https://gitlab.com/sift/portableaserve.git" },
+        // This is available via QuickLisp or darcs. But our version
+        // has fixes.
+        { "name": "iterate",
+          "dir": "lisp-utils/iterate",
+          "remote_url": "https://gitlab.com/sift/iterate.git" },
+
+        // SIFT libraries
+        { "name": "musliner-tools",
+          "dir": "lisp-utils/musliner-tools",
+          "remote_url": "https://gitlab.com/sift/musliner-tools.git" },
+
+        // SIFT version of fiveam -- with fixes and improvements.
+        { "name": "fiveam",
+          "dir": "lisp-utils/fiveam",
+          "remote_url": "https://gitlab.com/sift/fiveam.git" },
+        { "name": "fiveam-asdf",
+          "dir": "lisp-utils/fiveam-asdf",
+          "remote_url": "https://gitlab.com/sift/fiveam-asdf.git" },
+        // { "name": "asdf-flv",
+        //   "dir": "lisp-utils/asdf-flv",
+        //   "remote_url": "https://github.com/didierverna/asdf-flv.git" },
+        { "name": "arnesi",
+          "dir": "lisp-utils/arnesi",
+          "remote_url": "https://gitlab.com/sift/arnesi.git" },
 
         // SIFT
         { "name": "sparser",
@@ -51,7 +103,7 @@
           "asd_search_type": ":directory" },
         { "name": "spire",
           "dir": "spire",
-          "remote_url": "https://gitlab.com/cwc/spire.git",
+          "remote_url": "https://gitlab.com/sift/spire.git",
           "asd_search_type": ":directory" }
         // { "name": "clic",
         //   "dir": "clic" }
