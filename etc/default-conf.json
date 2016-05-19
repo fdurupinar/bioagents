@@ -26,13 +26,33 @@
           "dir": "hms/pysb",
           "remote_url": "https://github.com/bgyori/pysb" },
 
+        // External Libraries
+        { "name": "lisp-utils",
+          "dir": "lisp-utils",
+          "asd_search_type": ":tree" },
+        { "name": "fiveam",
+          "dir": "lisp-utils/fiveam",
+          "remote_url": "https://github.com/sionescu/fiveam.git" },
+        { "name": "fiveam-asdf",
+          "dir": "lisp-utils/fiveam-asdf"
+          // FIXME Add a remote_url once one exists.
+        }
+        { "name": "portableaserve",
+          "dir": "lisp-utils/portableaserve",
+          "remote_url": "https://github.com/mtravers/portableaserve.git" },
+        { "name": "puri",
+          "dir": "lisp-utils/puri",
+          "remote_url": "https://github.com/lisp/com.b9.puri.ppcre.git" },
+
         // SIFT
         { "name": "sparser",
           "dir": "sparser",
-          "remote_url": "https://github.com/ddmcdonald/sparser.git" },
+          "remote_url": "https://github.com/ddmcdonald/sparser.git",
+          "asd_search_type": ":directory" },
         { "name": "spire",
           "dir": "spire",
-          "remote_url": "https://gitlab.com/cwc/spire.git" }
+          "remote_url": "https://gitlab.com/cwc/spire.git",
+          "asd_search_type": ":directory" }
         // { "name": "clic",
         //   "dir": "clic" }
     ]
