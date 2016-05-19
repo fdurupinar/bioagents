@@ -41,7 +41,7 @@
           "dir": "lisp-utils/portableaserve",
           "remote_url": "https://github.com/mtravers/portableaserve.git" },
         { "name": "puri",
-          "dir": "lisp-utils/puri",
+          "dir": "lisp-utils/com.b9.puri.ppcre",
           "remote_url": "https://github.com/lisp/com.b9.puri.ppcre.git" },
 
         // SIFT
