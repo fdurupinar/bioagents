@@ -1,5 +1,6 @@
 package CwcConfig;
 
+use JSON;
 use Path::Class;
 
 # ------------------------------------------------------------

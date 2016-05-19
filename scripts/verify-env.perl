@@ -9,7 +9,6 @@ use CwcConfig;
 
 use Getopt::Long;
 use IPC::Open3;
-use JSON;
 use Path::Class;
 
 # ------------------------------------------------------------
