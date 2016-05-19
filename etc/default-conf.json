@@ -36,7 +36,7 @@
         { "name": "fiveam-asdf",
           "dir": "lisp-utils/fiveam-asdf"
           // FIXME Add a remote_url once one exists.
-        }
+        },
         { "name": "portableaserve",
           "dir": "lisp-utils/portableaserve",
           "remote_url": "https://github.com/mtravers/portableaserve.git" },
