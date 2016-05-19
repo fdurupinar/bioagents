@@ -22,7 +22,7 @@ my $NEED_MERGE = "need merge";
 my $AHEAD = "ahead";
 
 # Base location of cwc-integ stuff.
-my $base_dir = dir($FindBin::Bin, "..")->absolute();
+my $base_dir = dir($FindBin::Bin, "..")->resolve();
 
 # ------------------------------------------------------------
 # Global Variables

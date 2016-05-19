@@ -9,7 +9,7 @@ use Path::Class;
 my $CONFIG_GIT_REPOS_KEY = "git_repos";
 
 # Base location of cwc-integ stuff.
-my $base_dir = dir($FindBin::Bin, "..")->absolute();
+my $base_dir = dir($FindBin::Bin, "..")->resolve();
 
 # Location of conf files.
 my $etc_dir = $base_dir->subdir("/etc/")->absolute();
