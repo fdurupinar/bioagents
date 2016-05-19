@@ -4,6 +4,9 @@ use strict;
 use warnings;
 
 use FindBin;
+use lib ( $FindBin::Bin );  # for local modules
+use CwcConfig;
+
 use Getopt::Long;
 use IPC::Open3;
 use JSON;
@@ -11,8 +14,6 @@ use Path::Class;
 
 # ------------------------------------------------------------
 # Constant values
-
-my $CONFIG_GIT_REPOS_KEY = "git_repos";
 
 my $NEED_CLONE = "need clone";
 my $UNKNOWN = "unknown state";
@@ -41,10 +42,6 @@ my $fix = 0;
 # If set, print the fix commands instead of running them.
 my $dryrun = 0;
 
-# We populate this from the config file(s).
-my %git_repos = ();
-my @git_repo_names = ();
-
 # ------------------------------------------------------------
 # Parse Arguments
 
@@ -63,19 +60,19 @@ $verbose and
   print("Running in: " . dir(".")->absolute . "\n");
 
 # First load the default config.
-load_config($default_conf_filename);
+CwcConfig::load_config($default_conf_filename);
 
 # Then load the local config.
-load_config($local_conf_filename);
+CwcConfig::load_config($local_conf_filename);
 
 # Summarize the config.
-summarize_config();
+CwcConfig::summarize_config();
 
 # ------------------------------------------------------------
 # Check each of the git repos to see if they need to be updated.
 
 my $pass = 1;
-foreach my $repo_name (@git_repo_names) {
+foreach my $repo_name (CwcConfig::get_git_repo_names()) {
   my $verified_repo = verify_git_repo($repo_name);
   if (not $verified_repo) {
     $pass = 0;
@@ -95,92 +92,6 @@ else {
 # End of main script
 # ------------------------------------------------------------
 # Subroutines
-
-# ------------------------------------------------------------
-# Config Support
-
-sub load_config {
-  my $filename = shift();
-
-  if(not (-e $filename)) {
-    warn("Config file \"$filename\" does not exist, skipping it.");
-    return;
-  }
-
-  $verbose and
-    print("Reading config from: $filename\n");
-
-  # Read the config file contents.
-  my $json_text = "";
-  open(my $fh, "<", $filename) or
-    die("Unable to open config file: $filename");
-  while(my $line = <$fh>) {
-    chomp($line);
-    # Remove comment-like things.
-    $line =~ s/^\s*(?:#|\/\/|;).*//;
-    $json_text .= $line;
-  }
-
-  # Turn it into an object.
-  my $json = JSON->new();
-  my $config_ref = $json->decode($json_text);
-
-  config_git_repos($config_ref);
-}
-
-sub config_git_repos {
-  my $config_ref = shift();
-
-  if(not (defined($config_ref) and
-          exists($config_ref->{$CONFIG_GIT_REPOS_KEY}))) {
-    $verbose and
-      print("Config did not have a \"$CONFIG_GIT_REPOS_KEY\" field, skipping it.\n");
-    return;
-  }
-
-  my $repos_ref = $config_ref->{$CONFIG_GIT_REPOS_KEY};
-  foreach my $repo_ref (@$repos_ref) {
-    if (not exists($repo_ref->{name})) {
-      warn("Config contained repo without \"name\" field, skipping repo entry.");
-      next;
-    }
-
-    # Get the instance
-    my $name = $repo_ref->{name};
-    $verbose and
-      print("Configuring repo: $name\n");
-    if (not exists($git_repos{$name})) {
-      $git_repos{$name} = {};
-      push(@git_repo_names, $name);
-    }
-
-    # If the dir is set, use it.
-    if (exists($repo_ref->{dir})) {
-      my $reldir = $repo_ref->{dir};
-      $verbose and
-        print("  Directory: $reldir\n");
-      my $dir = dir($reldir)->absolute();
-      $git_repos{$name}->{dir} = $dir;
-    }
-
-    # If the remote_url is set, use it.
-    if (exists($repo_ref->{remote_url})) {
-      my $remote_url = $repo_ref->{remote_url};
-      $verbose and
-        print("  Remote URL: $remote_url\n");
-      $git_repos{$name}->{remote_url} = $remote_url;
-    }
-  }
-}
-
-sub summarize_config {
-  print("Git repos:\n");
-  foreach my $name (@git_repo_names) {
-    my $repo_ref = $git_repos{$name};
-    my $dir = $repo_ref->{dir};
-    printf("  %-20s -> $dir\n", $name);
-  }
-}
 
 # ------------------------------------------------------------
 # Git Interaction
@@ -209,7 +120,7 @@ sub verify_git_repo {
   $verbose and
     print("Verifying status of git repo: $repo_name\n");
 
-  my $repo_ref = $git_repos{$repo_name};
+  my $repo_ref = CwcConfig::get_git_repo_config_ref($repo_name);
   my @results = ();
 
   defined($repo_ref) or
