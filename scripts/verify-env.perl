@@ -258,11 +258,32 @@ sub verify_git_repo {
     chdir($cwd);
   }
 
-  my $result_str = "OK";
-  if (0 < scalar(@results)) {
-    $result_str = join(", ", @results);
+  # Prepare and print the result statement.
+  my $result_str = "";
+  my $problem_count = 0;
+  foreach my $result (@results) {
+    if (0 < $problem_count) {
+      $result_str .= ", ";
+    }
+    $result_str .= $result;
+
+    if ($AHEAD eq $result) {
+      # Just a warning. We're still okay.
+    }
+    else {
+      ++$problem_count;
+    }
   }
-  printf("%-25s ... $result_str\n", $repo_name);
+  printf("%-25s ... %-20s", $repo_name, $result_str);
+  if (0 == $problem_count) {
+    print("OK\n");
+  }
+  elsif (1 == $problem_count) {
+    print("1 problem\n");
+  }
+  else {
+    print("$problem_count problems\n");
+  }
 
    # If "fix" flag is set, try to fix the results.
   my $success = 0;
@@ -470,7 +491,7 @@ sub check_for_local_changes {
     $branch = $1;
   }
 
-  # Next line is the status.
+  # Next line is the status. Get it and determine what it means to us.
   my $status_line = <$git_fh>;
   chomp($status_line);
   $verbose and
@@ -478,7 +499,6 @@ sub check_for_local_changes {
 
   my $remote_branch;
   my $status;
-  # FIXME Make sure this works if we have unpushed local commits.
   if ($status_line =~ /Your branch is behind '(.+?)' by (\d+)/) {
     $remote_branch = $1;
     my $behind_by = $2;
@@ -574,6 +594,10 @@ sub fix {
                               ["git", "merge", "--ff-only"])) {
         $fixed_all = 0;
       }
+    }
+    elsif ($result eq $AHEAD) {
+      # FIXME We don't need to do anything to fix this. But perhaps
+      # print a message suggesting to push.
     }
     else {
       # Dunno what to do. Warn the user and punt.
