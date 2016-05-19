@@ -43,7 +43,7 @@ $verbose and
 CwcConfig::load_config(1);
 
 # ------------------------------------------------------------
-# FIXME Make a config!
+# Actually write the config file.
 
 print("Writing config file: $cwc_source_config_filename\n");
 open(my $fh, ">", $cwc_source_config_filename) or
