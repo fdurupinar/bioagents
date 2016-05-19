@@ -16,7 +16,7 @@ my $CONFIG_GIT_REPOS_KEY = "git_repos";
 
 my $NEED_CLONE = "need clone";
 my $UNKNOWN = "unknown state";
-my $NEED_FETCH = "need fetch";
+my $NEED_PULL = "need pull";
 my $NO_REMOTE = "no remote";
 my $NEED_MERGE = "need merge";
 my $AHEAD = "ahead";
@@ -194,7 +194,7 @@ sub summarize_config {
 #    no remotes -> need clone
 #    DONE
 # 3. Get local hash.
-#    doesn't match remote -> need fetch
+#    doesn't match remote -> need pull
 # 4. Get local status
 #    behind -> need merge
 #    ahead -> pushable
@@ -239,7 +239,7 @@ sub verify_git_repo {
     }
     else {
 
-      # Check to see if there are any remote changes to fetch.
+      # Check to see if there are any remote changes to get.
       my ($remote_loc, $remote_result) = check_for_remote_changes();
       if (defined($remote_result)) {
         push(@results, $remote_result);
@@ -355,8 +355,8 @@ sub check_for_remote_changes {
     if (defined($commit_date)) {
       # "current -- last commit: $commit_date";
     } else {
-      # We don't have this commit, need to fetch from remote.
-      $status = $NEED_FETCH;
+      # We don't have this commit, need to pull from remote.
+      $status = $NEED_PULL;
     }
   }
   else {
@@ -573,11 +573,10 @@ sub fix {
         $fixed_all = 0;
       }
     }
-    elsif ($result eq $NEED_FETCH) {
-      # FIXME git fetch -- and then merge. Or... do we need a pull
-      # instead?
+    elsif ($result eq $NEED_PULL) {
+      # git pull --ff-only
       if (not run_fix_command($repo_dir,
-                              ["git", "fetch"])) {
+                              ["git", "pull", "--ff-only"])) {
         $fixed_all = 0;
       }
     }
