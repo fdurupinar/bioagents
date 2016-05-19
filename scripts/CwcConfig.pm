@@ -57,11 +57,11 @@ sub load_config_file {
   my $filename = shift();
 
   if(not (-e $filename)) {
-    warn("Config file \"$filename\" does not exist, skipping it.");
+    # warn("Config file \"$filename\" does not exist, skipping it.");
     return;
   }
 
-  $verbose and
+  # $verbose and
     print("Reading config from: $filename\n");
 
   # Read the config file contents.
