@@ -14,8 +14,9 @@ use Path::Class;
 # ------------------------------------------------------------
 # Constant values
 
-my $NEED_CLONE = "need clone";
 my $UNKNOWN = "unknown state";
+my $MISSING_DIR = "missing dir";
+my $NEED_CLONE = "need clone";
 my $NEED_PULL = "need pull";
 my $NO_REMOTE = "no remote";
 my $NEED_MERGE = "need merge";
@@ -117,9 +118,12 @@ sub verify_git_repo {
   $verbose and
     print("  repo dir: $repo_dir\n");
 
-  if (not ((-d $repo_dir) and
-           (-d "$repo_dir/.git"))) {
+  if (exists($repo_ref->{remote_url}) and
+      not (-d "$repo_dir/.git")) {
     push(@results, $NEED_CLONE);
+  }
+  elsif (not (-d "$repo_dir")) {
+    push(@results, $MISSING_DIR);
   }
   else {
     # Go to the repo dir and figure out what the status is.
@@ -456,7 +460,10 @@ sub fix {
     $verbose and
       print("  Trying to fix: $result\n");
 
-    if ($result eq $NEED_CLONE) {
+    if ($result eq $MISSING_DIR) {
+      $repo_dir->mkpath();
+    }
+    elsif ($result eq $NEED_CLONE) {
       # git clone
       if (exists($repo_ref->{remote_url})) {
         my $remote_url = $repo_ref->{remote_url};
