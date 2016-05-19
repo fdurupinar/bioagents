@@ -1,0 +1,47 @@
+-*- org -*-
+
+When preparing the SIFT projects for sharing, I had to convert some
+svn repositories to git. I wanted to maintain the history as much as
+possible.
+
+I started following these recipes, but then Eric suggested an
+alternative using svn2git.
+
+http://john.albin.net/git/convert-subversion-to-git
+https://git-scm.com/book/en/v2/Git-and-Other-Systems-Migrating-to-Git
+
+Here's what I did:
+
+* 1. Prepare user name conversion
+I ran this command in the root of the repository, to catch all
+authors, not just the ones who have touched the code.
+
+: svn log -q | awk -F '|' '/^r/ {sub("^ ", "", $2); sub(" $", "", $2); print $2" = "$2" <"$2">"}' | sort -u > authors-transform.txt
+
+I repeated this for the CLIC and lisp-utils repos, then merged the
+results and edited the conversions to include names and email
+addresses.
+
+* 2. Clone the svn repo
+I used the svn2git tool:
+https://github.com/nirvdrum/svn2git
+
+Which I installed like:
+: sudo gem install svn2git
+
+Then commands like these:
+: mkdir spire-git
+: cd spire-git
+: svn2git [top-level-repo-url] -v --trunk=trunk/spire --nobranches --notags --authors ../authors-transform.txt
+
+* 3. Populate project at GitLab
+First I make the project for the SIFT group at GitLab, with the
+permissions set to private. Then, I go to the project settings and add
+the CwC group to the project.
+
+Added GitLab as origin of the local repo:
+: git remote add origin https://gitlab.com/sift/spire.git
+
+Then pushed the repo:
+: git push -u origin master
+
