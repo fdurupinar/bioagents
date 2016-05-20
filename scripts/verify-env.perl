@@ -162,8 +162,15 @@ sub verify_git_repo {
         push(@results, $remote_result);
       }
 
-      # Check to see if we have any local changes to merge.
-      if (defined($remote_loc)) {
+      # FIXME Should we check that $remote_loc eq $repo_ref->{remote_url}?
+      # if (defined($remote_loc) and
+      #     exists($repo_ref->{remote_url} and
+      #     ... eq ...) {
+
+      # Check to see if we have any local changes to merge. Only check
+      # actual repo directories, otherwise we may inadvertantly report
+      # status for some parent directory. Thanks, git.
+      if (-d "$repo_dir/.git") {
         my $result = check_for_local_changes();
         if (defined($result)) {
           push(@results, $result);
