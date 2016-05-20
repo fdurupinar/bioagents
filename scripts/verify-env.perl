@@ -69,16 +69,18 @@ foreach my $repo_name (CwcConfig::get_git_repo_names()) {
 }
 
 # ------------------------------------------------------------
-# Write the configuration.
+# If everything passed, write the configuration.
 
-# FIXME Make this an option and/or move the config-generation code
-# into a module.
-my @make_config_cmd =
-  ( $FindBin::Bin . "/make-config.perl"
-  );
-print("Making config with command: " . join(" ", @make_config_cmd) . "\n");
-(0 == system(@make_config_cmd)) or
-  warn("Encountered an error while making config.");
+if ($pass) {
+  # FIXME Make this an option and/or move the config-generation code
+  # into a module.
+  my @make_config_cmd =
+    ( $FindBin::Bin . "/make-config.perl"
+    );
+  print("Making config with command: " . join(" ", @make_config_cmd) . "\n");
+  (0 == system(@make_config_cmd)) or
+    warn("Encountered an error while making config.");
+}
 
 # ------------------------------------------------------------
 # Make the exit code reflect success/failure.
