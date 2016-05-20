@@ -191,7 +191,7 @@ sub verify_git_repo {
       ++$problem_count;
     }
   }
-  printf("%-25s ... %-20s", $repo_name, $result_str);
+  printf("  %-25s ... %-20s", $repo_name, $result_str);
   if (0 == $problem_count) {
     print("OK\n");
   }
@@ -209,13 +209,13 @@ sub verify_git_repo {
   }
   elsif ($fix) {
     $verbose and
-      print("  Attempting to fix problems.\n");
+      print("    Attempting to fix problems.\n");
     $success = fix($repo_ref, \@results);
     if ($success) {
-      print("  FIXED\n");
+      print("    FIXED\n");
     }
     else {
-      print("  NOT fixed\n");
+      print("    NOT fixed\n");
     }
   }
 
@@ -237,7 +237,7 @@ sub get_local_checksum {
   my $local_checksum = <$git_fh>;
   chomp($local_checksum);
   $verbose and
-    print("  Local checksum: $local_checksum\n");
+    print("    Local checksum: $local_checksum\n");
 
   if ($local_checksum =~ /does not have any commits yet/) {
     $local_checksum = undef;
@@ -260,7 +260,7 @@ sub check_for_remote_changes {
 
   if (defined($remote_checksum)) {
     $verbose and
-      print("  Found remote checksum: $remote_checksum\n");
+      print("    Found remote checksum: $remote_checksum\n");
 
     # Try to get the date for the local commit. If we find it, we have
     # everything from the remote. If we don't find it, we are out of
@@ -300,7 +300,7 @@ sub get_remote_info {
   my $source_line = <$git_fh>;
   chomp($source_line);
   $verbose and
-    print("  Determining remote source: $source_line\n");
+    print("    Determining remote source: $source_line\n");
 
   my $source_loc;
   my $target_checksum;
@@ -350,7 +350,7 @@ sub get_commit_date {
   my $date = <$git_fh>;
   chomp($date);
   $verbose and
-    print("  Date for $checksum: $date\n");
+    print("    Date for $checksum: $date\n");
 
   if ($date =~ /bad object|unknown revision/) {
     $date = undef;
@@ -367,7 +367,7 @@ sub get_commit_date {
 
 sub check_for_local_changes {
   $verbose and
-    print("  Checking for local changes.\n");
+    print("    Checking for local changes.\n");
 
   # Run 'git st', output is like:
   # $ git st
@@ -401,7 +401,7 @@ sub check_for_local_changes {
   my $branch_line = <$git_fh>;
   chomp($branch_line);
   $verbose and
-    print("  Determining branch: $branch_line\n");
+    print("    Determining branch: $branch_line\n");
 
   my $branch;
   if ($branch_line =~ /On\s+branch\s+(.+)/) {
@@ -412,7 +412,7 @@ sub check_for_local_changes {
   my $status_line = <$git_fh>;
   chomp($status_line);
   $verbose and
-    print("  Determining status: $status_line\n");
+    print("    Determining status: $status_line\n");
 
   my $remote_branch;
   my $status;
@@ -420,14 +420,14 @@ sub check_for_local_changes {
     $remote_branch = $1;
     my $behind_by = $2;
     $verbose and
-      print("  Behind by $behind_by commits\n");
+      print("    Behind by $behind_by commits\n");
 
     $status = $NEED_MERGE;
   }
   elsif ($status_line =~ /Your branch and '(.+?)' have diverged/) {
     $remote_branch = $1;
     $verbose and
-      print("  Diverged from remote\n");
+      print("    Diverged from remote\n");
 
     $status = $NEED_MERGE;
   }
@@ -439,7 +439,7 @@ sub check_for_local_changes {
     $remote_branch = $1;
     my $ahead_by = $2;
     $verbose and
-      print("  Ahead by $ahead_by commits\n");
+      print("    Ahead by $ahead_by commits\n");
 
     $status = $AHEAD;
   }
@@ -473,7 +473,7 @@ sub fix {
   my $fixed_all = 1;
   foreach my $result (@$results_ref) {
     $verbose and
-      print("  Trying to fix: $result\n");
+      print("    Trying to fix: $result\n");
 
     if ($result eq $MISSING_DIR) {
       $repo_dir->mkpath();
