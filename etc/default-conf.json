@@ -100,7 +100,7 @@
         { "name": "sparser",
           "dir": "sparser",
           "remote_url": "https://github.com/ddmcdonald/sparser.git",
-          "asd_search_type": ":directory" },
+          "asd_search_type": ":tree" },
         { "name": "spire",
           "dir": "spire",
           "remote_url": "https://gitlab.com/sift/spire.git",
