@@ -7,7 +7,7 @@ This is top-level projects organizes CwC integration and demo efforts.
 ```
 git clone https://gitlab.com/cwc/cwc-integ.git
 cd cwc-integ
-scripts/verify-env.perl
+scripts/verify-env.perl --fix
 scripts/run-test.perl :spire
 scripts/run-test.perl :spire/test-sparser
 ```
