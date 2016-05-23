@@ -200,16 +200,19 @@ sub verify_git_repo {
       ++$problem_count;
     }
   }
-  printf("  %-25s ... %-20s", $repo_name, $result_str);
+
+  my $prob_str;
   if (0 == $problem_count) {
-    print("OK\n");
+    $prob_str = "OK";
   }
   elsif (1 == $problem_count) {
-    print("1 problem\n");
+    $prob_str = "1 problem";
   }
   else {
-    print("$problem_count problems\n");
+    $prob_str = "$problem_count problems";
   }
+  printf("  %-25s %-12s... %-20s\n",
+         $repo_name, $prob_str, $result_str);
 
    # If "fix" flag is set, try to fix the results.
   my $success = 0;
@@ -452,6 +455,10 @@ sub check_for_local_changes {
 
     $status = $AHEAD;
   }
+  elsif ($status_line =~ /nothing to commit/) {
+    # No remote information. We see this on Jenkins, where we are not
+    # tracking a remote.
+  }
   elsif ($status_line =~ /Changes not staged/) {
     # No remote information, apparently.
   }
@@ -461,8 +468,14 @@ sub check_for_local_changes {
 
   # FIXME If we see this, we may want to return the remote branch to
   # use for checking remote (instead of assuming HEAD).
-  ("origin/master" eq $remote_branch) or
-    die("Tracking something other than origin/master. Probably going to have inaccurate status.");
+  if (not defined($remote_branch) or
+      ("origin/master" eq $remote_branch)) {
+    # Either we are not tracking any remote, or we are tracking the
+    # origin/master. This is what we expect.
+  }
+  else {
+    die("Tracking $remote_branch. Dunno what this means about our status.");
+  }
 
   return $status;
 }
