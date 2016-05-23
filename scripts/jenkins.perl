@@ -78,7 +78,7 @@ my $verify_end_time = Time::HiRes::time();
 # ------------------------------------------------------------
 # Run the tests we know about.
 
-my $test_start_time = Time::HiRes::time();
+my $tests_start_time = Time::HiRes::time();
 
 my @test_systems =
   (
@@ -86,8 +86,9 @@ my @test_systems =
    ":spire/test-sparser",
   );
 
-my %test_results = ();
+my %test_result_refs = ();
 foreach my $system (@test_systems) {
+  my $test_start_time = Time::HiRes::time();
   my @test_cmd =
     (
      $FindBin::Bin . "/run-test.perl",
@@ -99,10 +100,16 @@ foreach my $system (@test_systems) {
     print("  " . join(" ", @test_cmd) . "\n");
   }
   my $test_result = system(@test_cmd);
-  $test_results{$system} = $test_result;
+  my $test_end_time = Time::HiRes::time();
+
+  my $result_ref = ();
+  $result_ref->{result} = $test_result;
+  my $test_duration_s = $test_end_time - $test_start_time;
+  $result_ref->{duration_s} = $test_duration_s;
+  $test_result_refs{$system} = $result_ref;
 }
 
-my $test_end_time = Time::HiRes::time();
+my $tests_end_time = Time::HiRes::time();
 my $script_end_time = Time::HiRes::time();
 
 # ------------------------------------------------------------
@@ -112,17 +119,20 @@ print("------------------------------------------------------------\n");
 print("Test Results:\n");
 my $pass = 1;
 foreach my $system (@test_systems) {
-  printf("  %-20s ... ", $system);
-  my $result = $test_results{$system};
+  printf("  %-25s ... ", $system);
+  my $result_ref = $test_result_refs{$system};
+  my $result = $result_ref->{result};
   if (0 == $result) {
     # Success.
-    print("SUCCESS\n");
+    print("SUCCESS");
   }
   else {
     # Failure.
-    print("FAILURE\n");
+    print("FAILURE");
     $pass = 0;
   }
+  my $test_duration_s = $result_ref->{duration_s};
+  printf(" -- %0.1f s\n", $test_duration_s);
 }
 
 print("------------------------------------------------------------\n");
@@ -130,8 +140,8 @@ my $verify_duration_s = $verify_end_time - $verify_start_time;
 printf("Verify took:   %0.1f s\n", $verify_duration_s);
 # my $build_duration_s = $build_end_time - $build_start_time;
 # printf("Build took:    %0.1f s\n", $build_duration_s);
-my $test_duration_s = $test_end_time - $test_start_time;
-printf("Tests took:    %0.1f s\n", $test_duration_s);
+my $tests_duration_s = $tests_end_time - $tests_start_time;
+printf("Tests took:    %0.1f s\n", $tests_duration_s);
 my $script_duration_s = $script_end_time - $script_start_time;
 printf("Total time:    %0.1f s\n", $script_duration_s);
 print("------------------------------------------------------------\n");
