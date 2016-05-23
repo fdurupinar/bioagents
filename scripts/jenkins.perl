@@ -24,6 +24,7 @@ use warnings;
 
 use FindBin;
 use Getopt::Long;
+use Time::HiRes;
 
 # ------------------------------------------------------------
 # Global Variables
@@ -43,8 +44,12 @@ GetOptions('v|verbose'          => \$verbose,
           )
   or die("Error parsing arguments.");
 
+my $script_start_time = Time::HiRes::time();
+
 # ------------------------------------------------------------
 # Verify that we have a sane environment.
+
+my $verify_start_time = Time::HiRes::time();
 
 my @verify_cmd =
   (
@@ -61,13 +66,19 @@ if (0 != $env_result) {
   exit($env_result);
 }
 
+my $verify_end_time = Time::HiRes::time();
+
 # ------------------------------------------------------------
 # Check to see if a TRIPS build is needed. Build if necessary.
 
 # FIXME Implement this.
+# my $build_start_time = Time::HiRes::time();
+# my $build_end_time = Time::HiRes::time();
 
 # ------------------------------------------------------------
 # Run the tests we know about.
+
+my $test_start_time = Time::HiRes::time();
 
 my @test_systems =
   (
@@ -91,10 +102,14 @@ foreach my $system (@test_systems) {
   $test_results{$system} = $test_result;
 }
 
+my $test_end_time = Time::HiRes::time();
+my $script_end_time = Time::HiRes::time();
+
 # ------------------------------------------------------------
 # Print a summary of the results.
 
-print("Results:\n");
+print("------------------------------------------------------------\n");
+print("Test Results:\n");
 my $pass = 1;
 foreach my $system (@test_systems) {
   printf("  %-20s ... ", $system);
@@ -109,6 +124,17 @@ foreach my $system (@test_systems) {
     $pass = 0;
   }
 }
+
+print("------------------------------------------------------------\n");
+my $verify_duration_s = $verify_end_time - $verify_start_time;
+printf("Verify took:   %0.1f s\n", $verify_duration_s);
+# my $build_duration_s = $build_end_time - $build_start_time;
+# printf("Build took:    %0.1f s\n", $build_duration_s);
+my $test_duration_s = $test_end_time - $test_start_time;
+printf("Tests took:    %0.1f s\n", $test_duration_s);
+my $script_duration_s = $script_end_time - $script_start_time;
+printf("Total time:    %0.1f s\n", $script_duration_s);
+print("------------------------------------------------------------\n");
 
 if ($pass) {
   print("Build SUCCEEDED\n");
