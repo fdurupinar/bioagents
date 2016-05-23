@@ -80,7 +80,7 @@ foreach my $repo_name (CwcConfig::get_git_repo_names()) {
   }
 }
 
-print($fh "   :inherit-configuration))\n");
+print($fh "   :ignore-inherited-configuration))\n");
 
 exit(0);
 
