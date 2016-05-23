@@ -19,6 +19,7 @@ my $MISSING_DIR = "missing dir";
 my $NEED_CLONE = "need clone";
 my $NEED_PULL = "need pull";
 my $NO_REMOTE = "no remote";
+my $REMOTE_MISMATCH = "mismatched remote";
 my $NEED_MERGE = "need merge";
 my $AHEAD = "ahead";
 
@@ -135,7 +136,12 @@ sub verify_git_repo {
   $verbose and
     print("  repo dir: $repo_dir\n");
 
-  if (exists($repo_ref->{remote_url}) and
+  my $remote_url;
+  if (exists($repo_ref->{remote_url})) {
+    $remote_url = $repo_ref->{remote_url};
+  }
+
+  if (defined($remote_url) and
       not (-d "$repo_dir/.git")) {
     push(@results, $NEED_CLONE);
   }
@@ -160,6 +166,12 @@ sub verify_git_repo {
 
       # Check to see if there are any remote changes to get.
       my ($remote_loc, $remote_result) = check_for_remote_changes();
+      if (defined($remote_url) and
+          defined($remote_loc) and
+          ($remote_url ne $remote_loc)) {
+        push(@results, $REMOTE_MISMATCH);
+      }
+
       if (defined($remote_result)) {
         push(@results, $remote_result);
       }
