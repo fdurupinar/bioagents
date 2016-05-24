@@ -23,9 +23,8 @@ scripts/run-test.perl :spire/test-sparser
 # Requirements
 
 ## Lisp Implementations
-Many CwC components are written in Lisp. We have made efforts to be
-compatible with both SBCL and CCL, but ultimately we only official
-support SBCL.
+Many CwC components are written in Lisp. We only officially support
+SBCL, though we have made some effort to also support CCL.
 
 ## Perl Libraries
 The Perl scripts in this project have several external
@@ -51,7 +50,7 @@ During normal development, there are some tools you can use to ensure
 that the integrated system continues to work for everyone.
 
 ## ```scripts/verify-env.perl```
-```verify-env.perl``` reads its configuration from
+The verify-env script reads its configuration from
 ```etc/default-conf.json``` and ```etc/local-conf.json```, then
 performs some checks to see if the directories/repos identified in the
 config are up to date.
