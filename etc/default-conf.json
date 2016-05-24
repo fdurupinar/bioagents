@@ -58,6 +58,9 @@
         { "name": "puri",
           "dir": "lisp-utils/com.b9.puri.ppcre",
           "remote_url": "https://github.com/lisp/com.b9.puri.ppcre.git" },
+        { "name": "cl-quaternion",
+          "dir": "lisp-utils/cl-quaternion",
+          "remote_url": "https://github.com/gonzojive/cl-quaternion.git" },
 
         // SIFT versions of libraries without public repos.
         { "name": "forbus-dekleer-libs",
