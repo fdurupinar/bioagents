@@ -7,6 +7,12 @@ This is top-level projects organizes CwC integration and demo efforts.
 ```
 git clone https://gitlab.com/cwc/cwc-integ.git
 cd cwc-integ
+scripts/jenkins.perl
+```
+
+The Jenkins script basically runs these commands, then collects and
+reports some results and timing information.
+```
 scripts/verify-env.perl --fix
 scripts/run-test.perl :spire
 scripts/run-test.perl :spire/test-sparser
