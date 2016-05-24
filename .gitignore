@@ -3,5 +3,6 @@ hms
 lisp-utils
 sparser
 spire
+clic
 
 cwc-source-config.lisp

@@ -104,8 +104,10 @@
         { "name": "spire",
           "dir": "spire",
           "remote_url": "https://gitlab.com/sift/spire.git",
-          "asd_search_type": ":directory" }
-        // { "name": "clic",
-        //   "dir": "clic" }
+          "asd_search_type": ":directory" },
+        { "name": "clic",
+          "dir": "clic",
+          "remote_url": "https://gitlab.com/sift/clic.git",
+          "asd_search_type": ":tree" }
     ]
 }
