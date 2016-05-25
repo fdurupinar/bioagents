@@ -23,6 +23,8 @@ my $REMOTE_MISMATCH = "mismatched remote";
 my $NEED_MERGE = "need merge";
 my $AHEAD = "ahead";
 my $NEED_CHECKOUT = "need checkout";
+my $NO_URL = "no url";
+my $NEED_UPDATE = "need update";
 
 # Base location of cwc-integ stuff.
 my $base_dir = dir($FindBin::Bin, "..")->resolve();
@@ -212,23 +214,7 @@ sub verify_git_repo {
   my $problem_count = print_verification_result($repo_name, \@results);
 
   # If "fix" flag is set, try to fix the results.
-  my $success = 0;
-  if (0 == $problem_count) {
-    $success = 1;
-  }
-  elsif ($fix) {
-    $verbose and
-      print("    Attempting to fix problems.\n");
-    $success = fix($repo_ref, \@results);
-    if ($success) {
-      print("    FIXED\n");
-    }
-    else {
-      print("    NOT fixed\n");
-    }
-  }
-
-  return $success;
+  return attempt_fix($repo_ref, $problem_count, \@results);
 }
 
 sub get_local_checksum {
@@ -502,20 +488,104 @@ sub verify_svn_repo {
   }
 
   # Do whatever we need to do to check SVN status.
-  if (defined($remote_url) and
-      not (-d "$repo_dir/.svn")) {
-    push(@results, $NEED_CHECKOUT);
-  }
-  elsif (not (-d "$repo_dir")) {
-    push(@results, $MISSING_DIR);
+  if (not (-d "$repo_dir")) {
+    if (defined($remote_url)) {
+      push(@results, $NEED_CHECKOUT);
+    }
+    else {
+      push(@results, $MISSING_DIR);
+    }
   }
   else {
     # FIXME Go to the repo dir and figure out what the status is.
+    my ($remote_loc, $remote_result) = check_for_repo_changes($repo_dir);
+    if (defined($remote_url) and
+        defined($remote_loc) and
+        ($remote_url ne $remote_loc)) {
+      push(@results, $REMOTE_MISMATCH);
+    }
+
+    if (defined($remote_result)) {
+      push(@results, $remote_result);
+    }
   }
 
   # Prepare and print the result statement.
   my $problem_count = print_verification_result($repo_name, \@results);
 
+  # If "fix" flag is set, try to fix the results.
+  return attempt_fix($repo_ref, $problem_count, \@results);
+}
+
+sub check_for_repo_changes {
+  my $repo_dir = shift();
+  my $status;
+
+  my $remote_loc = get_repo_url($repo_dir);
+  if (defined($remote_loc)) {
+    # Had a remote, check for changes to merge.
+    $status = get_merge_status($repo_dir);
+
+    # FIXME We might also want to check for local changes that we need
+    # to commit.
+  }
+  else {
+    $status = $NO_URL;
+  }
+
+  return ($remote_loc, $status);
+}
+
+sub get_repo_url {
+  my $repo_dir = shift();
+
+  my @svn_cmd = ( "svn", "info",
+                  $repo_dir );
+  my $in = '';
+  my $svn_fh;
+  open3($in, $svn_fh, $svn_fh,
+        @svn_cmd) or
+          die("Unable to run command: " . join(" ", @svn_cmd));
+
+  while (my $line = <$svn_fh>) {
+    chomp($line);
+    if ($line =~ /^URL:\s+(.+)/) {
+      my $remote_loc = $1;
+      return $remote_loc;
+    }
+  }
+
+  # die("Unable to determine remote location for repo: $repo_name");
+  return undef;
+}
+
+sub get_merge_status {
+  my $repo_dir = shift();
+
+  my @svn_cmd = ( "svn", "status",
+                  "--show-updates",
+                  $repo_dir );
+  my $in = '';
+  my $svn_fh;
+  open3($in, $svn_fh, $svn_fh,
+        @svn_cmd) or
+          die("Unable to run command: " . join(" ", @svn_cmd));
+
+  my $need_update = 0;
+  while (my $line = <$svn_fh>) {
+    chomp($line);
+    if ($line =~ /^\s*\*\s+(.+?)\s+(.+)/) {
+      my $rev = $1;
+      my $filename = $2;
+      ++$need_update;
+    }
+  }
+
+  my $status;
+  if ($need_update) {
+    $status = $NEED_UPDATE;
+  }
+  return $status;
 }
 
 # ------------------------------------------------------------
@@ -553,10 +623,36 @@ sub print_verification_result {
   }
   printf("  %-25s %-12s... %-20s\n",
          $repo_name, $prob_str, $result_str);
+
+  return $problem_count;
 }
 
-  # ------------------------------------------------------------
+# ------------------------------------------------------------
 # Support for fixing problems
+
+sub attempt_fix {
+  my $repo_ref = shift();
+  my $problem_count = shift();
+  my $results_ref = shift();
+
+  my $success = 0;
+  if (0 == $problem_count) {
+    $success = 1;
+  }
+  elsif ($fix) {
+    $verbose and
+      print("    Attempting to fix problems.\n");
+    $success = fix($repo_ref, $results_ref);
+    if ($success) {
+      print("    FIXED\n");
+    }
+    else {
+      print("    NOT fixed\n");
+    }
+  }
+
+  return $success;
+}
 
 sub fix {
   my $repo_ref = shift();
