@@ -22,6 +22,7 @@ my $NO_REMOTE = "no remote";
 my $REMOTE_MISMATCH = "mismatched remote";
 my $NEED_MERGE = "need merge";
 my $AHEAD = "ahead";
+my $NEED_CHECKOUT = "need checkout";
 
 # Base location of cwc-integ stuff.
 my $base_dir = dir($FindBin::Bin, "..")->resolve();
@@ -64,6 +65,17 @@ print("Verifying status of git repositories.\n");
 my $pass = 1;
 foreach my $repo_name (CwcConfig::get_git_repo_names()) {
   my $verified_repo = verify_git_repo($repo_name);
+  if (not $verified_repo) {
+    $pass = 0;
+  }
+}
+
+# ------------------------------------------------------------
+# Check each of the svn repos to see if they need to be updated.
+
+print("Verifying status of svn repositories.\n");
+foreach my $repo_name (CwcConfig::get_svn_repo_names()) {
+  my $verified_repo = verify_svn_repo($repo_name);
   if (not $verified_repo) {
     $pass = 0;
   }
@@ -197,36 +209,9 @@ sub verify_git_repo {
   }
 
   # Prepare and print the result statement.
-  my $result_str = "";
-  my $problem_count = 0;
-  foreach my $result (@results) {
-    if (0 < $problem_count) {
-      $result_str .= ", ";
-    }
-    $result_str .= $result;
+  my $problem_count = print_verification_result($repo_name, \@results);
 
-    if ($AHEAD eq $result) {
-      # Just a warning. We're still okay.
-    }
-    else {
-      ++$problem_count;
-    }
-  }
-
-  my $prob_str;
-  if (0 == $problem_count) {
-    $prob_str = "OK";
-  }
-  elsif (1 == $problem_count) {
-    $prob_str = "1 problem";
-  }
-  else {
-    $prob_str = "$problem_count problems";
-  }
-  printf("  %-25s %-12s... %-20s\n",
-         $repo_name, $prob_str, $result_str);
-
-   # If "fix" flag is set, try to fix the results.
+  # If "fix" flag is set, try to fix the results.
   my $success = 0;
   if (0 == $problem_count) {
     $success = 1;
@@ -493,6 +478,84 @@ sub check_for_local_changes {
 }
 
 # ------------------------------------------------------------
+# Subversion Interaction
+
+sub verify_svn_repo {
+  my $repo_name = shift();
+
+  $verbose and
+    print("Verifying status of svn repo: $repo_name\n");
+
+  my $repo_ref = CwcConfig::get_svn_repo_config_ref($repo_name);
+  my @results = ();
+
+  defined($repo_ref) or
+    die("The repo ref was undefined for: $repo_name");
+
+  my $repo_dir = $repo_ref->{dir};
+  $verbose and
+    print("  repo dir: $repo_dir\n");
+
+  my $remote_url;
+  if (exists($repo_ref->{remote_url})) {
+    $remote_url = $repo_ref->{remote_url};
+  }
+
+  # Do whatever we need to do to check SVN status.
+  if (defined($remote_url) and
+      not (-d "$repo_dir/.svn")) {
+    push(@results, $NEED_CHECKOUT);
+  }
+  elsif (not (-d "$repo_dir")) {
+    push(@results, $MISSING_DIR);
+  }
+  else {
+    # FIXME Go to the repo dir and figure out what the status is.
+  }
+
+  # Prepare and print the result statement.
+  my $problem_count = print_verification_result($repo_name, \@results);
+
+}
+
+# ------------------------------------------------------------
+# Support for printing results
+
+sub print_verification_result {
+  my $repo_name = shift();
+  my $results_ref = shift();
+
+  my $result_str = "";
+  my $problem_count = 0;
+  foreach my $result (@$results_ref) {
+    if (0 < $problem_count) {
+      $result_str .= ", ";
+    }
+    $result_str .= $result;
+
+    if ($AHEAD eq $result) {
+      # Just a warning. We're still okay.
+    }
+    else {
+      ++$problem_count;
+    }
+  }
+
+  my $prob_str;
+  if (0 == $problem_count) {
+    $prob_str = "OK";
+  }
+  elsif (1 == $problem_count) {
+    $prob_str = "1 problem";
+  }
+  else {
+    $prob_str = "$problem_count problems";
+  }
+  printf("  %-25s %-12s... %-20s\n",
+         $repo_name, $prob_str, $result_str);
+}
+
+  # ------------------------------------------------------------
 # Support for fixing problems
 
 sub fix {
