@@ -112,5 +112,12 @@
           "dir": "clic",
           "remote_url": "https://gitlab.com/sift/clic.git",
           "asd_search_type": ":tree" }
+    ],
+
+    "svn_repos": [
+        { "name": "shop2",
+          "dir": "shop2",
+          "remote_url": "https://svn.sift.net:3333/svn/shop2/shop/trunk/shop2",
+          "asd_search_type": ":directory" }
     ]
 }

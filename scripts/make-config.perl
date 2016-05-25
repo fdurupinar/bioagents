@@ -61,8 +61,8 @@ print($fh "\n");
 print($fh "(asdf:initialize-source-registry\n");
 print($fh " '(:source-registry\n");
 
-foreach my $repo_name (CwcConfig::get_git_repo_names()) {
-  my $repo_ref = CwcConfig::get_git_repo_config_ref($repo_name);
+foreach my $repo_name (CwcConfig::get_all_repo_names()) {
+  my $repo_ref = CwcConfig::get_repo_config_ref($repo_name);
   if (not exists($repo_ref->{asd_search_type})) {
     # Just silently skip it.
   }
