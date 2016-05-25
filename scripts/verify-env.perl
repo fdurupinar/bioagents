@@ -24,6 +24,7 @@ my $NEED_MERGE = "need merge";
 my $AHEAD = "ahead";
 my $NEED_CHECKOUT = "need checkout";
 my $NO_URL = "no url";
+my $UPDATE_WOULD_CONFLICT = "update would conflict";
 my $NEED_UPDATE = "need update";
 
 # Base location of cwc-integ stuff.
@@ -583,9 +584,49 @@ sub get_merge_status {
 
   my $status;
   if ($need_update) {
-    $status = $NEED_UPDATE;
+    if (would_update_conflict($repo_dir)) {
+      $status = $UPDATE_WOULD_CONFLICT;
+    }
+    else {
+      $status = $NEED_UPDATE;
+    }
   }
   return $status;
+}
+
+sub would_update_conflict {
+  my $repo_dir = shift();
+
+  # First, go to the working directory.
+  my $cwd = dir(".");
+  chdir($repo_dir);
+
+  my @svn_cmd = ( "svn", "merge",
+                  "--dry-run",
+                  "-r", "BASE:HEAD",
+                  # For some reason, the merge command must be in the
+                  # repo dir.
+                  "." );
+  $verbose and
+    print("Checking for conflict using command: " . join(" ", @svn_cmd) . "\n");
+  my $in = '';
+  my $svn_fh;
+  open3($in, $svn_fh, $svn_fh,
+        @svn_cmd) or
+          die("Unable to run command: " . join(" ", @svn_cmd));
+
+  my $would_conflict = 0;
+  while (my $line = <$svn_fh>) {
+    chomp($line);
+    if ($line =~ /^Summary of conflicts:/) {
+      $would_conflict = 1;
+    }
+  }
+
+  # Go back to where we were.
+  chdir($cwd);
+
+  return $would_conflict;
 }
 
 # ------------------------------------------------------------
@@ -710,6 +751,28 @@ sub fix {
     elsif ($result eq $AHEAD) {
       # FIXME We don't need to do anything to fix this. But perhaps
       # print a message suggesting to push.
+    }
+    elsif ($result eq $NEED_CHECKOUT) {
+      if (exists($repo_ref->{remote_url})) {
+        my $remote_url = $repo_ref->{remote_url};
+        if (not run_fix_command(".",
+                                ["svn", "checkout",
+                                 $remote_url,
+                                 $repo_dir])) {
+          $fixed_all = 0;
+        }
+      }
+      else {
+        warn("Cannot fix repo with checkout, no remote_url in config.");
+        $fixed_all = 0;
+      }
+    }
+    elsif ($result eq $NEED_UPDATE) {
+      if (not run_fix_command(".",
+                              ["svn", "up",
+                               $repo_dir])) {
+        $fixed_all = 0;
+      }
     }
     else {
       # Dunno what to do. Warn the user and punt.
