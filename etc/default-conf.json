@@ -111,7 +111,12 @@
         { "name": "clic",
           "dir": "clic",
           "remote_url": "https://gitlab.com/sift/clic.git",
-          "asd_search_type": ":tree" }
+          "asd_search_type": ":tree" },
+
+        // Need a sub-directory of clic to store results. Git won't
+        // store empty directories the way svn does.
+        { "name": "clic-results",
+          "dir": "clic/results" }
     ],
 
     "svn_repos": [
