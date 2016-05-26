@@ -177,6 +177,9 @@ my @test_systems =
   (
    ":spire",
    ":spire/test-sparser",
+   ":clic/bw-tests",
+   ":clic/bio-tests",
+   ":spg/tests",
   );
 
 my %test_result_refs = ();
