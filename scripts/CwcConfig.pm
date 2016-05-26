@@ -173,7 +173,17 @@ sub store_repo_configs {
       if ("dir" eq $key) {
         # Treat this as a directory. Find it relative to the config
         # file.
-        my $dir = dir($val)->absolute();
+
+        # Attempt to do globbing in case the user included a ~ or
+        # something. Only accept the globbed answer if there was
+        # exactly one match.
+        my $path = $val;
+        my @expansions = glob($val);
+        if (1 == scalar(@expansions)) {
+          $path = $expansions[0];
+        }
+        my $dir = dir($path)->absolute();
+
         $verbose and
           print("  Directory: $val => $dir\n");
         $repo_config_ref->{$key} = $dir;
