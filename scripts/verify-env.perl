@@ -15,13 +15,20 @@ use Path::Class;
 # Constant values
 
 my $UNKNOWN = "unknown state";
+
+my $SKIP = "skip";
+
 my $MISSING_DIR = "missing dir";
+
+# git problems
 my $NEED_CLONE = "need clone";
 my $NEED_PULL = "need pull";
 my $NO_REMOTE = "no remote";
 my $REMOTE_MISMATCH = "mismatched remote";
 my $NEED_MERGE = "need merge";
 my $AHEAD = "ahead";
+
+# svn problems
 my $NEED_CHECKOUT = "need checkout";
 my $NO_URL = "no url";
 my $UPDATE_WOULD_CONFLICT = "update would conflict";
@@ -156,7 +163,11 @@ sub verify_git_repo {
     $remote_url = $repo_ref->{remote_url};
   }
 
-  if (defined($remote_url) and
+  if (exists($repo_ref->{skip}) and
+      $repo_ref->{skip}) {
+    push(@results, $SKIP);
+  }
+  elsif (defined($remote_url) and
       not (-d "$repo_dir/.git")) {
     push(@results, $NEED_CLONE);
   }
@@ -644,7 +655,10 @@ sub print_verification_result {
     }
     $result_str .= $result;
 
-    if ($AHEAD eq $result) {
+    if ($SKIP eq $result) {
+      # Told to skip it. We're still fine.
+    }
+    elsif ($AHEAD eq $result) {
       # Just a warning. We're still okay.
     }
     else {
