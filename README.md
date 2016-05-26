@@ -9,8 +9,9 @@ as necessary. Then it runs some tests, reporting results and timing
 information.
 
 If this (or any of the other Perl scripts) fails with an indication
-that it cannot find a library, look at the ~perl-libraries section below
-for guidance on how to install the missing library.
+that it cannot find a library, look at the
+[Perl Libraries](#perl-libraries) section below for guidance on how to
+install the missing library.
 
 ```
 git clone https://gitlab.com/cwc/cwc-integ.git
@@ -18,9 +19,7 @@ cd cwc-integ
 scripts/jenkins.perl
 ```
 
-# Requirements
-
-## Perl Libraries
+# Perl Libraries
 The Perl scripts in this project have several external
 dependencies. These must be manually installed on each developer
 machine. If you run a script and it gives an error that it can't find
@@ -40,7 +39,7 @@ the system package manager instead, as in:
 aptitude install libpath-class-perl
 ```
 
-## Supported Lisp Implementations
+# Supported Lisp Implementations
 Many CwC components are written in Lisp. We only officially support
 SBCL, though we have made some effort to also support CCL.
 
