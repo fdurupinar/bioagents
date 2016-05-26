@@ -62,42 +62,42 @@
           "dir": "lisp-utils/cl-quaternion",
           "remote_url": "https://github.com/gonzojive/cl-quaternion.git" },
 
-        // SIFT versions of libraries without public repos.
-        { "name": "forbus-dekleer-libs",
-          "dir": "lisp-utils/forbus-dekleer-libs",
-          "remote_url": "https://gitlab.com/sift/forbus-dekleer-libs.git" },
-        { "name": "xmls",
-          "dir": "lisp-utils/xmls",
-          "remote_url": "https://gitlab.com/sift/xmls.git" },
-        { "name": "portableaserve",
-          "dir": "lisp-utils/portableaserve",
-          // This is available publicly, but is ancient. We have fixes.
-          // "remote_url": "https://github.com/mtravers/portableaserve.git"
-          "remote_url": "https://gitlab.com/sift/portableaserve.git" },
-        // This is available via QuickLisp or darcs. But our version
-        // has fixes.
-        { "name": "iterate",
-          "dir": "lisp-utils/iterate",
-          "remote_url": "https://gitlab.com/sift/iterate.git" },
+        // // SIFT versions of libraries without public repos.
+        // { "name": "forbus-dekleer-libs",
+        //   "dir": "lisp-utils/forbus-dekleer-libs",
+        //   "remote_url": "https://gitlab.com/sift/forbus-dekleer-libs.git" },
+        // { "name": "xmls",
+        //   "dir": "lisp-utils/xmls",
+        //   "remote_url": "https://gitlab.com/sift/xmls.git" },
+        // { "name": "portableaserve",
+        //   "dir": "lisp-utils/portableaserve",
+        //   // This is available publicly, but is ancient. We have fixes.
+        //   // "remote_url": "https://github.com/mtravers/portableaserve.git"
+        //   "remote_url": "https://gitlab.com/sift/portableaserve.git" },
+        // // This is available via QuickLisp or darcs. But our version
+        // // has fixes.
+        // { "name": "iterate",
+        //   "dir": "lisp-utils/iterate",
+        //   "remote_url": "https://gitlab.com/sift/iterate.git" },
 
-        // SIFT libraries
-        { "name": "musliner-tools",
-          "dir": "lisp-utils/musliner-tools",
-          "remote_url": "https://gitlab.com/sift/musliner-tools.git" },
+        // // SIFT libraries
+        // { "name": "musliner-tools",
+        //   "dir": "lisp-utils/musliner-tools",
+        //   "remote_url": "https://gitlab.com/sift/musliner-tools.git" },
 
-        // SIFT version of fiveam -- with fixes and improvements.
-        { "name": "fiveam",
-          "dir": "lisp-utils/fiveam",
-          "remote_url": "https://gitlab.com/sift/fiveam.git" },
-        { "name": "fiveam-asdf",
-          "dir": "lisp-utils/fiveam-asdf",
-          "remote_url": "https://gitlab.com/sift/fiveam-asdf.git" },
-        // { "name": "asdf-flv",
-        //   "dir": "lisp-utils/asdf-flv",
-        //   "remote_url": "https://github.com/didierverna/asdf-flv.git" },
-        { "name": "arnesi",
-          "dir": "lisp-utils/arnesi",
-          "remote_url": "https://gitlab.com/sift/arnesi.git" },
+        // // SIFT version of fiveam -- with fixes and improvements.
+        // { "name": "fiveam",
+        //   "dir": "lisp-utils/fiveam",
+        //   "remote_url": "https://gitlab.com/sift/fiveam.git" },
+        // { "name": "fiveam-asdf",
+        //   "dir": "lisp-utils/fiveam-asdf",
+        //   "remote_url": "https://gitlab.com/sift/fiveam-asdf.git" },
+        // // { "name": "asdf-flv",
+        // //   "dir": "lisp-utils/asdf-flv",
+        // //   "remote_url": "https://github.com/didierverna/asdf-flv.git" },
+        // { "name": "arnesi",
+        //   "dir": "lisp-utils/arnesi",
+        //   "remote_url": "https://gitlab.com/sift/arnesi.git" },
 
         // SIFT
         { "name": "sparser",
@@ -120,6 +120,40 @@
     ],
 
     "svn_repos": [
+        // SIFT versions of libraries without public repos.
+        { "name": "forbus-dekleer-libs",
+          "dir": "lisp-utils/forbus-dekleer-libs",
+          "remote_url": "https://svn.sift.info:3333/svn/lisp-utils/trunk/forbus-dekleer-libs" },
+        { "name": "xmls",
+          "dir": "lisp-utils/xmls",
+          "remote_url": "https://svn.sift.info:3333/svn/lisp-utils/trunk/xmls" },
+        { "name": "portableaserve",
+          "dir": "lisp-utils/portableaserve",
+          // This is available publicly, but is ancient. We have fixes.
+          // "remote_url": "https://github.com/mtravers/portableaserve.git"
+          "remote_url": "https://svn.sift.info:3333/svn/lisp-utils/trunk/portableaserve" },
+        // This is available via QuickLisp or darcs. But our version
+        // has fixes.
+        { "name": "iterate",
+          "dir": "lisp-utils/iterate",
+          "remote_url": "https://svn.sift.info:3333/svn/lisp-utils/trunk/iterate" },
+
+        // SIFT libraries
+        { "name": "musliner-tools",
+          "dir": "lisp-utils/musliner-tools",
+          "remote_url": "https://svn.sift.info:3333/svn/lisp-utils/trunk/musliner-tools" },
+
+        // SIFT version of fiveam -- with fixes and improvements.
+        { "name": "fiveam",
+          "dir": "lisp-utils/fiveam",
+          "remote_url": "https://svn.sift.info:3333/svn/lisp-utils/trunk/fiveam" },
+        { "name": "fiveam-asdf",
+          "dir": "lisp-utils/fiveam-asdf",
+          "remote_url": "https://svn.sift.info:3333/svn/lisp-utils/trunk/fiveam-asdf" },
+        { "name": "arnesi",
+          "dir": "lisp-utils/arnesi",
+          "remote_url": "https://svn.sift.info:3333/svn/lisp-utils/trunk/arnesi_dev" },
+
         { "name": "shop2",
           "dir": "shop2",
           "remote_url": "https://svn.sift.net:3333/svn/shop2/shop/trunk/shop2",
