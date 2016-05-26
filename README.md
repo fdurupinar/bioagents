@@ -5,45 +5,44 @@ This is top-level projects organizes CwC integration and demo efforts.
 The most basic way to get started is to clone the cwc-integ project
 and run the jenkins script. The jenkins script verifies that the
 required projects and libraries are present, cloning and updating them
-as necessary.
+as necessary. Then it runs some tests, reporting results and timing
+information.
+
+If this (or any of the other Perl scripts) fails with an indication
+that it cannot find a library, look at the ~perl-libraries section below
+for guidance on how to install the missing library.
+
 ```
 git clone https://gitlab.com/cwc/cwc-integ.git
 cd cwc-integ
 scripts/jenkins.perl
 ```
 
-The Jenkins script basically runs these commands, then collects and
-reports some results and timing information.
-```
-scripts/verify-env.perl --fix
-scripts/run-test.perl :spire
-scripts/run-test.perl :spire/test-sparser
-```
-
 # Requirements
-
-## Lisp Implementations
-Many CwC components are written in Lisp. We only officially support
-SBCL, though we have made some effort to also support CCL.
 
 ## Perl Libraries
 The Perl scripts in this project have several external
 dependencies. These must be manually installed on each developer
-machine. We have installed these with invocations like:
+machine. If you run a script and it gives an error that it can't find
+a library (such as Path::Class or JSON), you should manually install
+the library and try again.
 
+On most Perl implementations, you should be able to install missing
+libraries using the CPAN shell. As in:
 ```
 sudo perl -MCPAN -e shell
 CPAN> install Path::Class
 ```
 
-and
-
+On a Debian server at SIFT we sometimes install the libraries using
+the system package manager instead, as in:
 ```
 aptitude install libpath-class-perl
 ```
 
-Among the required Perl modules are:
-- Path::Class / libpath-class-perl
+## Supported Lisp Implementations
+Many CwC components are written in Lisp. We only officially support
+SBCL, though we have made some effort to also support CCL.
 
 # Development
 During normal development, there are some tools you can use to ensure
