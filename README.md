@@ -67,14 +67,14 @@ like for an IHMC developer.
 // only counted when they are the only content on the line.
 {
     "git_repos": [
-        // Use the local versions of trips. 
+        // Use the local versions of TRIPS. 
         { "name": "trips-cabot",
           // Setting a value here overwrites the value from the
           // default config. Note that the path does not need to be a
           // subdirectory of cwc-integ.
           "dir": "~/projects/trips/cabot",
-          // Setting the skip value to true will cause it to be
-          // skipped during verification. It will be assumed to be
+          // Setting the skip value to true will cause this repo to
+          // be skipped during verification. It will be assumed to be
           // up-to-date.
           "skip": true },
         { "name": "trips-bob",
