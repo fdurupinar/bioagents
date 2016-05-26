@@ -33,8 +33,8 @@ sudo perl -MCPAN -e shell
 CPAN> install Path::Class
 ```
 
-On a Debian server at SIFT we sometimes install the libraries using
-the system package manager instead, as in:
+Alternatively, on a Debian server at SIFT we sometimes install the
+libraries using the system package manager instead, as in:
 ```
 aptitude install libpath-class-perl
 ```
@@ -60,7 +60,8 @@ The default config is maintained in git and is read first. The local
 config is ignored by git and loaded after the default config to
 override default values.
 
-Here is an example:
+Here is an example of what a ```etc/local-conf.json``` file might look
+like for an IHMC developer.
 ```
 // As with the default conf, comments can start with # or // and are
 // only counted when they are the only content on the line.
