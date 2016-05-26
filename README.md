@@ -43,6 +43,46 @@ aptitude install libpath-class-perl
 Many CwC components are written in Lisp. We only officially support
 SBCL, though we have made some effort to also support CCL.
 
+# Custom Environment Setup
+The default configuration puts all the required projects into
+appropriate subdirectories. Realistically, each developer may organize
+their projects separately. For instance, the IHMC TRIPS code is
+officially managed in a CVS repository and pushed to git overnight as
+appropriate. During daily development, IHMC developers will want to
+use a working copy of their CVS repo instead of a clone of the git
+repo.
+
+The verify script reads its configuration from two files:
+- ```etc/default-conf.json``` and
+- ```etc/local-conf.json```.
+
+The default config is maintained in git and is read first. The local
+config is ignored by git and loaded after the default config to
+override default values.
+
+Here is an example:
+```
+// As with the default conf, comments can start with # or // and are
+// only counted when they are the only content on the line.
+{
+    "git_repos": [
+        // Use the local versions of trips. 
+        { "name": "trips-cabot",
+          // Setting a value here overwrites the value from the
+          // default config. Note that the path does not need to be a
+          // subdirectory of cwc-integ.
+          "dir": "~/projects/trips/cabot",
+          // Setting the skip value to true will cause it to be
+          // skipped during verification. It will be assumed to be
+          // up-to-date.
+          "skip": true },
+        { "name": "trips-bob",
+          "dir": "~/projects/trips/bob",
+          "skip": true }
+    ]
+}
+```
+
 # Development
 During normal development, there are some tools you can use to ensure
 that the integrated system continues to work for everyone.
