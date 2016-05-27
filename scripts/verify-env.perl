@@ -102,7 +102,7 @@ if ($pass) {
     );
   print("Making config with command: " . join(" ", @make_config_cmd) . "\n");
   (0 == system(@make_config_cmd)) or
-    warn("Encountered an error while making config.");
+    die("Encountered an error while making config.");
 }
 
 # ------------------------------------------------------------
