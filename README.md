@@ -2,19 +2,46 @@
 This is top-level projects organizes CwC integration and demo efforts.
 
 # Getting Started
-The most basic way to get started is to clone the cwc-integ project
-and run the jenkins script. The jenkins script verifies that the
-required projects and libraries are present, cloning and updating them
-as necessary. Then it runs some tests, reporting results and timing
-information.
-
-If this (or any of the other Perl scripts) fails with an indication
-that it cannot find a library, look at the
+Please note, if any of the Perl scripts fail with an indication that
+they cannot find a library, look at the
 [Perl Libraries](#perl-libraries) section below for guidance on how to
 install the missing library.
 
+1. Clone the cwc-integ project.
 ```
 git clone https://gitlab.com/cwc/cwc-integ.git
+```
+
+2. Download or check out the SHOP2 HTN planner.
+
+The SHOP2 planner is maintained in an svn repo at SIFT. If you have credentials for this repo, you can check it out as in:
+```
+cd cwc-integ
+svn co https://svn.sift.net:3333/svn/shop2/shop/trunk/shop2
+```
+
+Otherwise, you can download the stable release from
+SourceForge. Uncompress the release into the cwc-integ/shop2
+directory.
+https://sourceforge.net/projects/shop/
+
+3. [Optional] Create an ```etc/local-conf.json``` file with custom
+   settings. See [below](custom-environment-setup) for details.
+
+4. Verify that your environment is set up properly. Fix it if
+necessary. The first time you run this, the script will clone a bunch
+of git repos and check out some svn repos. After that, running this
+script should only update the local copy when remote changes are
+found.
+```
+cd cwc-integ
+scripts/verify-env.perl --fix
+```
+
+5. Run the tests to verify that everything is working. The Jenkins
+   script always runs ```verify-env.perl --fix```, so the tests should
+   always run against an up-to-date environment.
+```
 cd cwc-integ
 scripts/jenkins.perl
 ```
