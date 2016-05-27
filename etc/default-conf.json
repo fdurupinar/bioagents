@@ -154,9 +154,18 @@
           "dir": "lisp-utils/arnesi",
           "remote_url": "https://svn.sift.info:3333/svn/lisp-utils/trunk/arnesi_dev" },
 
+        // SHOP2 has some license constraints that mean we cannot
+        // share it anonymously. The URL below should work for people
+        // with SIFT svn accounts. Just put the information in your
+        // local-conf.json, as described in the README.md file.
+        //
+        // If you don't have access to this repo, you'll need to grab
+        // the publicly available one from SourceForge (shudder).
+        // https://sourceforge.net/projects/shop/
         { "name": "shop2",
           "dir": "shop2",
-          "remote_url": "https://svn.sift.net:3333/svn/shop2/shop/trunk/shop2",
+          "skip": true,
+          // "remote_url": "https://svn.sift.net:3333/svn/shop2/shop/trunk/shop2",
           "asd_search_type": ":directory" }
     ]
 }
