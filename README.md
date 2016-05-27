@@ -23,16 +23,17 @@ svn co https://svn.sift.net:3333/svn/shop2/shop/trunk/shop2
 
     Otherwise, you can download the stable release from SourceForge --
     https://sourceforge.net/projects/shop/. Uncompress the release
-    into the cwc-integ/shop2 directory.
+    into the ```cwc-integ/shop2``` directory.
 
 3. [Optional] Create an ```etc/local-conf.json``` file with custom
    settings. See [below](custom-environment-setup) for details.
 
 4. Verify that your environment is set up properly. Fix it if
-   necessary. The first time you run this, the script will clone a
-   bunch of git repos and check out some svn repos. After that,
-   running this script should only update the local copy when remote
-   changes are found.
+   necessary.
+
+   The first time you run this, the script will clone a bunch of git
+   repos and check out some svn repos. After that, running this script
+   should only update the local copy when remote changes are found.
     ```
 cd cwc-integ
 scripts/verify-env.perl --fix
