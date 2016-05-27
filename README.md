@@ -31,9 +31,10 @@ svn co https://svn.sift.net:3333/svn/shop2/shop/trunk/shop2
 4. Verify that your environment is set up properly. Fix it if
    necessary.
 
-   The first time you run this, the script will clone a bunch of git
-   repos and check out some svn repos. After that, running this script
-   should only update the local copy when remote changes are found.
+    The first time you run this, the script will clone a bunch of git
+    repos and check out some svn repos. After that, running this
+    script should only update the local copy when remote changes are
+    found.
     ```
 cd cwc-integ
 scripts/verify-env.perl --fix
