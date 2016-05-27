@@ -163,6 +163,8 @@ sub verify_git_repo {
     $remote_url = $repo_ref->{remote_url};
   }
 
+  # Do whatever we need to do to check git status. Note that this is
+  # largely duplication with verify_svn_repo.
   if (exists($repo_ref->{skip}) and
       $repo_ref->{skip}) {
     push(@results, $SKIP);
@@ -499,8 +501,13 @@ sub verify_svn_repo {
     $remote_url = $repo_ref->{remote_url};
   }
 
-  # Do whatever we need to do to check SVN status.
-  if (not (-d "$repo_dir")) {
+  # Do whatever we need to do to check svn status. Note that this is
+  # largey duplication with verify_git_repo.
+  if (exists($repo_ref->{skip}) and
+      $repo_ref->{skip}) {
+    push(@results, $SKIP);
+  }
+  elsif (not (-d "$repo_dir")) {
     if (defined($remote_url)) {
       push(@results, $NEED_CHECKOUT);
     }
@@ -509,7 +516,7 @@ sub verify_svn_repo {
     }
   }
   else {
-    # FIXME Go to the repo dir and figure out what the status is.
+    # Figure out what the status is.
     my ($remote_loc, $remote_result) = check_for_repo_changes($repo_dir);
     if (defined($remote_url) and
         defined($remote_loc) and
