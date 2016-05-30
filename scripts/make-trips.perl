@@ -7,6 +7,8 @@ use FindBin;
 use lib ( $FindBin::Bin );  # for local modules
 use CwcConfig;
 
+use File::Find;
+use File::stat;
 use Getopt::Long;
 
 # ------------------------------------------------------------
@@ -15,10 +17,13 @@ use Getopt::Long;
 # Set to enable verbose (debugging) output.
 my $verbose = 0;
 
+my $dry_run = 0;
+
 # ------------------------------------------------------------
 # Parse Arguments
 
 GetOptions('v|verbose'          => \$verbose,
+           'n|dry-run'          => \$dry_run,
           )
   or die("Error parsing arguments.");
 
@@ -85,7 +90,76 @@ if (not $configured) {
 }
 
 # FIXME We are configured, go looking to see if we are up to date.
+my $bin_dir = "$repo_dir/bin";
+my $exe_filename = "$bin_dir/trips_exec";
 
+my $need_make = 0;
+if (not (-d $bin_dir)) {
+  $need_make = 1;
+}
+elsif (not (-e $exe_filename)) {
+  $need_make = 1;
+}
+else {
+  # We have the target exe file. Let's figure out when it was last
+  # modified and then see if we have any files newer than that in the
+  # source directory.
+
+  my $exe_mtime = stat($exe_filename)->mtime;
+  print("Exe last modified: $exe_mtime\n");
+
+  print("Looking for newer files.\n");
+  find(sub {
+         # Check if this file is newer.
+         my $name = $_;
+
+         if (-d $name) {
+           # Don't check the time on directories.
+         }
+         else {
+           my $stat = stat($name);
+           (defined($stat)) or
+             die("Unable to stat file: $name");
+
+           my $mtime = $stat->mtime;
+           if ($mtime > $exe_mtime) {
+             print("  $mtime - $File::Find::name\n");
+             $need_make = 1;
+           }
+         }
+       }, ".");
+}
+
+if ($need_make) {
+  # We need to make. Do a clean and then an install.
+  my @make_clean_cmd = ("make", "clean");
+  print("Calling:\n");
+  print("  " . join(" ", @make_clean_cmd) . "\n");
+  if (not $dry_run) {
+    (0 == system(@make_clean_cmd)) or
+      die("Failed to: " . join(" ", @make_clean_cmd));
+  }
+
+  my @make_install_cmd = ("make", "install");
+  print("Calling:\n");
+  print("  " . join(" ", @make_install_cmd) . "\n");
+  if (not $dry_run) {
+    (0 == system(@make_install_cmd)) or
+      die("Failed to: " . join(" ", @make_install_cmd));
+  }
+
+  # Exit with non-zero exit code so that callers know we aren't
+  # up-to-date.
+  if (not $dry_run) {
+    print("Looks like a build is needed.\n");
+    exit(1);
+  }
+}
+else {
+  print("Looks like the build is up to date.\n");
+}
+
+exit(0);
 
 # End of main script
 # ------------------------------------------------------------
