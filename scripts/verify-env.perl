@@ -850,6 +850,15 @@ sub fix {
         $fixed_all = 0;
       }
     }
+    elsif ($result eq $NEED_MAKE) {
+      my $repo_name = $repo_ref->{name};
+      if (not run_fix_command(".",
+                              [$FindBin::Bin . "/verify-trips-build.perl",
+                               $repo_name,
+                               "--fix"])) {
+        $fixed_all = 0;
+      }
+    }
     else {
       # Dunno what to do. Warn the user and punt.
       $fixed_all = 0;
