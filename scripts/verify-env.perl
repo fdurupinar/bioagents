@@ -850,6 +850,16 @@ sub fix {
         $fixed_all = 0;
       }
     }
+    elsif ($result eq $NEED_CONFIGURE) {
+      # Make a warning, but don't fail this. We don't want this to
+      # break Jenkins itself until after we have verified that the
+      # compile should be successful.
+      #
+      # Likewise, until we have the TRIPS-dependent code under test,
+      # most developers don't need TRIPS built either.
+      my $repo_name = $repo_ref->{name};
+      warn("Need to manually execute configure command for $repo_name.");
+    }
     elsif ($result eq $NEED_MAKE) {
       my $repo_name = $repo_ref->{name};
       if (not run_fix_command(".",
