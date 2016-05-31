@@ -26,7 +26,7 @@ svn co https://svn.sift.net:3333/svn/shop2/shop/trunk/shop2
     into the ```cwc-integ/shop2``` directory.
 
 3. [Optional] Create an ```etc/local-conf.json``` file with custom
-   settings. See [below](custom-environment-setup) for details.
+   settings. See [below](#custom-environment-setup) for details.
 
 4. Verify that your environment is set up properly. Fix it if
    necessary.
