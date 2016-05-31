@@ -34,6 +34,10 @@ my $NO_URL = "no url";
 my $UPDATE_WOULD_CONFLICT = "update would conflict";
 my $NEED_UPDATE = "need update";
 
+# TRIPS problems
+my $NEED_CONFIGURE = "need configure";
+my $NEED_MAKE = "need make";
+
 # Base location of cwc-integ stuff.
 my $base_dir = dir($FindBin::Bin, "..")->resolve();
 
@@ -64,7 +68,7 @@ GetOptions('v|verbose'          => \$verbose,
 # By default, do everything from the cwc-integ root dir.
 chdir($base_dir);
 $verbose and
-  print("Running in: " . dir(".")->absolute . "\n");
+  print("Running in: " . dir(".")->absolute() . "\n");
 
 CwcConfig::load_config(1);
 
@@ -89,6 +93,17 @@ foreach my $repo_name (CwcConfig::get_svn_repo_names()) {
   if (not $verified_repo) {
     $pass = 0;
   }
+}
+
+# ------------------------------------------------------------
+# Check the TRIPS directories, to make sure they have been made.
+
+print("Making sure that the TRIPS repos are built.\n");
+if (not verify_trips_built("trips-cabot")) {
+  $pass = 0;
+}
+if (not verify_trips_built("trips-bob")) {
+  $pass = 0;
 }
 
 # ------------------------------------------------------------
@@ -180,7 +195,7 @@ sub verify_git_repo {
     # Go to the repo dir and figure out what the status is.
 
     # We're going to change dirs, keep this so we can go back.
-    my $cwd = dir(".");
+    my $cwd = dir(".")->absolute();
     chdir($repo_dir);
 
     my $local_checksum = get_local_checksum();
@@ -616,7 +631,7 @@ sub would_update_conflict {
   my $repo_dir = shift();
 
   # First, go to the working directory.
-  my $cwd = dir(".");
+  my $cwd = dir(".")->absolute();
   chdir($repo_dir);
 
   my @svn_cmd = ( "svn", "merge",
@@ -645,6 +660,46 @@ sub would_update_conflict {
   chdir($cwd);
 
   return $would_conflict;
+}
+
+# ------------------------------------------------------------
+# Support for building TRIPS
+
+sub verify_trips_built {
+  my $repo_name = shift();
+  my $repo_ref = CwcConfig::get_repo_config_ref($repo_name);
+
+  # Check to see if an update is needed.
+  my @trips_cmd = ($FindBin::Bin . "/make-trips.perl",
+                   $repo_name);
+
+  $verbose and
+    print("Checking for need to make TRIPS using command: " . join(" ", @trips_cmd) . "\n");
+  my $in = '';
+  my $trips_fh;
+  open3($in, $trips_fh, $trips_fh,
+        @trips_cmd) or
+          die("Unable to run command: " . join(" ", @trips_cmd));
+
+  my @results = ();
+  while (my $line = <$trips_fh>) {
+    chomp($line);
+    $verbose and
+      print("$line\n");
+
+    if ($line =~ /Need to configure TRIPS/) {
+      push(@results, $NEED_CONFIGURE);
+    }
+    elsif ($line =~ /Looks like a build is needed/) {
+      push(@results, $NEED_MAKE);
+    }
+  }
+
+  # Prepare and print the result statement.
+  my $problem_count = print_verification_result($repo_name, \@results);
+
+  # If "fix" flag is set, try to fix the results.
+  return attempt_fix($repo_ref, $problem_count, \@results);
 }
 
 # ------------------------------------------------------------
@@ -821,7 +876,7 @@ sub run_fix_command {
   }
 
   # First, go to the working directory.
-  my $cwd = dir(".");
+  my $cwd = dir(".")->absolute();
   chdir($working_dir);
 
   print("  cd $working_dir\n");
