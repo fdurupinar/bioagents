@@ -17,33 +17,24 @@ use Getopt::Long;
 # Set to enable verbose (debugging) output.
 my $verbose = 0;
 
-my $dry_run = 0;
+my $fix = 0;
 
 # ------------------------------------------------------------
 # Parse Arguments
 
 GetOptions('v|verbose'          => \$verbose,
-           'n|dry-run'          => \$dry_run,
+           'f|fix'              => \$fix,
           )
   or die("Error parsing arguments.");
 
 # There should be just one argument, the name of the TRIPS system to
 # make.
-my $which_trips;
+my $repo_name;
 if (1 == scalar(@ARGV)) {
-  $which_trips = lc(shift(@ARGV));
+  $repo_name = lc(shift(@ARGV));
 }
 else {
-  die("Need command line arg with TRIPS system to build, \"bob\" or \"cabot\"");
-}
-
-if (("bob" eq $which_trips) or
-    ("cabot" eq $which_trips)) {
-  # Great!
-  print("Attempting to make: $which_trips\n");
-}
-else {
-  die("TRIPS system should be: \"bob\" or \"cabot\"");
+  die("Need command line arg with TRIPS system to build, \"trips-bob\" or \"trips-cabot\"");
 }
 
 # ------------------------------------------------------------
@@ -51,7 +42,6 @@ else {
 
 CwcConfig::load_config(0);
 
-my $repo_name = "trips-$which_trips";
 my $repo_ref = CwcConfig::get_repo_config_ref($repo_name);
 defined($repo_ref) or
   die("Unable to find repo config for: $repo_name");
@@ -131,27 +121,26 @@ else {
 }
 
 if ($need_make) {
+  print("Looks like a build is needed.\n");
+
   # We need to make. Do a clean and then an install.
   my @make_clean_cmd = ("make", "clean");
-  print("Calling:\n");
   print("  " . join(" ", @make_clean_cmd) . "\n");
-  if (not $dry_run) {
+  if ($fix) {
     (0 == system(@make_clean_cmd)) or
       die("Failed to: " . join(" ", @make_clean_cmd));
   }
 
   my @make_install_cmd = ("make", "install");
-  print("Calling:\n");
   print("  " . join(" ", @make_install_cmd) . "\n");
-  if (not $dry_run) {
+  if ($fix) {
     (0 == system(@make_install_cmd)) or
       die("Failed to: " . join(" ", @make_install_cmd));
   }
 
   # Exit with non-zero exit code so that callers know we aren't
   # up-to-date.
-  if (not $dry_run) {
-    print("Looks like a build is needed.\n");
+  if (not $fix) {
     exit(1);
   }
 }
