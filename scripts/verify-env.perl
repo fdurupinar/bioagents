@@ -670,7 +670,7 @@ sub verify_trips_built {
   my $repo_ref = CwcConfig::get_repo_config_ref($repo_name);
 
   # Check to see if an update is needed.
-  my @trips_cmd = ($FindBin::Bin . "/make-trips.perl",
+  my @trips_cmd = ($FindBin::Bin . "/verify-trips-build.perl",
                    $repo_name);
 
   $verbose and
