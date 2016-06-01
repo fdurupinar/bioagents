@@ -98,12 +98,17 @@ foreach my $repo_name (CwcConfig::get_svn_repo_names()) {
 # ------------------------------------------------------------
 # Check the TRIPS directories, to make sure they have been made.
 
-print("Making sure that the TRIPS repos are built.\n");
-if (not verify_trips_built("trips-cabot")) {
-  $pass = 0;
+if ($pass) {
+  print("Making sure that the TRIPS repos are built.\n");
+  if (not verify_trips_built("trips-cabot")) {
+    $pass = 0;
+  }
+  if (not verify_trips_built("trips-bob")) {
+    $pass = 0;
+  }
 }
-if (not verify_trips_built("trips-bob")) {
-  $pass = 0;
+else {
+  print("Found unfixed repo problems, skipping attempt to build TRIPS repos.\n");
 }
 
 # ------------------------------------------------------------
