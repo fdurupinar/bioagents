@@ -8,10 +8,6 @@
           "dir": "." },
 
         // TRIPS
-        { "name": "trips",
-          "dir": "trips",
-          "asd_search_type": ":directory" },
-
         { "name": "trips-cabot",
           "dir": "trips/cabot",
           "remote_url": "https://github.com/wdebeaum/cabot" },
