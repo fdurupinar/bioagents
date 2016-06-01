@@ -87,11 +87,14 @@ foreach my $repo_name (CwcConfig::get_all_repo_names()) {
   # If the directory exists, check to see if it is the 
   if (exists($repo_ref->{dir}) and
       (-d $repo_ref->{dir})) {
-    if ("trips-cabot" eq $repo_name) {
-      $trips_cabot_src_dir = "\"" . $repo_ref->{dir} . "/src\"";
-    }
-    elsif ("trips-bob" eq $repo_name) {
-      $trips_bob_src_dir = "\"" . $repo_ref->{dir} . "/src\"";
+    my $src_dir = $repo_ref->{dir} . "/src";
+    if (-d $src_dir) {
+      if ("trips-cabot" eq $repo_name) {
+        $trips_cabot_src_dir = "\"$src_dir\"";
+      }
+      elsif ("trips-bob" eq $repo_name) {
+        $trips_bob_src_dir = "\"$src_dir\"";
+      }
     }
   }
 }
