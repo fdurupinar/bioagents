@@ -476,6 +476,11 @@ sub check_for_local_changes {
     # No remote information. We see this on Jenkins, where we are not
     # tracking a remote.
   }
+  elsif ($status_line =~ /Untracked files/) {
+    # Again, no remote information. We see this on Jenkins after
+    # building TRIPS, where there are some generated files that are
+    # not in the .gitignore list.
+  }
   elsif ($status_line =~ /Changes not staged/) {
     # No remote information, apparently.
   }
