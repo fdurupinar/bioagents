@@ -27,7 +27,6 @@ use lib ( $FindBin::Bin );  # for local modules
 use Timeout;
 
 use Getopt::Long;
-use POSIX;
 use Time::HiRes;
 
 # ------------------------------------------------------------
