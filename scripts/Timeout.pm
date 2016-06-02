@@ -1,5 +1,6 @@
 package Timeout;
 
+use POSIX;
 
 sub fork_timeout_process {
   my $timeout_s = shift();
