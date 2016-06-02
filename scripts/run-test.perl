@@ -40,7 +40,7 @@ my $timeout_s = 0;
 my $which_trips;
 
 # If set, runs the bioagents.
-my $bioagents = 0;
+my $run_bioagents = 0;
 
 my $source_config_filename =
   $FindBin::Bin . "/../cwc-source-config.lisp";
@@ -51,7 +51,7 @@ my $source_config_filename =
 GetOptions('v|verbose'          => \$verbose,
            't|timeout=i'        => \$timeout_s,
            'trips=s'            => \$which_trips,
-           'bioagents'          => \$bioagents,
+           'bioagents'          => \$run_bioagents,
           )
   or die("Error parsing arguments.");
 
@@ -92,13 +92,12 @@ if (defined($which_trips)) {
 # ------------------------------------------------------------
 # Bioagents
 
-if ($bioagents) {
+if ($run_bioagents) {
   die("Dunno how to run bioagents yet.");
 }
 
 # ------------------------------------------------------------
-# Do the actual testing.
-
+# Run the LISP test process.
 $verbose and
   print("Running test: $test_name\n");
 my $lisp = ipc_run("LISP",
@@ -114,13 +113,23 @@ my $lisp = ipc_run("LISP",
                      "--eval", "(asdf:test-system $test_name)",
                    ]);
 
-# FIXME Need some way to detect that we are done... AND catch the
-# success/failure of the test.
+# ------------------------------------------------------------
+# Process output from the subprocesses as long as there is some.
+
 my $test_exit_code;
 while (not defined($test_exit_code)) {
+  # Try to pump TRIPS.
   if (defined($trips)) {
-    IPC::Run::pump_nb($trips);
+    if ($trips->pumpable()) {
+      $trips->pump_nb();
+    }
+    else {
+      # This should *not* have exited.
+      die("TRIPS exited unexpectedly.");
+    }
   }
+
+  # Try to pump LISP.
   if ($lisp->pumpable()) {
     $lisp->pump_nb();
   }
