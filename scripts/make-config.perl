@@ -65,8 +65,6 @@ print($fh "\n");
 print($fh "(asdf:initialize-source-registry\n");
 print($fh " '(:source-registry\n");
 
-my $trips_bob_src_dir = "nil";
-my $trips_cabot_src_dir = "nil";
 foreach my $repo_name (CwcConfig::get_all_repo_names()) {
   my $repo_ref = CwcConfig::get_repo_config_ref($repo_name);
   if (not exists($repo_ref->{asd_search_type})) {
@@ -85,31 +83,42 @@ foreach my $repo_name (CwcConfig::get_all_repo_names()) {
     my $repo_dir = $repo_ref->{dir};
     print($fh "    ($asd_search_type \"$repo_dir\")\n");
   }
-
-  # If the directory exists, check to see if it is the 
-  if (exists($repo_ref->{dir}) and
-      (-d $repo_ref->{dir})) {
-    my $src_dir = $repo_ref->{dir} . "/src";
-    if (-d $src_dir) {
-      if ("trips-cabot" eq $repo_name) {
-        $trips_cabot_src_dir = "\"$src_dir\"";
-      }
-      elsif ("trips-bob" eq $repo_name) {
-        $trips_bob_src_dir = "\"$src_dir\"";
-      }
-    }
-  }
 }
 
 print($fh "   :ignore-inherited-configuration))\n");
 
 # Store the paths to trips-bob and trips-cabot.
 print($fh "\n");
-print($fh "(defvar *trips-bob-src-dir* $trips_bob_src_dir)\n");
-print($fh "(defvar *trips-cabot-src-dir* $trips_cabot_src_dir)\n");
+add_trips_vars("bob");
+add_trips_vars("cabot");
 
 exit(0);
 
 # End of main script
 # ------------------------------------------------------------
 # Subroutines
+
+sub add_trips_vars {
+  my $which_trips = shift();
+  my $repo_name = "trips-$which_trips";
+
+  my $repo_ref = CwcConfig::get_repo_config_ref($repo_name);
+  defined($repo_ref) or
+    die("Unable to look up repo information for: $repo_name");
+
+  my $repo_dir = $repo_ref->{dir};
+  defined($repo_dir) or
+    die("Unable to find directory for repo: $repo_name");
+
+  my $src_dir = "$repo_dir/src";
+  if (not (-d $src_dir)) {
+    $src_dir = "nil";
+  }
+  my $bin_dir = "$repo_dir/bin";
+  if (not (-d $bin_dir)) {
+    $bin_dir = "nil";
+  }
+
+  print($fh "(defvar *trips-$which_trips-src-dir* \"$src_dir\")\n");
+  print($fh "(defvar *trips-$which_trips-bin-dir* \"$bin_dir\")\n");
+}
