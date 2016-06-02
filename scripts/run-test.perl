@@ -84,24 +84,28 @@ if (defined($which_trips)) {
     die("TRIPS bin directory ($trips_bin_dir) doesn't exist.");
   my $trips_exe = "$trips_bin_dir/trips-$which_trips";
 
-  $trips = ipc_run("TRIPS",
-                   $trips_bin_dir,
-                   [$trips_exe, '-nouser']);
+  $trips = ipc_run($trips_bin_dir,
+                   [$trips_exe, '-nouser'],
+                   "TRIPS");
+
+  print("Sleeping a couple seconds to let TRIPS get started.\n");
+  sleep(4);
 }
 
 # ------------------------------------------------------------
 # Bioagents
 
+my $bioagents;
 if ($run_bioagents) {
-  die("Dunno how to run bioagents yet.");
+  $bioagents = ipc_run(Cwd::abs_path($FindBin::Bin . "/.."),
+                       [$FindBin::Bin . "/run-bioagents.perl"]);
 }
 
 # ------------------------------------------------------------
 # Run the LISP test process.
 $verbose and
   print("Running test: $test_name\n");
-my $lisp = ipc_run("LISP",
-                   Cwd::abs_path($FindBin::Bin . "/.."),
+my $lisp = ipc_run(Cwd::abs_path($FindBin::Bin . "/.."),
                    [ "sbcl",
                      "--non-interactive",
                      "--no-sysinit",
@@ -111,7 +115,8 @@ my $lisp = ipc_run("LISP",
                      # "--eval", "(asdf:test-system :spire)",
                      # "--eval", "(asdf:test-system :spire/test-sparser)",
                      "--eval", "(asdf:test-system $test_name)",
-                   ]);
+                   ],
+                   "LISP");
 
 # ------------------------------------------------------------
 # Process output from the subprocesses as long as there is some.
@@ -126,6 +131,17 @@ while (not defined($test_exit_code)) {
     else {
       # This should *not* have exited.
       die("TRIPS exited unexpectedly.");
+    }
+  }
+
+  # Try to pump Bioagents.
+  if (defined($bioagents)) {
+    if ($bioagents->pumpable()) {
+      $bioagents->pump_nb();
+    }
+    else {
+      # This should *not* have exited.
+      die("Bioagents exited unexpectedly.");
     }
   }
 
@@ -149,9 +165,9 @@ exit($test_exit_code);
 # Subroutines
 
 sub ipc_run {
-  my $prefix = shift();
   my $working_dir = shift();
   my $cmd_ref = shift();
+  my $prefix = shift();
 
   # Move to the desired working dir.
   my $orig_dir = Cwd::abs_path(".");
@@ -164,7 +180,10 @@ sub ipc_run {
                             IPC::Run::new_chunker,
                             sub {
                               my $in = shift();
-                              print("$prefix: $in");
+                              if (defined($prefix)) {
+                                print("$prefix: ");
+                              }
+                              print($in);
                             });
 
   # Go back to the orig dir.
