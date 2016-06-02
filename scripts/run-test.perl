@@ -10,6 +10,9 @@ use strict;
 use warnings;
 
 use FindBin;
+use lib ( $FindBin::Bin );  # for local modules
+use Timeout;
+
 use Getopt::Long;
 
 # ------------------------------------------------------------
@@ -18,6 +21,9 @@ use Getopt::Long;
 # Set to enable verbose (debugging) output.
 my $verbose = 0;
 
+# How long to run before timing out and exiting.
+my $timeout_s = 0;
+
 my $source_config_filename =
   $FindBin::Bin . "/../cwc-source-config.lisp";
 
@@ -25,8 +31,14 @@ my $source_config_filename =
 # Parse arguments
 
 GetOptions('v|verbose'          => \$verbose,
+           't|timeout=i'        => \$timeout_s,
           )
   or die("Error parsing arguments.");
+
+# ------------------------------------------------------------
+# Timeout
+
+Timeout::fork_timeout_process($timeout_s);
 
 # ------------------------------------------------------------
 # Do the actual testing.
