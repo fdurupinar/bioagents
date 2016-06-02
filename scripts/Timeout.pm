@@ -1,6 +1,9 @@
 package Timeout;
 
 use POSIX;
+use Proc::Killfam;
+
+my $process_group;
 
 sub fork_timeout_process {
   my $timeout_s = shift();
@@ -57,7 +60,7 @@ sub fork_timeout_process {
 
   # I'm the child. Setup a signal handler and proceed with doing all
   # the work...
-  my $process_group = POSIX::setsid();
+  $process_group = POSIX::setsid();
   print("I ($$) am the child, and have become process group: $process_group\n");
 
   # This will be set to 1 if we time out.
@@ -66,12 +69,18 @@ sub fork_timeout_process {
     print("------------------------------------------------------------\n");
     # print("Timed out after $timeout_s seconds.\n");
     print("I (the child process) was given SIGUSR1.\n");
-    print("Sending TERM to process group: $process_group\n");
-    $SIG{TERM} = 'IGNORE';
-    # This assumes that all children will die gracefully in response to SIGTERM,
-    # but zombie children may still persist if signal is ignored.
-    kill(-15, $process_group);
-    # exit(1);
+    # print("Sending TERM to process group: $process_group\n");
+    # $SIG{TERM} = 'IGNORE';
+    # # This assumes that all children will die gracefully in response to SIGTERM,
+    # # but zombie children may still persist if signal is ignored.
+    # #
+    # # [jrye:20160602.1606CST] This doesn't seem to kill TRIPS
+    # # processes. Ugh. I'll just use the killfam library and call it
+    # # good.
+    # #
+    # # kill(-15, $process_group);
+    # killfam(15, $process_group);
+
     $timed_out = 1;
     exit(1);
   };
@@ -81,14 +90,24 @@ sub fork_timeout_process {
   my $killed = "";
   $SIG{'TERM'} = $SIG{'INT'} = $SIG{'QUIT'} = $SIG{'HUP'} = $SIG{'ABRT'} = sub {
     my $sig = shift;
-    print("got SIG$sig, Sending TERM to process group ($process_group)\n");
-    $SIG{'TERM'} = 'IGNORE';
-    kill(-15, $process_group);
+    print("got SIG$sig\n");
+    # print("got SIG$sig, Sending TERM to process group ($process_group)\n");
+    # $SIG{'TERM'} = 'IGNORE';
+    # # kill(-15, $process_group);
+    # killfam(15, $process_group);
+
     $killed = $sig;
     exit(1);
   };
 }
 
+END {
+  if (defined($process_group)) {
+    print("Exiting, sending TERM to process group.\n");
+    $SIG{TERM} = 'IGNORE';
+    killfam(15, $process_group);
+  }
+}
 
 # Evaluate to true so that the module can be loaded.
 1;
