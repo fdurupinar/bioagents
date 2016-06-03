@@ -68,6 +68,11 @@ libraries using the system package manager instead, as in:
 aptitude install libpath-class-perl
 ```
 
+There may be other modules, but you definitely need to have:
+- ```JSON```
+- ```Path::Class``` / ```libpath-class-perl```
+- ```Proc::Killfam``` / ```libproc-processtable-perl```
+
 # Supported Lisp Implementations
 Many CwC components are written in Lisp. We only officially support
 SBCL, though we have made some effort to also support CCL.
