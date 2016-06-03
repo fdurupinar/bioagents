@@ -73,6 +73,39 @@ There may be other modules, but you definitely need to have:
 - ```Path::Class``` / ```libpath-class-perl```
 - ```Proc::Killfam``` / ```libproc-processtable-perl```
 
+# Python Libraries
+The HMS bioagents require some Python libraries. As with the Perl
+libraries, there are potentially multiple ways to satisfy these
+dependencies.
+
+On Mac OSX, I used pip to install them:
+```
+pip install sympy
+```
+
+On Debian, I installed them via the package manager, as in:
+```
+aptitude install python-sympy
+```
+
+There may be other modules, but you definitely need to have:
+- ```sympy``` / ```python-sympy```
+- ```rdflib``` / ```python-rdflib```
+- ```pygraphviz``` / ```python-pygraphviz```
+- ```matplotlib``` / ```python-matplotlib```
+- ```functools32```
+- ```suds``` / ```python-suds```
+- ```scipy``` / ```python-scipy```
+- ```pandas``` / ```pythons-pandas```
+- ```cython``` / ```cython```
+
+I also needed to install ```jnius-indra```. However, on Debian (at
+least), pip would not install jnius-indra because it the available
+version was a development version. I installed it as:
+```
+pip install --pre jnius-indra
+```
+
 # Supported Lisp Implementations
 Many CwC components are written in Lisp. We only officially support
 SBCL, though we have made some effort to also support CCL.
