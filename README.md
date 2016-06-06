@@ -9,6 +9,10 @@ Jenkins environment at SIFT automatically tests the system each time a
 change is made to a relevant repository. Other OSes may work, but are
 not officially supported.
 
+## Lisp
+Many CwC components are written in Lisp. We only officially support
+SBCL, though we have made some effort to also support CCL.
+
 ## Perl
 This project uses several Perl scripts to facilitate tasks (e.g.,
 updating the environment, running tests). These scripts require
@@ -132,10 +136,6 @@ version was a development version. I installed it as:
 ```
 pip install --pre jnius-indra
 ```
-
-# Supported Lisp Implementations
-Many CwC components are written in Lisp. We only officially support
-SBCL, though we have made some effort to also support CCL.
 
 # Custom Environment Setup
 The default configuration puts all the required projects into
