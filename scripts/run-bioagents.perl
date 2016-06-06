@@ -60,15 +60,16 @@ $ENV{CLASSPATH} .= "$kqml_jar";
 $ENV{CLASSPATH} .= ":$trips_module_jar";
 $ENV{CLASSPATH} .= ":$util_jar";
 
-print("CLASSPATH = $ENV{CLASSPATH}\n");
+print("CLASSPATH=$ENV{CLASSPATH}\n");
 
 if (exists($ENV{PYTHONPATH})) {
   $ENV{PYTHONPATH} .= ":";
 }
 $ENV{PYTHONPATH} .= "."; # Cwd::abs_path(".");
 $ENV{PYTHONPATH} .= ":" . Cwd::abs_path("../indra");
+$ENV{PYTHONPATH} .= ":" . Cwd::abs_path("../pysb");
 
-print("PYTHONPATH = $ENV{PYTHONPATH}\n");
+print("PYTHONPATH=$ENV{PYTHONPATH}\n");
 
 # ------------------------------------------------------------
 # Make sure we have the drug_targets database.
