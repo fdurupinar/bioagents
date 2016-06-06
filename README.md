@@ -1,12 +1,39 @@
 # Communicating with Computers Integration
 This is top-level projects organizes CwC integration and demo efforts.
 
-# Getting Started
-Please note, if any of the Perl scripts fail with an indication that
-they cannot find a library, look at the
+# Prerequisites
+
+## Operating System
+This integrated environment has been tested on Mac OSX and Debian -- a
+Jenkins environment at SIFT automatically tests the system each time a
+change is made to a relevant repository. Other OSes may work, but are
+not officially supported.
+
+## Perl
+This project uses several Perl scripts to facilitate tasks (e.g.,
+updating the environment, running tests). These scripts require
+several libraries. If any of the Perl scripts fail with an indication
+that they cannot find a library, look at the
 [Perl Libraries](#perl-libraries) section below for guidance on how to
 install the missing library.
 
+## Python
+The HMS Bioagents software is written in Python and relies on numerous
+Python libraries. Again, if the Bioagents fail to find a library, see
+the [Python Libraries](python-libraries) section below.
+
+## BioNetGen
+The HMS Bioagents software (the MRA in particular) requires [BioNetGen](http://www.bionetgen.org/index.php/Main_Page)
+to generate model diagrams.
+
+I downloaded the command line binary distribution from:
+http://www.bionetgen.org/index.php/BioNetGen_Distributions
+
+It looks like the MRA expects this to reside in
+```/usr/local/share/BioNetGen```, so I uncompressed the archive and
+moved it there (removing the version number from the directory name).
+
+# Getting Started
 1. Clone the cwc-integ project.
     ```
 git clone https://gitlab.com/cwc/cwc-integ.git
