@@ -220,3 +220,18 @@ permissions.
     helper = store
 ```
 
+Alternatively, you can use SSH keys for GitLab repos, avoiding
+passwords altogether. Just follow
+[GitLab's SSH key configuration instructions](https://gitlab.com/help/ssh/README),
+and update the `remote_url` in your `etc/local-conf.json`, replacing
+`https://gitlab.com/` with `git@gitlab.com:`. For example:
+```
+{
+    "git_repos": [
+        { "name": "spire",
+          "remote_url": "git@gitlab.com:sift/spire.git"},
+        { "name": "clic",
+          "remote_url": "git@gitlab.com:sift/clic.git"}
+    ]
+}
+```
