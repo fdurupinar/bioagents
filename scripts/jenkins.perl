@@ -102,6 +102,12 @@ my @test_systems =
    ":clic/bw-tests",
    ":clic/bio-tests",
    ":spg/tests",
+   ":spg/bio-tests",
+  );
+
+my %test_options =
+  (
+   ":spg/bio-tests" => [ '--trips', 'bob', '--bioagents' ],
   );
 
 my %test_result_refs = ();
@@ -114,6 +120,10 @@ foreach my $system (@test_systems) {
     );
   if ($verbose) {
     push(@test_cmd, "--verbose");
+  }
+  if (exists($test_options{$system})) {
+    my $options_ref = $test_options{$system};
+    push(@test_cmd, @$options_ref);
   }
   my $test_result = exec_child(\@test_cmd);
   my $test_end_time = Time::HiRes::time();
