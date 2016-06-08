@@ -89,7 +89,7 @@ if (defined($which_trips)) {
                    "TRIPS");
 
   print("Sleeping a couple seconds to let TRIPS get started.\n");
-  sleep(4);
+  sleep(8);
 }
 
 # ------------------------------------------------------------
