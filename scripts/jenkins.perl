@@ -103,7 +103,7 @@ my @test_systems =
    ":clic/bio-tests",
    ":spg/tests",
    ":spg/bio-tests",
-   # ":spg/bw-tests",
+   ":spg/bio-tests",
   );
 
 my %test_options =
@@ -120,7 +120,7 @@ foreach my $system (@test_systems) {
   if ($need_sleep) {
     print("Last test might have interacted with sockets.\n");
     print("Sleeping for a moment before starting this test ($system).\n");
-    sleep(3);
+    sleep(10);
     $need_sleep = 0;
   }
 
