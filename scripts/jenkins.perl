@@ -103,15 +103,27 @@ my @test_systems =
    ":clic/bio-tests",
    ":spg/tests",
    ":spg/bio-tests",
+   # ":spg/bw-tests",
   );
 
 my %test_options =
   (
+   ":spg/bw-tests" => [ '--trips', 'cabot' ],
    ":spg/bio-tests" => [ '--trips', 'bob', '--bioagents' ],
   );
 
 my %test_result_refs = ();
+# Set to true when running a test that may leave sockets open. When
+# set, will sleep for a short time before starting the next test.
+my $need_sleep = 0;
 foreach my $system (@test_systems) {
+  if ($need_sleep) {
+    print("Last test might have interacted with sockets.\n");
+    print("Sleeping for a moment before starting this test ($system).\n");
+    sleep(3);
+    $need_sleep = 0;
+  }
+
   my $test_start_time = Time::HiRes::time();
   my @test_cmd =
     (
@@ -124,7 +136,10 @@ foreach my $system (@test_systems) {
   if (exists($test_options{$system})) {
     my $options_ref = $test_options{$system};
     push(@test_cmd, @$options_ref);
+
+    $need_sleep = 1;
   }
+
   my $test_result = exec_child(\@test_cmd);
   my $test_end_time = Time::HiRes::time();
 
