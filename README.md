@@ -43,6 +43,11 @@ renamed it, removing the version number from the directory name.
 git clone https://gitlab.com/cwc/cwc-integ.git
 ```
 
+    (If you want to use SSH with a key instead of HTTPS with a password, you
+    can replace ```https://gitlab.com/``` with ```git@gitlab.com:``` after
+    setting up your key on GitLab, as described in the [Git Tips](#git-tips)
+    section.)
+
 2. Download or check out the SHOP2 HTN planner.
 
     The SHOP2 planner is maintained in an svn repo at SIFT. If you
