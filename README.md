@@ -34,8 +34,8 @@ I downloaded the command line binary distribution from:
 http://www.bionetgen.org/index.php/BioNetGen_Distributions
 
 It looks like the MRA expects this to reside in
-```/usr/local/share/BioNetGen```, so I uncompressed the archive and
-moved it there (removing the version number from the directory name).
+```/usr/local/share/BioNetGen```, so I uncompressed the archive there and
+renamed it, removing the version number from the directory name.
 
 # Getting Started
 1. Clone the cwc-integ project.
@@ -54,7 +54,8 @@ svn co https://svn.sift.net:3333/svn/shop2/shop/trunk/shop2
 
     Otherwise, you can download the stable release from SourceForge --
     https://sourceforge.net/projects/shop/. Uncompress the release
-    into the ```cwc-integ/shop2``` directory.
+    in ```cwc-integ/``` and rename it ```cwc-integ/shop2/```, removing
+    the version number from the directory name (as with BioNetGen).
 
 3. [Optional] Create an ```etc/local-conf.json``` file with custom
    settings. See [below](#custom-environment-setup) for details.
