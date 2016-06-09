@@ -103,7 +103,7 @@ my @test_systems =
    ":clic/bio-tests",
    ":spg/tests",
    ":spg/bio-tests",
-   ":spg/bio-tests",
+   ":spg/bw-tests",
   );
 
 my %test_options =
