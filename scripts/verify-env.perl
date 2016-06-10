@@ -869,6 +869,7 @@ sub fix {
       # most developers don't need TRIPS built either.
       my $repo_name = $repo_ref->{name};
       warn("Need to manually execute configure command for $repo_name.");
+      $fixed_all = 0;
     }
     elsif ($result eq $NEED_MAKE) {
       my $repo_name = $repo_ref->{name};
