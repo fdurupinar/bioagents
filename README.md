@@ -111,11 +111,12 @@ There may be other modules, but you definitely need to have:
 - ```Path::Class``` / ```libpath-class-perl```
 - ```Proc::Killfam``` / ```libproc-processtable-perl```
 - ```IPC::Run``` / ```libipc-run-perl```
+- ```IO::Pty``` / ```libio-pty-perl```
 
 # Python Libraries
-The HMS bioagents require some Python libraries. As with the Perl
-libraries, there are potentially multiple ways to satisfy these
-dependencies.
+The HMS bioagents are implemented in Python. They require Python 2.7.x
+and some libraries. As with the Perl libraries, there are potentially
+multiple ways to satisfy these dependencies.
 
 On Mac OSX, I used pip to install them:
 ```
