@@ -16,15 +16,16 @@ SBCL, though we have made some effort to also support CCL.
 ## Perl
 This project uses several Perl scripts to facilitate tasks (e.g.,
 updating the environment, running tests). These scripts require
-several libraries. If any of the Perl scripts fail with an indication
-that they cannot find a library, look at the
-[Perl Libraries](#perl-libraries) section below for guidance on how to
-install the missing library.
+several libraries. Before you begin, (and later if any of the Perl
+scripts fail with an indication that they cannot find a library),
+look at the [Perl Libraries](#perl-libraries) section below for
+guidance on how to install any libraries you don't already have.
 
 ## Python
 The HMS Bioagents software is written in Python and relies on numerous
-Python libraries. Again, if the Bioagents fail to find a library, see
-the [Python Libraries](python-libraries) section below.
+Python libraries. Again, before you begin (and later if the Bioagents
+fail to find a library), see the [Python Libraries](python-libraries)
+section below.
 
 ## BioNetGen
 The HMS Bioagents software (the MRA in particular) requires [BioNetGen](http://www.bionetgen.org/index.php/Main_Page)
@@ -109,6 +110,7 @@ There may be other modules, but you definitely need to have:
 - ```JSON```
 - ```Path::Class``` / ```libpath-class-perl```
 - ```Proc::Killfam``` / ```libproc-processtable-perl```
+- ```IPC::Run``` / ```libipc-run-perl```
 
 # Python Libraries
 The HMS bioagents require some Python libraries. As with the Perl
@@ -129,16 +131,22 @@ There may be other modules, but you definitely need to have:
 - ```sympy``` / ```python-sympy```
 - ```rdflib``` / ```python-rdflib```
 - ```pygraphviz``` / ```python-pygraphviz```
+ - ```pygraphviz``` requires ```graphviz``` to be installed in a way that it
+   can be found using ```pkg-config```. On the Mac, you can install it via
+   MacPorts using ```sudo port install graphviz``` (you may also need to
+   install ```pkgconfig``` itself this way). Or you can install
+   ```Graphviz.app```, which installs to ```/usr/local/```, so if you do it
+   this way you may also need to add ```/usr/local/lib/pkgconfig``` to your
+   ```PKG_CONFIG_PATH``` environment variable.
 - ```matplotlib``` / ```python-matplotlib```
 - ```functools32```
 - ```suds``` / ```python-suds```
 - ```scipy``` / ```python-scipy```
 - ```pandas``` / ```pythons-pandas```
 - ```cython``` / ```cython```
-
-I also needed to install ```jnius-indra```. However, on Debian (at
-least), pip would not install jnius-indra because it the available
-version was a development version. I installed it as:
+- ```jnius-indra``` / (no Debian package?)
+ - On Debian (at least), pip would not install jnius-indra because it the
+   available version was a development version. I installed it as:
 ```
 pip install --pre jnius-indra
 ```
