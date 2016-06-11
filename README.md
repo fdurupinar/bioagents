@@ -144,13 +144,6 @@ There may be other modules, but you definitely need to have:
 - ```suds``` / ```python-suds```
 - ```scipy``` / ```python-scipy```
 - ```pandas``` / ```pythons-pandas```
-- ```cython``` / ```cython```
-- ```jnius-indra``` / (no Debian package?)
- - On Debian (at least), pip would not install jnius-indra because it the
-   available version was a development version. I installed it as:
-```
-pip install --pre jnius-indra
-```
 
 # Custom Environment Setup
 The default configuration puts all the required projects into
