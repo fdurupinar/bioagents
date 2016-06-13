@@ -88,8 +88,8 @@ if (defined($which_trips)) {
                    [$trips_exe, '-nouser'],
                    "TRIPS");
 
-  print("Sleeping a couple seconds to let TRIPS get started.\n");
-  sleep(8);
+  print("Sleeping a few seconds to let TRIPS get started.\n");
+  sleep(6);
 }
 
 # ------------------------------------------------------------
@@ -99,6 +99,8 @@ my $bioagents;
 if ($run_bioagents) {
   $bioagents = ipc_run(Cwd::abs_path($FindBin::Bin . "/.."),
                        [$FindBin::Bin . "/run-bioagents.perl"]);
+  print("Sleeping a few seconds to let bioagents get started.\n");
+  sleep(6);
 }
 
 # ------------------------------------------------------------
