@@ -105,7 +105,7 @@ my @test_systems =
    ":spg/bio-tests",
    # FIXME [jrye:20160610.0832CST] This passes on OSX, but not on
    # Debian. I'm disabling the test until I can figure out why.
-   # ":spg/bw-tests",
+   ":spg/bw-tests",
   );
 
 my %test_options =
