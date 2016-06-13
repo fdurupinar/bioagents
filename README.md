@@ -128,6 +128,14 @@ On Debian, I installed them via the package manager, as in:
 aptitude install python-sympy
 ```
 
+Note that if you have multiple versions of python installed, it may
+help to use
+[virtualenv](http://docs.python-guide.org/en/latest/dev/virtualenvs/)
+to set up a local python environment to install these libraries in.
+For example, I (Will) got an error message complaining about
+"numpy < 1.7.0" when ```pip show numpy``` said I had version 1.11.0,
+and using virtualenv fixed it.
+
 There may be other modules, but you definitely need to have:
 - ```sympy``` / ```python-sympy```
 - ```rdflib``` / ```python-rdflib```
