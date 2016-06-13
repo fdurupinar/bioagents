@@ -152,7 +152,6 @@ There may be other modules, but you definitely need to have:
 - ```suds``` / ```python-suds```
 - ```scipy``` / ```python-scipy```
 - ```pandas``` / ```pythons-pandas```
-- ```indra``` / (no Debian package?)
 
 # Custom Environment Setup
 The default configuration puts all the required projects into
