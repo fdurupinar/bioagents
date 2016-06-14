@@ -86,6 +86,30 @@ cd cwc-integ
 scripts/jenkins.perl
 ```
 
+# Running the Integrated System
+To run the integrated system, use the ```scripts/run-cwc.perl```
+script. This script starts TRIPS, bioagents (if necessary), and
+SPG. Pass an argument to the script to tell it what domain to
+start. The script recognizes: bw, blocksworld, bio, and biocuration.
+
+So, the simplest way to start the system is:
+```
+scripts/run-cwc.perl bw
+```
+or
+```
+scripts/run-cwc.perl bio
+```
+
+See the top of the script for details on additional arguments. The
+most useful arguments are:
+- ```-n``` or ```--nouser``` -- when this flag is pass, the script
+  adds the ```nouser``` argument when running TRIPS. This prevents the
+  TRIPS UI components from starting.
+- ```-s``` or ```--show-browser``` -- when this flag is used, the
+  script watches for the SPG to finish starting and then opens a web
+  browser to the web page for the demo.
+
 # Perl Libraries
 The Perl scripts in this project have several external
 dependencies. These must be manually installed on each developer
@@ -138,6 +162,8 @@ and using virtualenv fixed it.
 
 There may be other modules, but you definitely need to have:
 - ```sympy``` / ```python-sympy```
+- ```scipy``` / ```python-scipy```
+- ```numpy``` / ```python-numpy```
 - ```rdflib``` / ```python-rdflib```
 - ```pygraphviz``` / ```python-pygraphviz```
  - ```pygraphviz``` requires ```graphviz``` to be installed in a way that it
@@ -150,8 +176,9 @@ There may be other modules, but you definitely need to have:
 - ```matplotlib``` / ```python-matplotlib```
 - ```functools32```
 - ```suds``` / ```python-suds```
-- ```scipy``` / ```python-scipy```
 - ```pandas``` / ```pythons-pandas```
+- ```requests```
+- ```lxml```
 
 # Custom Environment Setup
 The default configuration puts all the required projects into

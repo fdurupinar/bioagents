@@ -29,39 +29,6 @@ my $bioagents_dir = $bioagents_repo->{dir};
 chdir($bioagents_dir);
 print("In directory: $bioagents_dir\n");
 
-# ------------------------------------------------------------
-# Fix up the classpath.
-
-my $trips_bob_repo = CwcConfig::get_repo_config_ref("trips-bob");
-my $trips_bob_dir = $trips_bob_repo->{dir};
-(-d $trips_bob_dir) or
-  die("TRIPS BOB directory doesn't exist: $trips_bob_dir");
-
-my $bob_jar_dir = $trips_bob_dir . "/etc/java";
-(-d $bob_jar_dir) or
-  die("Didnt find expected dir for jar: $bob_jar_dir");
-
-my $kqml_jar = "$bob_jar_dir/TRIPS.KQML.jar";
-(-e $kqml_jar) or
-  die("KQML jar didn't exist: $kqml_jar");
-
-my $trips_module_jar = "$bob_jar_dir/TRIPS.TripsModule.jar";
-(-e $trips_module_jar) or
-  die("TripsModule jar didn't exist: $trips_module_jar");
-
-my $util_jar = "$bob_jar_dir/TRIPS.util.jar";
-(-e $util_jar) or
-  die("Util jar didn't exist: $util_jar");
-
-if (exists($ENV{CLASSPATH})) {
-  $ENV{CLASSPATH} .= ":";
-}
-$ENV{CLASSPATH} .= "$kqml_jar";
-$ENV{CLASSPATH} .= ":$trips_module_jar";
-$ENV{CLASSPATH} .= ":$util_jar";
-
-print("CLASSPATH=$ENV{CLASSPATH}\n");
-
 if (exists($ENV{PYTHONPATH})) {
   $ENV{PYTHONPATH} .= ":";
 }
