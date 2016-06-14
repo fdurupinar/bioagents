@@ -58,7 +58,7 @@ my $source_config_filename =
 
 GetOptions('v|verbose'          => \$verbose,
            't|timeout=i'        => \$timeout_s,
-           'nouser'             => \$nouser,
+           'n|nouser'           => \$nouser,
            's|show-browser'     => \$start_browser,
           )
   or die("Error parsing arguments.");
@@ -82,18 +82,14 @@ if ($domain =~ /bio|biocuration/i) {
   $which_trips = "bob";
   $run_bioagents = 1;
   $system_name = ":spg/bio";
-  if ($start_browser) {
-    $url = "http://localhost:8000/bio";
-  }
+  $url = "http://localhost:8000/bio";
 }
 elsif ($domain =~ /bw|blocksworld/i) {
   print("Running BLOCKSWORLD domain.\n");
   $which_trips = "cabot";
   $run_bioagents = 0;
   $system_name = ":spg/bw";
-  if ($start_browser) {
-    $url = "http://localhost:8000/bw";
-  }
+  $url = "http://localhost:8000/bw";
 }
 else {
   die ("Do not understand domain: $domain");
@@ -299,6 +295,15 @@ sub handle_spg_events {
   my $in = shift();
 
   if ($in =~ /SPG is READY/) {
-    warn("SPG is ready!");
+    print("SPG is ready.\n");
+    if ($start_browser) {
+      print("Opening web browser to:\n");
+      print("  $url\n");
+      system("open $url &");
+    }
+    else {
+      print("Open a browser to:\n");
+      print("  $url\n");
+    }
   }
 }
