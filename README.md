@@ -138,6 +138,8 @@ and using virtualenv fixed it.
 
 There may be other modules, but you definitely need to have:
 - ```sympy``` / ```python-sympy```
+- ```scipy``` / ```python-scipy```
+- ```numpy``` / ```python-numpy```
 - ```rdflib``` / ```python-rdflib```
 - ```pygraphviz``` / ```python-pygraphviz```
  - ```pygraphviz``` requires ```graphviz``` to be installed in a way that it
@@ -150,8 +152,9 @@ There may be other modules, but you definitely need to have:
 - ```matplotlib``` / ```python-matplotlib```
 - ```functools32```
 - ```suds``` / ```python-suds```
-- ```scipy``` / ```python-scipy```
 - ```pandas``` / ```pythons-pandas```
+- ```requests```
+- ```lxml```
 
 # Custom Environment Setup
 The default configuration puts all the required projects into
