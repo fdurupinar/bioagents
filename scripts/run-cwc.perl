@@ -26,6 +26,7 @@ use Timeout;
 
 use Cwd;
 use Getopt::Long;
+use IO::Handle;
 use IPC::Run;
 
 # Autoflush stdout.
@@ -151,25 +152,32 @@ if ($run_bioagents) {
 
 $verbose and
   print("Running SPG system: $system_name\n");
+my @spg_cmd =
+  (
+   "sbcl",
+   "--non-interactive",
+   # "--disable-debugger",
+   "--no-sysinit",
+   "--no-userinit",
+   "--load", $source_config_filename,
+   "--eval", "(asdf:load-system $system_name)",
+   # Print a message to identify readiness.
+   "--eval", "(start-spg)",
+   "--eval", "(format t \"SPG is READY~%\")",
+   # Sleep essentially forever -- 1 year! Forcing output every second.
+   "--eval", "(dotimes (n 31536000) (finish-output *standard-output*) (sleep 1))",
+   );
 my $spg = ipc_run(Cwd::abs_path($FindBin::Bin . "/.."),
-                  [ "sbcl",
-                    "--non-interactive",
-                    "--no-sysinit",
-                    "--no-userinit",
-                    "--load", $source_config_filename,
-                    "--eval", "(asdf:load-system $system_name)",
-                    "--eval", "(start-spg)",
-                    # Print a message to identify readiness.
-                    "--eval", "(format t \"SPG is READY~%\")",
-                    # Sleep essentially forever -- 1 year!
-                    "--eval", "(sleep 31536000)",
-                  ],
-                  "SPG");
+                  \@spg_cmd,
+                  "SPG",
+                  \&handle_spg_events);
 
 # ------------------------------------------------------------
 # Process output from the subprocesses as long as there is some.
 
+my $print_time = time();
 my $done = 0;
+my $need_newline = 0;
 while (not $done) {
   # Try to pump TRIPS.
   if (defined($trips)) {
@@ -203,6 +211,15 @@ while (not $done) {
     $spg->finish();
     $done = 1;
   }
+
+  my $cur_time = time();
+  my $since_last_print_s = $cur_time - $print_time;
+  if (1.0 < $since_last_print_s) {
+    print(".");
+    $need_newline = 1;
+    $print_time = $cur_time;
+  }
+  STDOUT->flush();
 }
 
 exit(0);
@@ -215,6 +232,7 @@ sub ipc_run {
   my $working_dir = shift();
   my $cmd_ref = shift();
   my $prefix = shift();
+  my $event_fn = shift();
 
   # Move to the desired working dir.
   my $orig_dir = Cwd::abs_path(".");
@@ -222,16 +240,53 @@ sub ipc_run {
 
   print("Running IPC command:\n");
   print("  " . join(" ", @$cmd_ref) . "\n");
-  my $ipc = IPC::Run::start($cmd_ref,
-                            '>pty>',
-                            IPC::Run::new_chunker,
-                            sub {
-                              my $in = shift();
-                              if (defined($prefix)) {
-                                print("$prefix: ");
-                              }
-                              print($in);
-                            });
+
+  # For some reason, the chunker didn't work. I kinda wonder if some
+  # crazy character code got in that interfered with the regex
+  # match. Anyway, it seems to be okay for us to use a closure and
+  # assemble the partial content ourselves.
+  my $pending_content = "";
+  my $ipc =
+    IPC::Run::start($cmd_ref,
+                    '<', \undef,
+                    '>pty>',
+                    # IPC::Run::new_chunker(qr/[\r\n]+/),
+                    sub {
+                      my $chunk = "$pending_content" . shift();
+                      $pending_content = "";
+                      my $complete = 0;
+                      if ($chunk =~ /\n$/) {
+                        $complete = 1;
+                      }
+
+                      my @lines = split(/[\r\n]+/, $chunk);
+                      while(my $line = shift(@lines)) {
+                        if ((0 == scalar(@lines)) and
+                            (not $complete)) {
+                          $pending_content .= $line;
+                        }
+                        else {
+                          # If we were printing dots, make a newline
+                          # before this content.
+                          if ($need_newline) {
+                            print("\n");
+                            $need_newline = 0;
+                          }
+
+                          # If we have a prefix, print it.
+                          if (defined($prefix)) {
+                            print("$prefix: ");
+                          }
+                          print("$line\n");
+
+                          # Check to see if the line of output should
+                          # trigger anything.
+                          if (defined($event_fn)) {
+                            $event_fn->($line);
+                          }
+                        }
+                      }
+                    });
 
   # Go back to the orig dir.
   chdir($orig_dir);
@@ -239,3 +294,11 @@ sub ipc_run {
   return $ipc;
 }
 
+# Check to see if an SPG output should trigger anything.
+sub handle_spg_events {
+  my $in = shift();
+
+  if ($in =~ /SPG is READY/) {
+    warn("SPG is ready!");
+  }
+}
