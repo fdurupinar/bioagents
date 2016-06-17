@@ -11,7 +11,8 @@ not officially supported.
 
 ## Lisp
 Many CwC components are written in Lisp. We only officially support
-SBCL, though we have made some effort to also support CCL.
+[SBCL](http://www.sbcl.org) (1.3.1 or later; some code is known not to 
+work in 1.2.11), though we have made some effort to also support CCL.
 
 ## Perl
 This project uses several Perl scripts to facilitate tasks (e.g.,
