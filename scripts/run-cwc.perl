@@ -124,7 +124,7 @@ if (defined($which_trips)) {
   if ($nouser) {
     push(@trips_cmd, '-nouser');
   }
-  $trips = ipc_run($trips_bin_dir,
+  $trips = ipc_run(Cwd::abs_path('.'),
                    \@trips_cmd,
                    "TRIPS");
 
