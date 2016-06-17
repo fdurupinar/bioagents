@@ -84,7 +84,7 @@ if (defined($which_trips)) {
     die("TRIPS bin directory ($trips_bin_dir) doesn't exist.");
   my $trips_exe = "$trips_bin_dir/trips-$which_trips";
 
-  $trips = ipc_run($trips_bin_dir,
+  $trips = ipc_run(Cwd::abs_path('.'),
                    [$trips_exe, '-nouser'],
                    "TRIPS");
 
