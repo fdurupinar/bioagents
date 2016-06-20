@@ -10,6 +10,7 @@ use CwcConfig;
 use File::Find;
 use File::stat;
 use Getopt::Long;
+use IPC::Open3;
 
 # ------------------------------------------------------------
 # Global Variables
@@ -146,20 +147,37 @@ if ($need_make) {
   my @make_clean_cmd = ("make", "clean");
   print("  " . join(" ", @make_clean_cmd) . "\n");
   if ($fix) {
-    (0 == system(@make_clean_cmd)) or
-      die("Failed to: " . join(" ", @make_clean_cmd));
+    # (0 == system(@make_clean_cmd)) or
+    #   die("Failed to: " . join(" ", @make_clean_cmd));
   }
 
   my @make_install_cmd = ("make", "install");
   print("  " . join(" ", @make_install_cmd) . "\n");
   if ($fix) {
-    (0 == system(@make_install_cmd)) or
-      die("Failed to: " . join(" ", @make_install_cmd));
-  }
+    my $in = '';
+    my $make_fh;
+    open3($in, $make_fh, $make_fh,
+          @make_install_cmd) or
+            die("Unable to run command: " . join(" ", @make_install_cmd));
+    while (my $line = <$make_fh>) {
+      print("$line");
+      if ($line =~ /^make\[\d+\]:\s+\*+\s+\[.*\]\s+Error/) {
+        die("Make reported an error.");
+      }
+    }
 
-  # Exit with non-zero exit code so that callers know we aren't
-  # up-to-date.
-  if (not $fix) {
+    close($make_fh);
+    my $exit_code = $?;
+    $exit_code = $exit_code >> 8;
+
+    (0 == $exit_code) or
+      die("Make exited with non-zero exit code: $exit_code");
+
+    print("Looks like we successfully built TRIPS.\n");
+  }
+  else {
+    # Need make, but not told to fix, so we exit with non-zero exit
+    # code so that callers know we aren't up-to-date.
     exit(1);
   }
 }
