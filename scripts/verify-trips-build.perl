@@ -79,28 +79,46 @@ if (not $configured) {
   exit(1);
 }
 
-# FIXME We are configured, go looking to see if we are up to date.
+# We are configured, go looking to see if we are up to date.
 my $bin_dir = "$repo_dir/bin";
-my $exe_filename = "$bin_dir/trips_exec";
+my $exe_pattern = "$bin_dir/*";
 
 my $need_make = 0;
 if (not (-d $bin_dir)) {
   $need_make = 1;
 }
-elsif (not (-e $exe_filename)) {
-  $need_make = 1;
-}
+# elsif (not (-e $exe_filename)) {
+#   $need_make = 1;
+# }
 else {
   # We have the target exe file. Let's figure out when it was last
   # modified and then see if we have any files newer than that in the
   # source directory.
 
-  my $exe_mtime = stat($exe_filename)->mtime;
-  print("Exe last modified: $exe_mtime\n");
+  my $exe_mtime = undef;
+  for my $exe_filename (glob($exe_pattern)) {
+    if (-d $exe_filename) {
+      # Don't check time on directories.
+    }
+    else {
+      my $mtime = stat($exe_filename)->mtime;
+      if ((not defined($exe_mtime)) ||
+          ($mtime > $exe_mtime)) {
+        $exe_mtime = $mtime;
+        print("Exe ($exe_filename) last modified: $exe_mtime\n");
+      }
+    }
+  }
 
-  print("Looking for newer files.\n");
-  find(sub {
-         # Check if this file is newer.
+  if (not defined($exe_mtime)) {
+    # Didn't have any exe files, definitely need make.
+    $need_make = 1;
+  }
+  else {
+    # Had exe file time, check for newer source files.
+    print("Looking for newer files.\n");
+    find(sub {
+           # Check if this file is newer.
          my $name = $_;
 
          if (-d $name) {
@@ -118,6 +136,7 @@ else {
            }
          }
        }, ".");
+  }
 }
 
 if ($need_make) {
