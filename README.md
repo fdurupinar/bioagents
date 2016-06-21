@@ -180,6 +180,7 @@ There may be other modules, but you definitely need to have:
 - ```pandas``` / ```pythons-pandas```
 - ```requests```
 - ```lxml```
+- ```jsonpickle```
 
 # Custom Environment Setup
 The default configuration puts all the required projects into
