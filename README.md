@@ -197,10 +197,10 @@ There may be other modules, but you definitely need to have:
 - ```matplotlib``` / ```python-matplotlib```
 - ```functools32```
 - ```suds``` / ```python-suds```
-- ```pandas``` / ```pythons-pandas```
+- ```pandas``` / ```python-pandas```
 - ```requests```
 - ```lxml```
-- ```jsonpickle```
+- ```jsonpickle``` / ```python-jsonpickle```
 
 # Custom Environment Setup
 The default configuration puts all the required projects into
