@@ -13,6 +13,12 @@ not officially supported.
 Many CwC components are written in Lisp. We only officially support
 [SBCL](http://www.sbcl.org) (1.3.1 or later; some code is known not to 
 work in 1.2.11), though we have made some effort to also support CCL.
+You will need to make sure your lisp has multithreading support; for
+example, on the Mac, an easy way to get this is through ​
+[MacPorts](http://www.macports.org/), using this command:
+```
+sudo port install sbcl +threads
+```
 
 ## Perl
 This project uses several Perl scripts to facilitate tasks (e.g.,
@@ -27,6 +33,20 @@ The HMS Bioagents software is written in Python and relies on numerous
 Python libraries. Again, before you begin (and later if the Bioagents
 fail to find a library), see the [Python Libraries](python-libraries)
 section below.
+
+## TRIPS prerequisites
+
+TRIPS requires [WordNet](http://wordnet.princeton.edu/),
+[CoreNLP](http://stanfordnlp.github.io/CoreNLP/) (v3.5.2. or later), and
+the
+[MESH Supplementary Concept Records (SCR) in ASCII format](https://www.nlm.nih.gov/mesh/download_mesh.html). Check
+[this](http://trips.ihmc.us/trac/drum/wiki/TripsDrumSystemInstallation#Prerequisites)
+for specific instructions. More biomedical resources will be downloaded during
+the first make (which may take a rather long time). Generally, after any
+update of the TRIPS environment (prerequisites, lisp implementation or version
+thereof, etc.), you will want to make clean and
+[re-configure](http://trips.ihmc.us/trac/drum/wiki/TripsDrumSystemInstallation#Configuringmakinginstalling)
+manually.
 
 ## BioNetGen
 The HMS Bioagents software (the MRA in particular) requires [BioNetGen](http://www.bionetgen.org/index.php/Main_Page)
@@ -180,6 +200,7 @@ There may be other modules, but you definitely need to have:
 - ```pandas``` / ```pythons-pandas```
 - ```requests```
 - ```lxml```
+- ```jsonpickle```
 
 # Custom Environment Setup
 The default configuration puts all the required projects into
