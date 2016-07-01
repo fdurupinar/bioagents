@@ -71,26 +71,18 @@ if (not ((-e $drug_targets_db_filename) and
 # python dtda_module.py
 #
 # And MRA.
+# And TRA.
 
-my @dtda_cmd =
-  (
-   "python",
-   "bioagents/dtda/dtda_module.py",
-  );
+my @children = ();
+push(@children,
+     start_child("DTDA",
+                 [ "python",
+                   "bioagents/dtda/dtda_module.py", ]));
 
-print("Running DTDA with command:\n");
-print("  " . join(" ", @dtda_cmd) . "\n");
-# system(@dtda_cmd);
-my $dtda = IPC::Run::start(\@dtda_cmd, '>pty>', IPC::Run::new_chunker, \&dtda_echo);
-
-my @mra_cmd =
-  (
-   "python",
-   "bioagents/mra/mra_module.py",
-  );
-print("Running MRA with command:\n");
-print("  " . join(" ", @mra_cmd) . "\n");
-my $mra = IPC::Run::start(\@mra_cmd, '>pty>', IPC::Run::new_chunker, \&mra_echo);
+push(@children,
+     start_child("MRA",
+                 [ "python",
+                   "bioagents/mra/mra_module.py", ]));
 
 # Set up handlers and a loop to poll the children for output and exit
 # when told.
@@ -103,19 +95,22 @@ $SIG{CHLD} = $SIG{TERM} = $SIG{INT} = $SIG{QUIT} = $SIG{HUP} = $SIG{ABRT} = sub 
 };
 
 while (not $done) {
-  IPC::Run::pump_nb($dtda);
-  IPC::Run::pump_nb($mra);
+  foreach my $child (@children) {
+    IPC::Run::pump_nb($child);
+  }
 }
 
 print("Done, killing children.\n");
 
-$dtda->kill_kill();
-$mra->kill_kill();
+foreach my $child (@children) {
+  $child->kill_kill();
+}
 
 print("Waiting for children to finish.\n");
 
-$dtda->finish();
-$mra->finish();
+foreach my $child (@children) {
+  $child->finish();
+}
 
 print("Done with children.\n");
 exit(0);
@@ -124,15 +119,24 @@ exit(0);
 # ------------------------------------------------------------
 # Subroutines
 
-sub dtda_echo {
-  my $in = shift();
-  # $in already includes the newline.
-  print("DTDA: $in");
+sub start_child {
+  my $name = shift();
+  my $cmd_ref = shift();
+
+  print("Running $name with command:\n");
+  print("  " . join(" ", @$cmd_ref) . "\n");
+  my $child = IPC::Run::start(\@$cmd_ref, '>pty>',
+                              IPC::Run::new_chunker,
+                              sub { my $in = shift();
+                                    echo($name, $in);
+                                    });
+  return $child;
 }
 
-sub mra_echo {
+sub echo {
+  my $name = shift();
   my $in = shift();
   # $in already includes the newline.
-  print("MRA: $in");
+  print("$name: $in");
 }
 
