@@ -84,6 +84,13 @@ push(@children,
                  [ "python",
                    "bioagents/mra/mra_module.py", ]));
 
+push(@children,
+     start_child("TRA",
+                 [ "python",
+                   "bioagents/tra/tra_module.py",
+                   "--kappa_url", "http://maasha.org:8080",
+                 ]));
+
 # Set up handlers and a loop to poll the children for output and exit
 # when told.
 my $done = 0;
