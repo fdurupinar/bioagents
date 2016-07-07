@@ -147,8 +147,8 @@ if ($need_make) {
   my @make_clean_cmd = ("make", "clean");
   print("  " . join(" ", @make_clean_cmd) . "\n");
   if ($fix) {
-    # (0 == system(@make_clean_cmd)) or
-    #   die("Failed to: " . join(" ", @make_clean_cmd));
+    (0 == system(@make_clean_cmd)) or
+      die("Failed to: " . join(" ", @make_clean_cmd));
   }
 
   my @make_install_cmd = ("make", "install");
