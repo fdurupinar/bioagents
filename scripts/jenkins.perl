@@ -103,15 +103,16 @@ my @test_systems =
    ":clic/bio-tests",
    ":spg/tests",
    ":spg/bio-tests",
-   # FIXME [jrye:20160610.0832CST] This passes on OSX, but not on
-   # Debian. I'm disabling the test until I can figure out why.
    ":spg/bw-tests",
+   # Keep the demo working.
+   ":spg/bio-demo-march",
   );
 
 my %test_options =
   (
-   ":spg/bw-tests" => [ '--trips', 'cabot' ],
-   ":spg/bio-tests" => [ '--trips', 'bob', '--bioagents' ],
+   ":spg/bw-tests"        => [ '--trips', 'cabot' ],
+   ":spg/bio-tests"       => [ '--trips', 'bob', '--bioagents' ],
+   ":spg/bio-demo-march"  => [ '--trips', 'bob', '--bioagents' ],
   );
 
 my %test_result_refs = ();
