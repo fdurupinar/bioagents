@@ -248,9 +248,9 @@ There is a CwC Biocuration project at Basecamp. Use this for public
 discussions and document sharing.
 https://basecamp.com/2716585/projects/10031598
 
-Ben wrote up a design for the messages accepted by the bioagents. This write up is in a [Google doc](https://docs.google.com/document/d/14DVvzBxKDew5fA241Cn49ThOIq3dgP12oVNPvMOcwW4/edit).
+Ben wrote up a Google doc with the [bioagent tasking specification](https://docs.google.com/document/d/14DVvzBxKDew5fA241Cn49ThOIq3dgP12oVNPvMOcwW4/edit).
 
-Ben wrote up a design/plan for talking about models of properties. This write up is in a [Google doc](https://docs.google.com/document/d/1gPIh6xZwPd9vucYbTmGltTWUNQGTuNpCFOlvvnawmuc/edit).
+Ben also wrote up a Google doc with design/plan for [talking about model properties](https://docs.google.com/document/d/1gPIh6xZwPd9vucYbTmGltTWUNQGTuNpCFOlvvnawmuc/edit).
 
 # Development
 During normal development, there are some tools you can use to ensure
