@@ -243,6 +243,15 @@ like for an IHMC developer.
 }
 ```
 
+# Collaboration and Documents
+There is a CwC Biocuration project at Basecamp. Use this for public
+discussions and document sharing.
+https://basecamp.com/2716585/projects/10031598
+
+Ben wrote up a design for the messages accepted by the bioagents. This write up is in a [Google doc](https://docs.google.com/document/d/14DVvzBxKDew5fA241Cn49ThOIq3dgP12oVNPvMOcwW4/edit).
+
+Ben wrote up a design/plan for talking about models of properties. This write up is in a [Google doc](https://docs.google.com/document/d/1gPIh6xZwPd9vucYbTmGltTWUNQGTuNpCFOlvvnawmuc/edit).
+
 # Development
 During normal development, there are some tools you can use to ensure
 that the integrated system continues to work for everyone.
@@ -292,6 +301,13 @@ The run-test script runs a single test. You can run tests as in:
 ```
 scripts/run-test.perl :spire
 scripts/run-test.perl :spire/test-sparser
+```
+
+## ```scripts/run-cwc.perl```
+Runs the integrated system. Run as:
+```
+scripts/run-cwc.perl bw
+scripts/run-cwc.perl bio
 ```
 
 # Git Tips
