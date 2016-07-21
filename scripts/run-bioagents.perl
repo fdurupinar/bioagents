@@ -107,6 +107,13 @@ while (not $done) {
   }
 }
 
+# Hack to try to flush any remaining output.
+for (my $i = 0; $i < 100; ++$i) {
+  foreach my $child (@children) {
+    IPC::Run::pump_nb($child);
+  }
+}
+
 print("Done, killing children.\n");
 
 foreach my $child (@children) {
