@@ -102,8 +102,9 @@ my @test_systems =
    ":clic/bw-tests",
    ":clic/bio-tests",
    ":spg/tests",
-   ":spg/bio-tests",
    ":spg/bw-tests",
+   ":spg/bio-tests",
+   ":spg/bioagent-tests",
    # Keep the demo working.
    ":spg/bio-demo-march",
   );
@@ -111,7 +112,8 @@ my @test_systems =
 my %test_options =
   (
    ":spg/bw-tests"        => [ '--trips', 'cabot' ],
-   ":spg/bio-tests"       => [ '--trips', 'bob', '--bioagents' ],
+   ":spg/bio-tests"       => [ '--trips', 'bob' ],
+   ":spg/bioagent-tests"  => [ '--trips', 'bob', '--bioagents' ],
    ":spg/bio-demo-march"  => [ '--trips', 'bob', '--bioagents' ],
   );
 
