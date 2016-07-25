@@ -85,7 +85,7 @@ foreach my $repo_name (CwcConfig::get_all_repo_names()) {
   }
 }
 
-print($fh "   :ignore-inherited-configuration))\n");
+print($fh "   :inherit-configuration))\n");
 
 # Store the paths to trips-bob and trips-cabot.
 print($fh "\n");
