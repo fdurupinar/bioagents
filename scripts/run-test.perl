@@ -89,7 +89,7 @@ if (defined($which_trips)) {
                    "TRIPS");
 
   print("Sleeping a few seconds to let TRIPS get started.\n");
-  sleep(12);
+  sleep(20);
 }
 
 # ------------------------------------------------------------
@@ -100,7 +100,7 @@ if ($run_bioagents) {
   $bioagents = ipc_run(Cwd::abs_path($FindBin::Bin . "/.."),
                        [$FindBin::Bin . "/run-bioagents.perl"]);
   print("Sleeping a few seconds to let bioagents get started.\n");
-  sleep(6);
+  sleep(5);
 }
 
 # ------------------------------------------------------------
