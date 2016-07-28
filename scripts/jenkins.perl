@@ -106,7 +106,7 @@ my @test_systems =
    ":spg/bio-tests",
    ":spg/bioagent-tests",
    # Keep the demo working.
-   ":spg/bio-demo-march",
+   ":spg/bio-demos",
   );
 
 my %test_options =
@@ -114,7 +114,7 @@ my %test_options =
    ":spg/bw-tests"        => [ '--trips', 'cabot' ],
    ":spg/bio-tests"       => [ '--trips', 'bob' ],
    ":spg/bioagent-tests"  => [ '--trips', 'bob', '--bioagents' ],
-   ":spg/bio-demo-march"  => [ '--trips', 'bob', '--bioagents' ],
+   ":spg/bio-demos"       => [ '--trips', 'bob', '--bioagents' ],
   );
 
 my %test_result_refs = ();
