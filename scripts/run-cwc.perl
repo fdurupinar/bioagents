@@ -50,6 +50,10 @@ my $start_browser = 0;
 # Default to the bio domain.
 my $domain = "bio";
 
+# If set, use the raw-executive mockup instead of the full
+# TRIPS-enabled system.
+my $rem = 0;
+
 my $source_config_filename =
   $FindBin::Bin . "/../cwc-source-config.lisp";
 
@@ -60,6 +64,7 @@ GetOptions('v|verbose'          => \$verbose,
            't|timeout=i'        => \$timeout_s,
            'n|nouser'           => \$nouser,
            's|show-browser'     => \$start_browser,
+           'r|raw-exec-mockup'  => \$rem,
           )
   or die("Error parsing arguments.");
 
@@ -75,20 +80,31 @@ if (0 < scalar(@ARGV)) {
 my $which_trips;
 my $run_bioagents;
 my $system_name;
+my $system_startup_command = "(start-spg)";
 my $url;
 
-if ($domain =~ /bio|biocuration/i) {
+if ($domain =~ /^bio|biocuration$/i) {
   print("Running BIO domain.\n");
+  if ($rem) {
+    die("SORRY! BIO domain currently cannot be run without TRIPS. Do not use the -r|-raw-exec-mockup argument.");
+  }
   $which_trips = "bob";
   $run_bioagents = 1;
   $system_name = ":spg/bio";
   $url = "http://localhost:8000/bio";
 }
-elsif ($domain =~ /bw|blocksworld/i) {
+elsif ($domain =~ /^bw|blocksworld$/i) {
   print("Running BLOCKSWORLD domain.\n");
-  $which_trips = "cabot";
+  if ($rem) {
+    $which_trips = undef;
+    $system_startup_command = "(clic:init-clic-web-blocksworld)";
+    $system_name = ":clic/bw";
+  }
+  else {
+    $which_trips = "cabot";
+    $system_name = ":spg/bw";
+  }
   $run_bioagents = 0;
-  $system_name = ":spg/bw";
   $url = "http://localhost:8000/bw";
 }
 else {
@@ -144,11 +160,11 @@ if ($run_bioagents) {
 }
 
 # ------------------------------------------------------------
-# Run the LISP process for SPG.
+# Run the LISP process for CLIC.
 
 $verbose and
-  print("Running SPG system: $system_name\n");
-my @spg_cmd =
+  print("Running CLIC system: $system_name\n");
+my @clic_cmd =
   (
    "sbcl",
    "--non-interactive",
@@ -158,15 +174,15 @@ my @spg_cmd =
    "--load", $source_config_filename,
    "--eval", "(asdf:load-system $system_name)",
    # Print a message to identify readiness.
-   "--eval", "(start-spg)",
-   "--eval", "(format t \"SPG is READY~%\")",
+   "--eval", $system_startup_command,
+   "--eval", "(format t \"CLIC is READY~%\")",
    # Sleep essentially forever -- 1 year! Forcing output every second.
    "--eval", "(dotimes (n 31536000) (finish-output *standard-output*) (sleep 1))",
    );
-my $spg = ipc_run(Cwd::abs_path($FindBin::Bin . "/.."),
-                  \@spg_cmd,
-                  "SPG",
-                  \&handle_spg_events);
+my $clic = ipc_run(Cwd::abs_path($FindBin::Bin . "/.."),
+                   \@clic_cmd,
+                   "CLIC",
+                   \&handle_clic_events);
 
 # ------------------------------------------------------------
 # Process output from the subprocesses as long as there is some.
@@ -197,14 +213,14 @@ while (not $done) {
     }
   }
 
-  # Try to pump SPG.
-  if ($spg->pumpable()) {
-    $spg->pump_nb();
+  # Try to pump CLIC.
+  if ($clic->pumpable()) {
+    $clic->pump_nb();
   }
   else {
-    # Whoa. The SPG exited.
-    print("SPG finished, getting exit code.\n");
-    $spg->finish();
+    # Whoa. CLIC exited.
+    print("CLIC finished, getting exit code.\n");
+    $clic->finish();
     $done = 1;
   }
 
@@ -290,12 +306,12 @@ sub ipc_run {
   return $ipc;
 }
 
-# Check to see if an SPG output should trigger anything.
-sub handle_spg_events {
+# Check to see if an output should trigger anything.
+sub handle_clic_events {
   my $in = shift();
 
-  if ($in =~ /SPG is READY/) {
-    print("SPG is ready.\n");
+  if ($in =~ /CLIC is READY/) {
+    print("CLIC is ready.\n");
     if ($start_browser) {
       print("Opening web browser to:\n");
       print("  $url\n");
