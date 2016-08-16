@@ -100,6 +100,7 @@ my @test_systems =
    ":spire",
    ":spire/test-sparser",
    ":clic/bw-tests",
+   ":clic/bw-demos",
    ":clic/bio-tests",
    ":spg/tests",
    ":spg/bw-tests",
