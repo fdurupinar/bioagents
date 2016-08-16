@@ -100,7 +100,7 @@ elsif ($domain =~ /^bw|blocksworld$/i) {
     $which_trips = undef;
     $system_name = ":clic/bw";
     @system_startup_commands =
-      ( "(clic:register-bw-demo-handlers)",
+      ( "(clic:register-bw-rem-handlers)",
         "(clic:init-clic-web-blocksworld)"
       );
     $system_prefix = "CLIC";
