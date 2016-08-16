@@ -64,7 +64,7 @@ GetOptions('v|verbose'          => \$verbose,
            't|timeout=i'        => \$timeout_s,
            'n|nouser'           => \$nouser,
            's|show-browser'     => \$start_browser,
-           'r|raw-exec-mockup'  => \$rem,
+           'r|rem|raw-exec-mockup' => \$rem,
           )
   or die("Error parsing arguments.");
 
@@ -81,7 +81,7 @@ my $which_trips;
 my $run_bioagents;
 my $system_name;
 my $url;
-my $system_startup_command = "(start-spg)";
+my @system_startup_commands = ( "(start-spg)" );
 my $system_prefix = "SPG";
 
 if ($domain =~ /^bio|biocuration$/i) {
@@ -99,7 +99,10 @@ elsif ($domain =~ /^bw|blocksworld$/i) {
   if ($rem) {
     $which_trips = undef;
     $system_name = ":clic/bw";
-    $system_startup_command = "(clic:init-clic-web-blocksworld)";
+    @system_startup_commands =
+      ( "(clic:register-bw-demo-handlers)",
+        "(clic:init-clic-web-blocksworld)"
+      );
     $system_prefix = "CLIC";
   }
   else {
@@ -175,12 +178,18 @@ my @clic_cmd =
    "--no-userinit",
    "--load", $source_config_filename,
    "--eval", "(asdf:load-system $system_name)",
-   # Print a message to identify readiness.
-   "--eval", $system_startup_command,
-   "--eval", "(format t \"CLIC is READY~%\")",
-   # Sleep essentially forever -- 1 year! Forcing output every second.
-   "--eval", "(dotimes (n 31536000) (finish-output *standard-output*) (sleep 1))",
-   );
+  );
+
+foreach my $startup_command (@system_startup_commands) {
+  push(@clic_cmd, "--eval", $startup_command);
+}
+
+push(@clic_cmd,
+     # Print a message to identify readiness.
+     "--eval", "(format t \"CLIC is READY~%\")",
+     # Sleep essentially forever -- 1 year! Forcing output every second.
+     "--eval", "(dotimes (n 31536000) (finish-output *standard-output*) (sleep 1))",
+    );
 my $clic = ipc_run(Cwd::abs_path($FindBin::Bin . "/.."),
                    \@clic_cmd,
                    $system_prefix,
