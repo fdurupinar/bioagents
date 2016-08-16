@@ -80,8 +80,9 @@ if (0 < scalar(@ARGV)) {
 my $which_trips;
 my $run_bioagents;
 my $system_name;
-my $system_startup_command = "(start-spg)";
 my $url;
+my $system_startup_command = "(start-spg)";
+my $system_prefix = "SPG";
 
 if ($domain =~ /^bio|biocuration$/i) {
   print("Running BIO domain.\n");
@@ -97,8 +98,9 @@ elsif ($domain =~ /^bw|blocksworld$/i) {
   print("Running BLOCKSWORLD domain.\n");
   if ($rem) {
     $which_trips = undef;
-    $system_startup_command = "(clic:init-clic-web-blocksworld)";
     $system_name = ":clic/bw";
+    $system_startup_command = "(clic:init-clic-web-blocksworld)";
+    $system_prefix = "CLIC";
   }
   else {
     $which_trips = "cabot";
@@ -181,7 +183,7 @@ my @clic_cmd =
    );
 my $clic = ipc_run(Cwd::abs_path($FindBin::Bin . "/.."),
                    \@clic_cmd,
-                   "CLIC",
+                   $system_prefix,
                    \&handle_clic_events);
 
 # ------------------------------------------------------------
