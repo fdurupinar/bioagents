@@ -70,24 +70,10 @@ git clone https://gitlab.com/cwc/cwc-integ.git
     setting up your key on GitLab, as described in the [Git Tips](#git-tips)
     section.)
 
-2. Download or check out the SHOP2 HTN planner.
-
-    The SHOP2 planner is maintained in an svn repo at SIFT. If you
-    have credentials for this repo, you can check it out as in:
-    ```
-cd cwc-integ
-svn co https://svn.sift.net:3333/svn/shop2/shop/trunk/shop2
-```
-
-    Otherwise, you can download the stable release from SourceForge --
-    https://sourceforge.net/projects/shop/. Uncompress the release
-    in ```cwc-integ/``` and rename it ```cwc-integ/shop2/```, removing
-    the version number from the directory name (as with BioNetGen).
-
-3. [Optional] Create an ```etc/local-conf.json``` file with custom
+2. [Optional] Create an ```etc/local-conf.json``` file with custom
    settings. See [below](#custom-environment-setup) for details.
 
-4. Verify that your environment is set up properly. Fix it if
+3. Verify that your environment is set up properly. Fix it if
    necessary.
 
     The first time you run this, the script will clone a bunch of git
@@ -99,7 +85,7 @@ cd cwc-integ
 scripts/verify-env.perl --fix
 ```
 
-5. Run the tests to verify that everything is working. The Jenkins
+4. Run the tests to verify that everything is working. The Jenkins
    script always runs ```verify-env.perl --fix```, so the tests should
    always run against an up-to-date environment.
     ```
