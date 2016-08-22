@@ -84,7 +84,7 @@ my $url;
 my @system_startup_commands = ( "(start-spg)" );
 my $system_prefix = "SPG";
 
-if ($domain =~ /^bio|biocuration$/i) {
+if ($domain =~ /^(?:bio|biocuration)$/i) {
   print("Running BIO domain.\n");
   if ($rem) {
     die("SORRY! BIO domain currently cannot be run without TRIPS. Do not use the -r|-raw-exec-mockup argument.");
@@ -94,7 +94,7 @@ if ($domain =~ /^bio|biocuration$/i) {
   $system_name = ":spg/bio";
   $url = "http://localhost:8000/bio";
 }
-elsif ($domain =~ /^bw|blocksworld$/i) {
+elsif ($domain =~ /^(?:bw|blocksworld)$/i) {
   print("Running BLOCKSWORLD domain.\n");
   if ($rem) {
     $which_trips = undef;
