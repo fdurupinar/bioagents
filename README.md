@@ -37,11 +37,11 @@ section below.
 ## TRIPS prerequisites
 
 TRIPS requires [WordNet](http://wordnet.princeton.edu/),
-[CoreNLP](http://stanfordnlp.github.io/CoreNLP/) (v3.5.2. or later), and
-the
+[CoreNLP](http://stanfordnlp.github.io/CoreNLP/) (v3.5.2. or later), the 
+[Enju parser](http://www.nactem.ac.uk/enju/#download), and the
 [MESH Supplementary Concept Records (SCR) in ASCII format](https://www.nlm.nih.gov/mesh/download_mesh.html). Check
 [this](http://trips.ihmc.us/trac/drum/wiki/TripsDrumSystemInstallation#Prerequisites)
-for specific instructions. More biomedical resources will be downloaded during
+for specific instructions on how and where to install them. More biomedical resources will be downloaded during
 the first make (which may take a rather long time). Generally, after any
 update of the TRIPS environment (prerequisites, lisp implementation or version
 thereof, etc.), you will want to make clean and
