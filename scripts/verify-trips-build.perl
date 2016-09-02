@@ -75,7 +75,7 @@ if (not $configured) {
   print("  $repo_dir/Docs/building-trips.html\n");
   print("You may be able to configure TRIPS with a command like:\n");
   print("  cd $src_dir\n");
-  print("  ./configure --with-lisp=sbcl --with-fasl=fasl --with-lisp-flavor=sbcl --with-corenlp=\$PWD/../../nl/stanford-corenlp-full-2015-12-09/ --with-geonames=\$PWD/../../geonames/2015-12-01/NationalFile_20151201.zip --with-wordnet=\$PWD/../../nl/WordNet-3.0/dict/ --with-mesh-scr=\$PWD/../../nl/mesh/c2015.bin.gz\n");
+  print("  ./configure --with-lisp=sbcl --with-fasl=fasl --with-lisp-flavor=sbcl --with-corenlp=\$PWD/../../nl/stanford-corenlp-full-2015-12-09/ --with-geonames=\$PWD/../../geonames/2015-12-01/NationalFile_20151201.zip --with-wordnet=\$PWD/../../nl/WordNet-3.0/dict/ --with-mesh-scr=\$PWD/../../nl/mesh/c2015.bin.gz --with-enju=\$PWD/../../enju-2.4.2-macosx\n");
   
   exit(1);
 }
