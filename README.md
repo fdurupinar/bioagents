@@ -180,6 +180,7 @@ There may be other modules, but you definitely need to have:
    ```Graphviz.app```, which installs to ```/usr/local/```, so if you do it
    this way you may also need to add ```/usr/local/lib/pkgconfig``` to your
    ```PKG_CONFIG_PATH``` environment variable.
+ - On macOS, I ended up just using MacPorts to install ```py-pygraphviz```.
 - ```matplotlib``` / ```python-matplotlib```
 - ```functools32```
 - ```suds``` / ```python-suds```
