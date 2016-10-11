@@ -145,9 +145,9 @@ There may be other modules, but you definitely need to have:
 - ```IO::Pty``` / ```libio-pty-perl```
 
 # Python Libraries
-The HMS bioagents are implemented in Python. They require Python 2.7.x
-and some libraries. As with the Perl libraries, there are potentially
-multiple ways to satisfy these dependencies.
+The HMS bioagents are implemented in Python. They require Python 2.7.x and 
+some libraries. As with the Perl libraries, there are potentially multiple 
+ways to satisfy these dependencies.
 
 On Mac OSX, I used pip to install them:
 ```
@@ -182,12 +182,13 @@ There may be other modules, but you definitely need to have:
    ```PKG_CONFIG_PATH``` environment variable.
  - On macOS, I ended up just using MacPorts to install ```py-pygraphviz```.
 - ```matplotlib``` / ```python-matplotlib```
-- ```functools32```
 - ```suds``` / ```python-suds```
 - ```pandas``` / ```python-pandas```
 - ```requests```
 - ```lxml```
 - ```jsonpickle``` / ```python-jsonpickle```
+- ```future```
+- ```functools32```
 
 # Custom Environment Setup
 The default configuration puts all the required projects into
