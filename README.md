@@ -85,7 +85,15 @@ cd cwc-integ
 scripts/verify-env.perl --fix
 ```
 
-4. Run the tests to verify that everything is working. The Jenkins
+4. You may need to configure (or reconfigure) one or both of the TRIPS
+   systems. In case, you can execute the following to generate the
+   appropriate configure commands for CABOT and BOB, respectively:
+   ```
+scripts/verify-trips-build.perl trips-cabot
+scripts/verify-trips-build.perl trips-bob
+```
+
+5. Run the tests to verify that everything is working. The Jenkins
    script always runs ```verify-env.perl --fix```, so the tests should
    always run against an up-to-date environment.
     ```
