@@ -92,6 +92,9 @@ scripts/verify-env.perl --fix
 scripts/verify-trips-build.perl trips-cabot
 scripts/verify-trips-build.perl trips-bob
 ```
+If you want to force a reconfigure one of the above systems, delete
+   the ```trips/<system>/src/Makefile``` and then run the above perl
+   script(s).
 
 5. Run the tests to verify that everything is working. The Jenkins
    script always runs ```verify-env.perl --fix```, so the tests should
