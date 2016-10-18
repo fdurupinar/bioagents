@@ -18,13 +18,13 @@
         // HMS
         { "name": "hms-bioagents",
           "dir": "hms/bioagents",
-          "remote_url": "https://github.com/bgyori/bioagents" },
+          "remote_url": "https://github.com/sorgerlab/bioagents" },
         { "name": "hms-indra",
           "dir": "hms/indra",
-          "remote_url": "https://github.com/bgyori/indra" },
+          "remote_url": "https://github.com/sorgerlab/indra" },
         { "name": "hms-pysb",
           "dir": "hms/pysb",
-          "remote_url": "https://github.com/bgyori/pysb" },
+          "remote_url": "https://github.com/pysb/pysb" },
 
         // External Libraries
         { "name": "lisp-utils",
