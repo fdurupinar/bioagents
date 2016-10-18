@@ -67,6 +67,31 @@ if (not ((-e $drug_targets_db_filename) and
 }
 
 # ------------------------------------------------------------
+# Figure out what Python to run.
+
+my $python = "python";
+my $python_version = `$python --version`;
+chomp($python_version);
+if ($python_version =~ /2\.7\.\d+/) {
+  print("Looks like we have a suitable version of Python: $python_version\n");
+}
+else {
+  print("Python in path wasn't a suitable version: $python_version\n");
+  # Python version isn't suitable, see if python2.7 is available.
+  my $which_python_27 = `which python2.7`;
+  chomp($which_python_27);
+  # print("$which_python_27\n");
+  if (-e $which_python_27) {
+    # Yeah, it's a file that exists. Use it.
+    $python = "python2.7";
+    print("Will use: $python\n");
+  }
+  else {
+    print("Unable to find python2.7, expect execution to fail.\n");
+  }
+}
+
+# ------------------------------------------------------------
 # Now, run DTDA.
 # python dtda_module.py
 #
@@ -76,17 +101,17 @@ if (not ((-e $drug_targets_db_filename) and
 my @children = ();
 push(@children,
      start_child("DTDA",
-                 [ "python",
+                 [ "$python",
                    "bioagents/dtda/dtda_module.py", ]));
 
 push(@children,
      start_child("MRA",
-                 [ "python",
+                 [ "$python",
                    "bioagents/mra/mra_module.py", ]));
 
 push(@children,
      start_child("TRA",
-                 [ "python",
+                 [ "$python",
                    "bioagents/tra/tra_module.py",
                    "--kappa_url", "http://maasha.org:8080",
                  ]));
