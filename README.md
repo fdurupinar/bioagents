@@ -15,11 +15,14 @@ Many CwC components are written in Lisp. We only officially support
 work in 1.2.11), though we have made some effort to also support CCL.
 You will need to make sure your lisp has multithreading support; for
 example, on the Mac, an easy way to get this is through ​
-[MacPorts](http://www.macports.org/), using this command:
+[MacPorts](http://www.macports.org/), using:
 ```
 sudo port install sbcl +threads
 ```
-
+or [Homebrew](http://brew.sh/)
+```
+brew install sbcl
+```
 ## Perl
 This project uses several Perl scripts to facilitate tasks (e.g.,
 updating the environment, running tests). These scripts require
@@ -31,7 +34,7 @@ guidance on how to install any libraries you don't already have.
 ## Python
 The HMS Bioagents software is written in Python and relies on numerous
 Python libraries. Again, before you begin (and later if the Bioagents
-fail to find a library), see the [Python Libraries](python-libraries)
+fail to find a library), see the [Python Libraries](#python-libraries)
 section below.
 
 ## TRIPS prerequisites
@@ -156,16 +159,17 @@ There may be other modules, but you definitely need to have:
 - ```IO::Pty``` / ```libio-pty-perl```
 
 # Python Libraries
-The HMS bioagents are implemented in Python. They require Python 2.7.x and 
-some libraries. As with the Perl libraries, there are potentially multiple 
+The HMS bioagents are implemented in Python. They require Python 2.7.x and additional packages.
+As with the Perl libraries, there are potentially multiple 
 ways to satisfy these dependencies.
 
-On Mac OSX, I used pip to install them:
+The easiest way to install packages is with `pip` such as:
 ```
 pip install sympy
 ```
 
-On Debian, I installed them via the package manager, as in:
+On Debian, if a system installation is preferred, one can install these dependencies
+using the package manager, as in:
 ```
 aptitude install python-sympy
 ```
@@ -174,9 +178,11 @@ Note that if you have multiple versions of python installed, it may
 help to use
 [virtualenv](http://docs.python-guide.org/en/latest/dev/virtualenvs/)
 to set up a local python environment to install these libraries in.
-For example, I (Will) got an error message complaining about
-"numpy < 1.7.0" when ```pip show numpy``` said I had version 1.11.0,
-and using virtualenv fixed it.
+Virtualenv allows the creation of project-specific python environments with
+different versions of packages (and potentially different version of Python)
+installed in each environment. Also, keep in mind that the PYTHONPATH environment
+variable, if set, might result in unexpected versions of python
+packages to be loaded.
 
 There may be other modules, but you definitely need to have:
 - ```sympy``` / ```python-sympy```
@@ -186,12 +192,10 @@ There may be other modules, but you definitely need to have:
 - ```pygraphviz``` / ```python-pygraphviz```
  - ```pygraphviz``` requires ```graphviz``` to be installed in a way that it
    can be found using ```pkg-config```. On the Mac, you can install it via
-   MacPorts using ```sudo port install graphviz``` (you may also need to
-   install ```pkgconfig``` itself this way). Or you can install
-   ```Graphviz.app```, which installs to ```/usr/local/```, so if you do it
-   this way you may also need to add ```/usr/local/lib/pkgconfig``` to your
-   ```PKG_CONFIG_PATH``` environment variable.
- - On macOS, I ended up just using MacPorts to install ```py-pygraphviz```.
+   using ```sudo port install graphviz``` (you may also need to
+   install ```pkgconfig``` itself this way) or ```brew install graphviz```. 
+    The solution to a commonly encountered problem when installing `pygraphviz` on Mac using `brew` 
+is [here](http://www.alexandrejoseph.com/blog/2016-02-10-install-pygraphviz-mac-osx.html).
 - ```matplotlib``` / ```python-matplotlib```
 - ```suds``` / ```python-suds```
 - ```pandas``` / ```python-pandas```
