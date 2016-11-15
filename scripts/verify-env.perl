@@ -106,6 +106,9 @@ if ($pass) {
   if (not verify_trips_built("trips-bob")) {
     $pass = 0;
   }
+  if (not verify_trips_built("trips-cogent")) {
+      $pass = 0;
+  }
 }
 else {
   print("Found unfixed repo problems, skipping attempt to build TRIPS repos.\n");

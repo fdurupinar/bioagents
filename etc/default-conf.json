@@ -14,6 +14,9 @@
         { "name": "trips-bob",
           "dir": "trips/bob",
           "remote_url": "https://github.com/wdebeaum/bob" },
+	{ "name": "trips-cogent",
+          "dir": "trips/cogent",
+          "remote_url": "https://github.com/wdebeaum/cogent" },
 
         // HMS
         { "name": "hms-bioagents",
