@@ -105,8 +105,9 @@ my @test_systems =
    ":spg/tests",
    ":spg/bw-tests",
    ":spg/bio-tests",
+   # This passes, but is *slow* (like -- several minutes slow).
    ":spg/bioagent-tests",
-   # Keep the demo working.
+   # Keep the demos working.
    ":spg/bio-demos",
   );
 
