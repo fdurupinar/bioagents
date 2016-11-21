@@ -256,6 +256,12 @@ Ben wrote up a Google doc with the [bioagent tasking specification](https://docs
 
 Ben also wrote up a Google doc with design/plan for [talking about model properties](https://docs.google.com/document/d/1gPIh6xZwPd9vucYbTmGltTWUNQGTuNpCFOlvvnawmuc/edit).
 
+IHMC has also created some design/API documents relevant to this
+effort.
+- [CwC: Inter-agent Communicative Acts](https://docs.google.com/document/d/1pz5QT2VW4YPyY7VsP1kibhlUTUZE8f9ZpQXEvDxGrg0/edit?usp=sharing)
+- [Goal and Status API](https://docs.google.com/document/d/16SADT4vGcCryB_PsoQHuDs5V9RlR2F63ijNFRmFW0vw/edit?usp=sharing)
+- [Todo List](https://docs.google.com/document/d/1ax1_3Eaes7xktltLiWbyXnTJj1sUf0lEaYqhVuSqf-o/edit?usp=sharing)
+
 # Development
 During normal development, there are some tools you can use to ensure
 that the integrated system continues to work for everyone.
