@@ -695,13 +695,16 @@ sub verify_trips_built {
           die("Unable to run command: " . join(" ", @trips_cmd));
 
   my @results = ();
+  my $need_config = 0;
   while (my $line = <$trips_fh>) {
     chomp($line);
-    $verbose and
+    if ($verbose or $need_config) {
       print("$line\n");
+    }
 
     if ($line =~ /Need to configure TRIPS/) {
       push(@results, $NEED_CONFIGURE);
+      $need_config = 1;
     }
     elsif ($line =~ /Looks like a build is needed/) {
       push(@results, $NEED_MAKE);
