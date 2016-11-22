@@ -230,7 +230,7 @@ like for an IHMC developer.
 // only counted when they are the only content on the line.
 {
     "git_repos": [
-        // Use the local versions of TRIPS. 
+        // Use the local versions of TRIPS.
         { "name": "trips-cabot",
           // Setting a value here overwrites the value from the
           // default config. Note that the path does not need to be a
@@ -242,6 +242,21 @@ like for an IHMC developer.
           "skip": true },
         { "name": "trips-bob",
           "dir": "~/projects/trips/bob",
+          "skip": true }
+    ]
+}
+```
+
+If you are only working with one version of TRIPS and would like to
+avoid cloning, updating, and building the other versions, you can add
+something like this to ```etc/local-conf.json```.
+```
+{
+    "git_repos": [
+        // Skip unused versions of TRIPS.
+        { "name": "trips-bob",
+          "skip": true },
+        { "name": "trips-cabot",
           "skip": true }
     ]
 }
