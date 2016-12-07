@@ -28,6 +28,9 @@
         { "name": "hms-pysb",
           "dir": "hms/pysb",
           "remote_url": "https://github.com/pysb/pysb" },
+        { "name": "hms-kqml",
+          "dir": "hms/kqml",
+          "remote_url": "https://github.com/bgyori/pykqml" },
 
         // External Libraries
         { "name": "lisp-utils",

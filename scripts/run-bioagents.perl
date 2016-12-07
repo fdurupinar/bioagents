@@ -35,6 +35,7 @@ if (exists($ENV{PYTHONPATH})) {
 $ENV{PYTHONPATH} .= "."; # Cwd::abs_path(".");
 $ENV{PYTHONPATH} .= ":" . Cwd::abs_path("../indra");
 $ENV{PYTHONPATH} .= ":" . Cwd::abs_path("../pysb");
+$ENV{PYTHONPATH} .= ":" . Cwd::abs_path("../kqml");
 
 print("PYTHONPATH=$ENV{PYTHONPATH}\n");
 
