@@ -29,7 +29,7 @@
           "dir": "hms/pysb",
           "remote_url": "https://github.com/pysb/pysb" },
         { "name": "hms-kqml",
-          "dir": "hms/kqml",
+          "dir": "hms/pykqml",
           "remote_url": "https://github.com/bgyori/pykqml" },
 
         // External Libraries
