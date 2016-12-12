@@ -107,7 +107,7 @@ if ($pass) {
     $pass = 0;
   }
   if (not verify_trips_built("trips-cogent")) {
-      $pass = 0;
+    $pass = 0;
   }
 }
 else {
@@ -681,6 +681,12 @@ sub would_update_conflict {
 sub verify_trips_built {
   my $repo_name = shift();
   my $repo_ref = CwcConfig::get_repo_config_ref($repo_name);
+
+  if (exists($repo_ref->{skip}) and
+      $repo_ref->{skip}) {
+    # Treat skip as a success.
+    return 1;
+  }
 
   # Check to see if an update is needed.
   my @trips_cmd = ($FindBin::Bin . "/verify-trips-build.perl",
