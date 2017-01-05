@@ -14,6 +14,12 @@ use IPC::Run;
 $| = 1;
 
 # ------------------------------------------------------------
+# No arguments allowed.
+
+(0 == scalar(@ARGV)) or
+  die("This script does not accept any arguments.");
+
+# ------------------------------------------------------------
 # First off, load the config.
 
 CwcConfig::load_config(1);
@@ -21,23 +27,11 @@ CwcConfig::load_config(1);
 # ------------------------------------------------------------
 # Get to the place where we want to run.
 
-my $bioagents_repo = CwcConfig::get_repo_config_ref("hms-bioagents");
-my $bioagents_dir = $bioagents_repo->{dir};
-(-d $bioagents_dir) or
-  die("Bioagents directory doesn't exist: $bioagents_dir");
-
+my $bioagents_dir = CwcConfig::get_repo_dir("hms-bioagents");
 chdir($bioagents_dir);
 print("In directory: $bioagents_dir\n");
 
-if (exists($ENV{PYTHONPATH})) {
-  $ENV{PYTHONPATH} .= ":";
-}
-$ENV{PYTHONPATH} .= "."; # Cwd::abs_path(".");
-$ENV{PYTHONPATH} .= ":" . Cwd::abs_path("../indra");
-$ENV{PYTHONPATH} .= ":" . Cwd::abs_path("../pysb");
-$ENV{PYTHONPATH} .= ":" . Cwd::abs_path("../pykqml");
-
-print("PYTHONPATH=$ENV{PYTHONPATH}\n");
+CwcConfig::setup_python_path();
 
 # ------------------------------------------------------------
 # Make sure we have the drug_targets database.
