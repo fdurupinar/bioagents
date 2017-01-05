@@ -14,7 +14,7 @@
         { "name": "trips-bob",
           "dir": "trips/bob",
           "remote_url": "https://github.com/wdebeaum/bob" },
-	{ "name": "trips-cogent",
+        { "name": "trips-cogent",
           "dir": "trips/cogent",
           "remote_url": "https://github.com/wdebeaum/cogent" },
 
@@ -31,6 +31,11 @@
         { "name": "hms-kqml",
           "dir": "hms/pykqml",
           "remote_url": "https://github.com/bgyori/pykqml" },
+
+        // TFTA
+        { "name": "tfta",
+          "dir": "tfagent",
+          "remote_url": "https://github.com/xzhang2016/tfagent" },
 
         // External Libraries
         { "name": "lisp-utils",
