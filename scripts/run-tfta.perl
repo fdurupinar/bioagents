@@ -34,6 +34,34 @@ print("In directory: $tfta_dir\n");
 CwcConfig::setup_python_path();
 
 # ------------------------------------------------------------
+# Make sure we have the drug_targets database.
+
+my $targets_db_filename =
+  "$tfta_dir/resources/TF_target.db";
+if (not ((-e $targets_db_filename) and
+         (0 < -s $targets_db_filename))) {
+  my $targets_url =
+    "https://www.dropbox.com/s/mti21pr0eoinqbq/TF_target.db?dl=0";
+  my @curl_cmd =
+    (
+     "curl",
+     # No progress bar, but yes errors.
+     "-sS",
+     # And fail on server errors.
+     "-f",
+     "-o", $targets_db_filename,
+     $targets_url,
+    );
+  warn("Drug targets file ($targets_db_filename) is missing or empty.");
+  print("Downloading it from: $targets_url\n");
+  print("Using command:\n");
+  print("  " . join(" ", @curl_cmd) . "\n");
+  my $result = system(@curl_cmd);
+  (0 == $result) or
+    die("Unable to get targets DB.");
+}
+
+# ------------------------------------------------------------
 # Figure out what Python to run.
 
 my $python = "python";
