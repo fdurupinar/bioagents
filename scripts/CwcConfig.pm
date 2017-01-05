@@ -212,5 +212,36 @@ sub summarize_config {
   }
 }
 
+# ------------------------------------------------------------
+# Setup stuff shared between Python-based agents (e.g., run-bioagents
+# and run-tfta).
+
+sub get_repo_dir {
+  my $repo_name = shift();
+
+  my $repo_ref = CwcConfig::get_repo_config_ref($repo_name);
+  defined($repo_name) or
+    die("Repo wasn't defined: $repo_name");
+
+  my $repo_dir = $repo_ref->{dir};
+  (-d $repo_dir) or
+    die("Repo directory doesn't exist: $repo_dir");
+
+  return $repo_dir;
+}
+
+sub setup_python_path {
+  if (exists($ENV{PYTHONPATH})) {
+    $ENV{PYTHONPATH} .= ":";
+  }
+  $ENV{PYTHONPATH} .= "."; # Cwd::abs_path(".");
+  $ENV{PYTHONPATH} .= ":" . Cwd::abs_path(get_repo_dir("hms-indra"));
+  $ENV{PYTHONPATH} .= ":" . Cwd::abs_path(get_repo_dir("hms-pysb"));
+  $ENV{PYTHONPATH} .= ":" . Cwd::abs_path(get_repo_dir("hms-kqml"));
+
+  print("PYTHONPATH=$ENV{PYTHONPATH}\n");
+}
+
+
 # Evaluate to true so that the module can be loaded.
 1;
