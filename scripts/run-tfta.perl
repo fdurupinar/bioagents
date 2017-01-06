@@ -41,7 +41,7 @@ my $targets_db_filename =
 if (not ((-e $targets_db_filename) and
          (0 < -s $targets_db_filename))) {
   my $targets_url =
-    "https://www.dropbox.com/s/mti21pr0eoinqbq/TF_target.db?dl=0";
+    "https://www.dropbox.com/s/mti21pr0eoinqbq/TF_target.db?dl=0#";
   my @curl_cmd =
     (
      "curl",
@@ -49,6 +49,8 @@ if (not ((-e $targets_db_filename) and
      "-sS",
      # And fail on server errors.
      "-f",
+     # And follow redirects.
+     "--location",
      "-o", $targets_db_filename,
      $targets_url,
     );
