@@ -157,10 +157,15 @@ if (defined($which_trips)) {
 # Bioagents
 
 my $bioagents;
+my $tfta;
 if ($run_bioagents) {
   $bioagents = ipc_run(Cwd::abs_path($FindBin::Bin . "/.."),
                        [$FindBin::Bin . "/run-bioagents.perl"]);
-  print("Sleeping a few seconds to let bioagents get started.\n");
+
+  $tfta = ipc_run(Cwd::abs_path($FindBin::Bin . "/.."),
+                  [$FindBin::Bin . "/run-tfta.perl"]);
+
+  print("Sleeping a few seconds to let bioagents and TFTA get started.\n");
   sleep(6);
 }
 
@@ -221,6 +226,15 @@ while (not $done) {
     else {
       # This should *not* have exited.
       die("Bioagents exited unexpectedly.");
+    }
+  }
+  if (defined($tfta)) {
+    if ($tfta->pumpable()) {
+      $tfta->pump_nb();
+    }
+    else {
+      # This should *not* have exited.
+      die("TFTA exited unexpectedly.");
     }
   }
 
