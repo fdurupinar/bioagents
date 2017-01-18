@@ -67,7 +67,7 @@ if (not ((-e $targets_db_filename) and
 # Figure out what Python to run.
 
 my $python = "python";
-my $python_version = `$python --version`;
+my $python_version = `$python --version 2>&1`;
 chomp($python_version);
 if ($python_version =~ /2\.7\.\d+/) {
   print("Looks like we have a suitable version of Python: $python_version\n");
