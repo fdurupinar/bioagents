@@ -177,6 +177,7 @@ $verbose and
 my @clic_cmd =
   (
    "sbcl",
+   "--dynamic-space-size", 2048,
    "--non-interactive",
    # "--disable-debugger",
    "--no-sysinit",
