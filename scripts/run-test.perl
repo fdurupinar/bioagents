@@ -109,7 +109,7 @@ $verbose and
   print("Running test: $test_name\n");
 my $lisp = ipc_run(Cwd::abs_path($FindBin::Bin . "/.."),
                    [ "sbcl",
-                     "--dynamic-space-size", 2048,
+                     "--dynamic-space-size", 4096,
                      "--non-interactive",
                      "--no-sysinit",
                      "--no-userinit",                     
