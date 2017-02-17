@@ -22,6 +22,7 @@ use Timeout;
 use Cwd;
 use Getopt::Long;
 use IPC::Run;
+use Time::HiRes;
 
 # Autoflush stdout.
 $| = 1;
@@ -38,6 +39,9 @@ my $timeout_s = 0;
 # If set, runs the appropriate TRIPS executive. Should be set to
 # either "cabot" or "bob".
 my $which_trips;
+
+# Set to 1 when TRIPS has started and the facilitator is listening.
+my $trips_ready = 0;
 
 # If set, runs the bioagents.
 my $run_bioagents = 0;
@@ -61,6 +65,9 @@ my $test_name = shift(@ARGV);
 
 # Load the config so that we can properly find everything.
 CwcConfig::load_config(0);
+
+# Record the time the script takes.
+my $script_start_time = Time::HiRes::time();
 
 # ------------------------------------------------------------
 # Timeout
@@ -86,10 +93,22 @@ if (defined($which_trips)) {
 
   $trips = ipc_run(Cwd::abs_path('.'),
                    [$trips_exe, '-nouser'],
-                   "TRIPS");
+                   "TRIPS",
+                   \&handle_trips_events);
 
-  print("Sleeping a few seconds to let TRIPS get started.\n");
-  sleep(20);
+  # Pump trips until TRIPS is ready.
+  while (not $trips_ready) {
+    if ($trips->pumpable()) {
+      $trips->pump_nb();
+    }
+    else {
+      # This should *not* have exited.
+      die("TRIPS didn't even get started.");
+    }
+  }
+
+  # print("Sleeping a few seconds to let TRIPS get started.\n");
+  # sleep(20);
 }
 
 # ------------------------------------------------------------
@@ -161,6 +180,12 @@ while (not defined($test_exit_code)) {
 }
 
 print("Test finished with exit code: $test_exit_code\n");
+
+# Get the end time.
+my $script_end_time = Time::HiRes::time();
+my $script_duration_s = $script_end_time - $script_start_time;
+printf("Tests took %0.1fs to run.\n", $script_duration_s);
+
 exit($test_exit_code);
 
 # End of Main Script
@@ -171,6 +196,7 @@ sub ipc_run {
   my $working_dir = shift();
   my $cmd_ref = shift();
   my $prefix = shift();
+  my $event_fn = shift();
 
   # Move to the desired working dir.
   my $orig_dir = Cwd::abs_path(".");
@@ -178,16 +204,46 @@ sub ipc_run {
 
   print("Running IPC command:\n");
   print("  " . join(" ", @$cmd_ref) . "\n");
-  my $ipc = IPC::Run::start($cmd_ref,
-                            '>pty>',
-                            IPC::Run::new_chunker,
-                            sub {
-                              my $in = shift();
-                              if (defined($prefix)) {
-                                print("$prefix: ");
-                              }
-                              print($in);
-                            });
+
+  # For some reason, the chunker didn't work. I kinda wonder if some
+  # crazy character code got in that interfered with the regex
+  # match. Anyway, it seems to be okay for us to use a closure and
+  # assemble the partial content ourselves.
+  my $pending_content = "";
+  my $ipc =
+    IPC::Run::start($cmd_ref,
+                    '<', \undef,
+                    '>pty>',
+                    # IPC::Run::new_chunker(qr/[\r\n]+/),
+                    sub {
+                      my $chunk = "$pending_content" . shift();
+                      $pending_content = "";
+                      my $complete = 0;
+                      if ($chunk =~ /\n$/) {
+                        $complete = 1;
+                      }
+
+                      my @lines = split(/[\r\n]+/, $chunk);
+                      while(my $line = shift(@lines)) {
+                        if ((0 == scalar(@lines)) and
+                            (not $complete)) {
+                          $pending_content .= $line;
+                        }
+                        else {
+                          # If we have a prefix, print it.
+                          if (defined($prefix)) {
+                            print("$prefix: ");
+                          }
+                          print("$line\n");
+
+                          # Check to see if the line of output should
+                          # trigger anything.
+                          if (defined($event_fn)) {
+                            $event_fn->($line);
+                          }
+                        }
+                      }
+                    });
 
   # Go back to the orig dir.
   chdir($orig_dir);
@@ -195,3 +251,12 @@ sub ipc_run {
   return $ipc;
 }
 
+# Set a flag once TRIPS is ready.
+sub handle_trips_events {
+  my $in = shift();
+
+  if ($in =~ /facilitator: listening on port 6200/) {
+    print("TRIPS is ready.\n");
+    $trips_ready = 1;
+  }
+}
