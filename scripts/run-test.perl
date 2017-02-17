@@ -256,7 +256,9 @@ sub ipc_run {
 sub handle_trips_events {
   my $in = shift();
 
-  if ($in =~ /facilitator: listening on port 6200/) {
+  # CABOT and BOB report startup differently.
+  if (($in =~ /facilitator: listening on port 6200/) or
+      ($in =~ /comm: initialize-socket: localhost:6200/)) {
     print("TRIPS is ready.\n");
     $trips_ready = 1;
   }
