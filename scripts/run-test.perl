@@ -105,6 +105,7 @@ if (defined($which_trips)) {
       # This should *not* have exited.
       die("TRIPS didn't even get started.");
     }
+    sleep(0.1);
   }
 
   # print("Sleeping a few seconds to let TRIPS get started.\n");
@@ -219,7 +220,7 @@ sub ipc_run {
                       my $chunk = "$pending_content" . shift();
                       $pending_content = "";
                       my $complete = 0;
-                      if ($chunk =~ /\n$/) {
+                      if ($chunk =~ /[\r\n]$/) {
                         $complete = 1;
                       }
 
