@@ -62,6 +62,10 @@ my $test_name = shift(@ARGV);
 
 # Record the time the script takes.
 my $script_start_time = Time::HiRes::time();
+# This value will be overridden by an output handler. We just set it
+# here so that if something goes wrong we don't have an undefined
+# variable.
+my $system_ready_time = $script_start_time;
 
 # ------------------------------------------------------------
 # Timeout
@@ -96,9 +100,12 @@ my $lisp = CwcRun::ipc_run(Cwd::abs_path($FindBin::Bin . "/.."),
                              "--no-sysinit",
                              "--no-userinit",
                              "--load", $source_config_filename,
+                             "--eval", "(asdf:load-system $test_name)",
+                             "--eval", "(format t \"CLIC is READY~%\")",
                              "--eval", "(asdf:test-system $test_name)",
                            ],
-                           "CLIC");
+                           "CLIC",
+                           \&handle_clic_events);
 
 # ------------------------------------------------------------
 # Process output from the subprocesses as long as there is some.
@@ -151,13 +158,34 @@ while (not defined($test_exit_code)) {
 print("Test finished with exit code: $test_exit_code\n");
 
 # Get the end time.
+my $system_ready_duration_s = $system_ready_time - $script_start_time;
+printf("System was ready in:   %0.1fs\n", $system_ready_duration_s);
+
 my $script_end_time = Time::HiRes::time();
+my $tests_duration_s = $script_end_time - $system_ready_time;
+printf("Tests ran in:          %0.1fs\n", $tests_duration_s);
+
 my $script_duration_s = $script_end_time - $script_start_time;
-printf("Tests took %0.1fs to run.\n", $script_duration_s);
+printf("Total execution time:  %0.1fs\n", $script_duration_s);
+
+if ($test_exit_code) {
+  print("Tests FAILED\n");
+}
+else {
+  print("Tests SUCCEEDED\n");
+}
 
 exit($test_exit_code);
 
 # End of Main Script
 # ------------------------------------------------------------
 # Subroutines
+
+sub handle_clic_events {
+  my $in = shift();
+
+  if ($in =~ /CLIC is READY/) {
+    $system_ready_time = Time::HiRes::time();
+  }
+}
 
