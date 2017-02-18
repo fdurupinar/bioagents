@@ -30,8 +30,12 @@ sub start_trips {
     die("TRIPS bin directory ($trips_bin_dir) doesn't exist.");
   my $trips_exe = "$trips_bin_dir/trips-$which_trips";
 
+  my @trips_cmd = ( $trips_exe );
+  if ($nouser) {
+    push(@trips_cmd, '-nouser');
+  }
   my $trips = CwcRun::ipc_run(Cwd::abs_path('.'),
-                              [$trips_exe, '-nouser'],
+                              \@trips_cmd,
                               "TRIPS",
                               \&handle_trips_events);
 
