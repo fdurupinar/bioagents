@@ -1,5 +1,17 @@
 package CwcRun;
 
+# This should be used by callers who want to print partial lines of
+# their own (I'm looking at you run-cwc.perl). When printing things
+# like periods which show that the system is still alive, callers
+# should set this to 1 so that the next output printed here will be
+# printed on a new line.
+#
+# Output reported here resets this. So callers should set this to 1
+# each time they print a partial line.
+#
+# This can be safely ignored by callers who don't need it.
+my $need_newline = 0;
+
 sub ipc_run {
   my $working_dir = shift();
   my $cmd_ref = shift();
@@ -38,6 +50,13 @@ sub ipc_run {
                           $pending_content .= $line;
                         }
                         else {
+                          # If we were printing dots, make a newline
+                          # before this content.
+                          if ($need_newline) {
+                            print("\n");
+                            $need_newline = 0;
+                          }
+
                           # If we have a prefix, print it.
                           if (defined($prefix)) {
                             print("$prefix: ");

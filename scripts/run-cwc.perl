@@ -22,6 +22,7 @@ use warnings;
 use FindBin;
 use lib ( $FindBin::Bin );  # for local modules
 use CwcConfig;
+use CwcRun;
 use Timeout;
 
 use Cwd;
@@ -145,9 +146,9 @@ if (defined($which_trips)) {
   if ($nouser) {
     push(@trips_cmd, '-nouser');
   }
-  $trips = ipc_run(Cwd::abs_path('.'),
-                   \@trips_cmd,
-                   "TRIPS");
+  $trips = CwcRun::ipc_run(Cwd::abs_path('.'),
+                           \@trips_cmd,
+                           "TRIPS");
 
   print("Sleeping a few seconds to let TRIPS get started.\n");
   sleep(6);
@@ -159,14 +160,14 @@ if (defined($which_trips)) {
 my $bioagents;
 my $tfta;
 if ($run_bioagents) {
-  $bioagents = ipc_run(Cwd::abs_path($FindBin::Bin . "/.."),
-                       [$FindBin::Bin . "/run-bioagents.perl"]);
+  $bioagents = CwcRun::ipc_run(Cwd::abs_path($FindBin::Bin . "/.."),
+                               [$FindBin::Bin . "/run-bioagents.perl"]);
 
-  $tfta = ipc_run(Cwd::abs_path($FindBin::Bin . "/.."),
-                  [$FindBin::Bin . "/run-tfta.perl"]);
+  $tfta = CwcRun::ipc_run(Cwd::abs_path($FindBin::Bin . "/.."),
+                          [$FindBin::Bin . "/run-tfta.perl"]);
 
   print("Sleeping a few seconds to let bioagents and TFTA get started.\n");
-  sleep(6);
+  sleep(5);
 }
 
 # ------------------------------------------------------------
@@ -196,17 +197,16 @@ push(@clic_cmd,
      # Sleep essentially forever -- 1 year! Forcing output every second.
      "--eval", "(dotimes (n 31536000) (finish-output *standard-output*) (sleep 1))",
     );
-my $clic = ipc_run(Cwd::abs_path($FindBin::Bin . "/.."),
-                   \@clic_cmd,
-                   $system_prefix,
-                   \&handle_clic_events);
+my $clic = CwcRun::ipc_run(Cwd::abs_path($FindBin::Bin . "/.."),
+                           \@clic_cmd,
+                           $system_prefix,
+                           \&handle_clic_events);
 
 # ------------------------------------------------------------
 # Process output from the subprocesses as long as there is some.
 
 my $print_time = time();
 my $done = 0;
-my $need_newline = 0;
 while (not $done) {
   # Try to pump TRIPS.
   if (defined($trips)) {
@@ -254,7 +254,7 @@ while (not $done) {
   my $since_last_print_s = $cur_time - $print_time;
   if (1.0 < $since_last_print_s) {
     print(".");
-    $need_newline = 1;
+    $CwcRun::need_newline = 1;
     $print_time = $cur_time;
   }
   STDOUT->flush();
@@ -265,72 +265,6 @@ exit(0);
 # End of Main Script
 # ------------------------------------------------------------
 # Subroutines
-
-sub ipc_run {
-  my $working_dir = shift();
-  my $cmd_ref = shift();
-  my $prefix = shift();
-  my $event_fn = shift();
-
-  # Move to the desired working dir.
-  my $orig_dir = Cwd::abs_path(".");
-  chdir($working_dir);
-
-  print("Running IPC command:\n");
-  print("  " . join(" ", @$cmd_ref) . "\n");
-
-  # For some reason, the chunker didn't work. I kinda wonder if some
-  # crazy character code got in that interfered with the regex
-  # match. Anyway, it seems to be okay for us to use a closure and
-  # assemble the partial content ourselves.
-  my $pending_content = "";
-  my $ipc =
-    IPC::Run::start($cmd_ref,
-                    '<', \undef,
-                    '>pty>',
-                    # IPC::Run::new_chunker(qr/[\r\n]+/),
-                    sub {
-                      my $chunk = "$pending_content" . shift();
-                      $pending_content = "";
-                      my $complete = 0;
-                      if ($chunk =~ /\n$/) {
-                        $complete = 1;
-                      }
-
-                      my @lines = split(/[\r\n]+/, $chunk);
-                      while(my $line = shift(@lines)) {
-                        if ((0 == scalar(@lines)) and
-                            (not $complete)) {
-                          $pending_content .= $line;
-                        }
-                        else {
-                          # If we were printing dots, make a newline
-                          # before this content.
-                          if ($need_newline) {
-                            print("\n");
-                            $need_newline = 0;
-                          }
-
-                          # If we have a prefix, print it.
-                          if (defined($prefix)) {
-                            print("$prefix: ");
-                          }
-                          print("$line\n");
-
-                          # Check to see if the line of output should
-                          # trigger anything.
-                          if (defined($event_fn)) {
-                            $event_fn->($line);
-                          }
-                        }
-                      }
-                    });
-
-  # Go back to the orig dir.
-  chdir($orig_dir);
-
-  return $ipc;
-}
 
 # Check to see if an output should trigger anything.
 sub handle_clic_events {
