@@ -1,5 +1,72 @@
 package CwcRun;
 
+use CwcConfig;
+
+# ------------------------------------------------------------
+# Setup
+
+# Load the config so that we can properly find everything.
+CwcConfig::load_config(0);
+
+# ------------------------------------------------------------
+# TRIPS
+
+# Set to 1 when TRIPS has started and the facilitator is listening.
+my $trips_ready = 0;
+
+sub start_trips {
+  my $which_trips = shift();
+  my $no_user = shift();
+
+  my $trips_repo_name = "trips-$which_trips";
+  my $trips_repo_ref =  CwcConfig::get_git_repo_config_ref($trips_repo_name);
+  defined($trips_repo_ref) or
+    die("Unable to get repo configuration: $trips_repo_name");
+  my $trips_dir = $trips_repo_ref->{dir};
+  defined($trips_dir) or
+    die("Did not find TRIPS directory in config: $trips_repo_name");
+  my $trips_bin_dir = "$trips_dir/bin";
+  (-d $trips_bin_dir) or
+    die("TRIPS bin directory ($trips_bin_dir) doesn't exist.");
+  my $trips_exe = "$trips_bin_dir/trips-$which_trips";
+
+  my $trips = CwcRun::ipc_run(Cwd::abs_path('.'),
+                              [$trips_exe, '-nouser'],
+                              "TRIPS",
+                              \&handle_trips_events);
+
+  print("Waiting for TRIPS to be ready.\n");
+
+  # Pump trips until TRIPS is ready.
+  while (not $trips_ready) {
+    if ($trips->pumpable()) {
+      $trips->pump_nb();
+    }
+    else {
+      # This should *not* have exited.
+      die("TRIPS didn't even get started.");
+    }
+    sleep(0.1);
+  }
+
+  return $trips;
+}
+
+# Set a flag once TRIPS is ready.
+sub handle_trips_events {
+  my $in = shift();
+
+  # CABOT and BOB report startup differently.
+  if (($in =~ /facilitator: listening on port 6200/) or
+      ($in =~ /comm: initialize-socket: localhost:6200/)) {
+    print("TRIPS is ready.\n");
+    $trips_ready = 1;
+  }
+}
+
+# ------------------------------------------------------------
+# General-purpose run support
+
 # This should be used by callers who want to print partial lines of
 # their own (I'm looking at you run-cwc.perl). When printing things
 # like periods which show that the system is still alive, callers
@@ -10,8 +77,10 @@ package CwcRun;
 # each time they print a partial line.
 #
 # This can be safely ignored by callers who don't need it.
-my $need_newline = 0;
+our $need_newline = 0;
 
+# Run a command, prefixing the output. Returns an IPC::Run handle that
+# should be pumped.
 sub ipc_run {
   my $working_dir = shift();
   my $cmd_ref = shift();

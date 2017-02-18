@@ -16,7 +16,6 @@ use warnings;
 
 use FindBin;
 use lib ( $FindBin::Bin );  # for local modules
-use CwcConfig;
 use CwcRun;
 use Timeout;
 
@@ -41,9 +40,6 @@ my $timeout_s = 0;
 # either "cabot" or "bob".
 my $which_trips;
 
-# Set to 1 when TRIPS has started and the facilitator is listening.
-my $trips_ready = 0;
-
 # If set, runs the bioagents.
 my $run_bioagents = 0;
 
@@ -64,9 +60,6 @@ GetOptions('v|verbose'          => \$verbose,
   die("Script requires exactly one test name.");
 my $test_name = shift(@ARGV);
 
-# Load the config so that we can properly find everything.
-CwcConfig::load_config(0);
-
 # Record the time the script takes.
 my $script_start_time = Time::HiRes::time();
 
@@ -80,37 +73,7 @@ Timeout::fork_timeout_process($timeout_s);
 
 my $trips;
 if (defined($which_trips)) {
-  my $trips_repo_name = "trips-$which_trips";
-  my $trips_repo_ref =  CwcConfig::get_git_repo_config_ref($trips_repo_name);
-  defined($trips_repo_ref) or
-    die("Unable to get repo configuration: $trips_repo_name");
-  my $trips_dir = $trips_repo_ref->{dir};
-  defined($trips_dir) or
-    die("Did not find TRIPS directory in config: $trips_repo_name");
-  my $trips_bin_dir = "$trips_dir/bin";
-  (-d $trips_bin_dir) or
-    die("TRIPS bin directory ($trips_bin_dir) doesn't exist.");
-  my $trips_exe = "$trips_bin_dir/trips-$which_trips";
-
-  $trips = CwcRun::ipc_run(Cwd::abs_path('.'),
-                           [$trips_exe, '-nouser'],
-                           "TRIPS",
-                           \&handle_trips_events);
-
-  # Pump trips until TRIPS is ready.
-  while (not $trips_ready) {
-    if ($trips->pumpable()) {
-      $trips->pump_nb();
-    }
-    else {
-      # This should *not* have exited.
-      die("TRIPS didn't even get started.");
-    }
-    sleep(0.1);
-  }
-
-  # print("Sleeping a few seconds to let TRIPS get started.\n");
-  # sleep(20);
+  $trips = CwcRun::start_trips($which_trips, 1);
 }
 
 # ------------------------------------------------------------
@@ -191,14 +154,3 @@ exit($test_exit_code);
 # ------------------------------------------------------------
 # Subroutines
 
-# Set a flag once TRIPS is ready.
-sub handle_trips_events {
-  my $in = shift();
-
-  # CABOT and BOB report startup differently.
-  if (($in =~ /facilitator: listening on port 6200/) or
-      ($in =~ /comm: initialize-socket: localhost:6200/)) {
-    print("TRIPS is ready.\n");
-    $trips_ready = 1;
-  }
-}
