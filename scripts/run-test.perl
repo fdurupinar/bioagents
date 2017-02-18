@@ -80,11 +80,9 @@ if (defined($which_trips)) {
 # Bioagents
 
 my $bioagents;
+my $tfta;
 if ($run_bioagents) {
-  $bioagents = CwcRun::ipc_run(Cwd::abs_path($FindBin::Bin . "/.."),
-                               [$FindBin::Bin . "/run-bioagents.perl"]);
-  print("Sleeping a few seconds to let bioagents get started.\n");
-  sleep(5);
+  ($bioagents, $tfta) = CwcRun::start_bioagents();
 }
 
 # ------------------------------------------------------------
@@ -126,6 +124,15 @@ while (not defined($test_exit_code)) {
     else {
       # This should *not* have exited.
       die("Bioagents exited unexpectedly.");
+    }
+  }
+  if (defined($tfta)) {
+    if ($tfta->pumpable()) {
+      $tfta->pump_nb();
+    }
+    else {
+      # This should *not* have exited.
+      die("TFTA exited unexpectedly.");
     }
   }
 

@@ -16,7 +16,7 @@ my $trips_ready = 0;
 
 sub start_trips {
   my $which_trips = shift();
-  my $no_user = shift();
+  my $nouser = shift();
 
   my $trips_repo_name = "trips-$which_trips";
   my $trips_repo_ref =  CwcConfig::get_git_repo_config_ref($trips_repo_name);
@@ -66,6 +66,20 @@ sub handle_trips_events {
     print("TRIPS is ready.\n");
     $trips_ready = 1;
   }
+}
+
+# ------------------------------------------------------------
+# Bioagents
+
+sub start_bioagents {
+  my $bioagents = CwcRun::ipc_run(Cwd::abs_path($FindBin::Bin . "/.."),
+                                  [$FindBin::Bin . "/run-bioagents.perl"]);
+  my $tfta = CwcRun::ipc_run(Cwd::abs_path($FindBin::Bin . "/.."),
+                             [$FindBin::Bin . "/run-tfta.perl"]);
+  print("Sleeping a few seconds to let bioagents get started.\n");
+  sleep(5);
+
+  return ($bioagents, $tfta);
 }
 
 # ------------------------------------------------------------

@@ -135,14 +135,7 @@ if (defined($which_trips)) {
 my $bioagents;
 my $tfta;
 if ($run_bioagents) {
-  $bioagents = CwcRun::ipc_run(Cwd::abs_path($FindBin::Bin . "/.."),
-                               [$FindBin::Bin . "/run-bioagents.perl"]);
-
-  $tfta = CwcRun::ipc_run(Cwd::abs_path($FindBin::Bin . "/.."),
-                          [$FindBin::Bin . "/run-tfta.perl"]);
-
-  print("Sleeping a few seconds to let bioagents and TFTA get started.\n");
-  sleep(5);
+  ($bioagents, $tfta) = CwcRun::start_bioagents();
 }
 
 # ------------------------------------------------------------
