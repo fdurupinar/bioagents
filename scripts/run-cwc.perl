@@ -28,6 +28,7 @@ use Cwd;
 use Getopt::Long;
 use IO::Handle;
 use IPC::Run;
+use Time::HiRes;
 
 # Autoflush stdout.
 $| = 1;
@@ -74,6 +75,8 @@ if (0 < scalar(@ARGV)) {
     warn("Can only handle a single domain argument, ignoring: " . join(" ", @ARGV));
   }
 }
+
+my $script_start_time = Time::HiRes::time();
 
 # Values of what to run. These are set based on the $domain and used
 # below.
@@ -173,7 +176,7 @@ my $clic = CwcRun::ipc_run(Cwd::abs_path($FindBin::Bin . "/.."),
 # ------------------------------------------------------------
 # Process output from the subprocesses as long as there is some.
 
-my $print_time = time();
+my $print_time = Time::HiRes::time();
 my $done = 0;
 while (not $done) {
   # Try to pump TRIPS.
@@ -218,7 +221,7 @@ while (not $done) {
     $done = 1;
   }
 
-  my $cur_time = time();
+  my $cur_time = Time::HiRes::time();
   my $since_last_print_s = $cur_time - $print_time;
   if (1.0 < $since_last_print_s) {
     print(".");
@@ -240,6 +243,11 @@ sub handle_clic_events {
 
   if ($in =~ /CLIC is READY/) {
     print("CLIC is ready.\n");
+
+    my $ready_time = Time::HiRes::time();
+    my $ready_duration_s = $ready_time - $script_start_time;
+    printf("Startup took %0.1fs.\n", $ready_duration_s);
+
     if ($start_browser) {
       print("Opening web browser to:\n");
       print("  $url\n");
