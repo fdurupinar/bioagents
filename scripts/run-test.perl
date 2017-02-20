@@ -153,6 +153,7 @@ while (not defined($test_exit_code)) {
     $lisp->finish();
     $test_exit_code = $lisp->result(0);
   }
+  STDOUT->flush();
 }
 
 print("Test finished with exit code: $test_exit_code\n");
