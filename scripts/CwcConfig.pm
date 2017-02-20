@@ -1,5 +1,8 @@
 package CwcConfig;
 
+use strict;
+use warnings;
+
 use JSON;
 use Path::Class;
 
@@ -159,7 +162,7 @@ sub store_repo_configs {
 
     # Get the instance
     my $name = $repo_ref->{name};
-    $verbose and
+    $main::verbose and
       print("Configuring repo: $name\n");
     if (not exists($repo_configs_ref->{$name})) {
       $repo_configs_ref->{$name} = {};
@@ -184,7 +187,7 @@ sub store_repo_configs {
         }
         my $dir = dir($path)->absolute();
 
-        $verbose and
+        $main::verbose and
           print("  Directory: $val => $dir\n");
         $repo_config_ref->{$key} = $dir;
       }

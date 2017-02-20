@@ -1,5 +1,8 @@
 package CwcRun;
 
+use strict;
+use warnings;
+
 use CwcConfig;
 
 # ------------------------------------------------------------

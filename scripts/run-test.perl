@@ -31,7 +31,7 @@ $| = 1;
 # Global variables
 
 # Set to enable verbose (debugging) output.
-my $verbose = 0;
+our $verbose = 0;
 
 # How long to run before timing out and exiting.
 my $timeout_s = 0;

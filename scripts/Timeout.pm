@@ -1,5 +1,8 @@
 package Timeout;
 
+use strict;
+use warnings;
+
 use POSIX;
 use Proc::Killfam;
 
