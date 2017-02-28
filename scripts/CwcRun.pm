@@ -37,6 +37,14 @@ sub start_trips {
   if ($nouser) {
     push(@trips_cmd, '-nouser');
   }
+  else {
+    # CABOT now has the traffic window as an argument. BOB does
+    # not. Once BOB has this argument, we should remove the
+    # conditional.
+    if ($trips_repo_name =~ /cabot/) {
+      push(@trips_cmd, '-showtraffic');
+    }
+  }
   my $trips = CwcRun::ipc_run(Cwd::abs_path('.'),
                               \@trips_cmd,
                               "TRIPS",
