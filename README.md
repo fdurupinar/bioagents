@@ -53,15 +53,24 @@ thereof, etc.), you will want to make clean and
 manually.
 
 ## BioNetGen
-The HMS Bioagents software (the MRA in particular) requires [BioNetGen](http://www.bionetgen.org/index.php/Main_Page)
-to generate model diagrams.
+The HMS Bioagents (the MRA in particular) require [BioNetGen](http://www.bionetgen.org/index.php/Main_Page) to generate model diagrams.
 
-I downloaded the command line binary distribution from:
-http://www.bionetgen.org/index.php/BioNetGen_Distributions
+The binary distribution can be downloaded from: http://www.bionetgen.org/index.php/BioNetGen_Distributions
 
-It looks like the MRA expects this to reside in
-```/usr/local/share/BioNetGen```, so I uncompressed the archive there and
-renamed it, removing the version number from the directory name.
+The MRA expects this to be in
+```/usr/local/share/BioNetGen```, so the downloaded archive needs to be extracted and
+renamed, removing the version number from the directory name.
+
+## SBGNViz
+The SBGNViz system is implemented in javascript. It has the following
+dependencies: nodejs, redis and mongodb. On Mac, these can be installed as
+```
+brew install nodejs
+brew install redis
+brew install mongodb
+```
+Follow the instructions [here](https://github.com/fdurupinar/Sbgnviz-Collaborative-Editor)
+to install on Ubuntu/Debian.
 
 # Getting Started
 1. Clone the cwc-integ project.

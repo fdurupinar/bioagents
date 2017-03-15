@@ -90,7 +90,12 @@
         // Need a sub-directory of clic to store results. Git won't
         // store empty directories the way svn does.
         { "name": "clic-results",
-          "dir": "clic/results" }
+          "dir": "clic/results" },
+
+        // SBGNViz
+        { "name": "sbgnviz",
+          "dir": "sbgnviz",
+          "remote_url": "https://github.com/fdurupinar/Sbgnviz-Collaborative-Editor.git"}
     ],
 
     "svn_repos": [
