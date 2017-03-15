@@ -112,6 +112,11 @@ push(@children,
                    "--kappa_url", "http://maasha.org:8080",
                  ]));
 
+push(@children,
+     start_child("BIONLG",
+                 [ "$python",
+                   "bioagents/bionlg/bionlg_module.py", ]));
+
 # Set up handlers and a loop to poll the children for output and exit
 # when told.
 my $done = 0;
