@@ -63,9 +63,9 @@ renamed, removing the version number from the directory name.
 
 ## SBGNViz
 The SBGNViz system is implemented in javascript. It has the following
-dependencies: nodejs, redis and mongodb. On Mac, these can be installed as
+dependencies: redis, mongodb and nodejs (version 4.x works but the latest version, 7.x doesn't since it is incompatible with some dependencies). On Mac, these can be installed as
 ```
-brew install nodejs
+brew install node@4
 brew install redis
 brew install mongodb
 ```
