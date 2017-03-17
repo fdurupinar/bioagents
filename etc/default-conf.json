@@ -94,7 +94,7 @@
 
         // SBGNViz
         { "name": "sbgnviz",
-          "dir": "sbgnviz",
+          "dir": "Sbgnviz-Collaborative-Editor",
           "remote_url": "https://github.com/fdurupinar/Sbgnviz-Collaborative-Editor.git"}
     ],
 
