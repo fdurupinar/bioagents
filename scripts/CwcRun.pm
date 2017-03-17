@@ -91,6 +91,11 @@ sub start_bioagents {
   return ($bioagents, $tfta);
 }
 
+sub start_sbgnviz {
+    my $sbgnviz = CwcRun::ipc_run(Cwd::abs_path($FindBin::Bin . "/.."),
+                                  [$FindBin::Bin . "/run-sbgnviz.perl"]);
+    }
+
 # ------------------------------------------------------------
 # We should sleep sometimes so that we are not polling open loop. If
 # we wrote something, odds are there is more to write, so do not
