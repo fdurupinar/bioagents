@@ -158,6 +158,9 @@ There may be other modules, but you definitely need to have:
 - ```Proc::Killfam``` / ```libproc-processtable-perl```
 - ```IPC::Run``` / ```libipc-run-perl```
 - ```IO::Pty``` / ```libio-pty-perl```
+- ```DBI```
+- ```Set::Scalar```
+- ```File::Slurp```
 
 # Python Libraries
 The HMS bioagents are implemented in Python. They require Python 2.7.x and additional packages.
