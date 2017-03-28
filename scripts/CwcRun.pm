@@ -5,6 +5,8 @@ use warnings;
 
 use CwcConfig;
 
+use Time::HiRes;
+
 # ------------------------------------------------------------
 # Setup
 
@@ -56,7 +58,8 @@ sub start_trips {
       # This should *not* have exited.
       die("TRIPS didn't even get started.");
     }
-    sleep(0.1);
+
+    avoid_polling_open_loop();
   }
 
   return $trips;
@@ -86,6 +89,25 @@ sub start_bioagents {
   sleep(5);
 
   return ($bioagents, $tfta);
+}
+
+# ------------------------------------------------------------
+# We should sleep sometimes so that we are not polling open loop. If
+# we wrote something, odds are there is more to write, so do not
+# sleep. But if we didn't write anything, sleep for a moment to avoid
+# chewing up the processor.
+
+# Set to 1 each time we write something. Reset by the avoid_polling
+# function.
+my $wrote_output = 0;
+
+sub avoid_polling_open_loop {
+  if (not $wrote_output) {
+    Time::HiRes::sleep(0.1);
+  }
+  # In any case, reset the wrote flag so that we can detect if
+  # something was written in the future.
+  $wrote_output = 0;
 }
 
 # ------------------------------------------------------------
@@ -155,6 +177,10 @@ sub ipc_run {
                             print("$prefix: ");
                           }
                           print("$line\n");
+                          $wrote_output = 1;
+
+                          # For good measure.
+                          STDOUT->flush();
 
                           # Check to see if the line of output should
                           # trigger anything.

@@ -6,6 +6,7 @@ use warnings;
 use FindBin;
 use lib ( $FindBin::Bin );  # for local modules
 use CwcConfig;
+use CwcRun;
 
 use Cwd;
 use IPC::Run;
@@ -125,6 +126,7 @@ while (not $done) {
   foreach my $child (@children) {
     IPC::Run::pump_nb($child);
   }
+  CwcRun::avoid_polling_open_loop();
 }
 
 # Hack to try to flush any remaining output.

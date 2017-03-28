@@ -229,6 +229,8 @@ while (not $done) {
     $print_time = $cur_time;
   }
   STDOUT->flush();
+
+  CwcRun::avoid_polling_open_loop();
 }
 
 exit(0);
