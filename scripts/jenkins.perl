@@ -103,12 +103,13 @@ my @test_systems =
    ":clic/bw-demos",
    ":clic/bio-tests",
    ":spg/tests",
-   # ":spg/bw-tests",
+   ":spg/bw-tests",
    # ":spg/bio-tests",
-   # This passes, but is *slow* (like -- several minutes slow).
+   # This just double-checks that some messages roundtrip with the
+   # bioagents the way we expect.
    ":spg/bioagent-tests",
    # Keep the demos working.
-   # ":spg/bio-demos",
+   ":spg/bio-demos",
   );
 
 my %test_options =
