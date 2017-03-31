@@ -106,6 +106,11 @@ push(@children,
                    "bioagents/mra/mra_module.py", ]));
 
 push(@children,
+     start_child("QCA",
+                 [ "$python",
+                   "bioagents/qca/qca_module.py", ]));
+
+push(@children,
      start_child("TRA",
                  [ "$python",
                    "bioagents/tra/tra_module.py",
