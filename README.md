@@ -210,6 +210,7 @@ is [here](http://www.alexandrejoseph.com/blog/2016-02-10-install-pygraphviz-mac-
 - ```functools32```
 - ```ndex```
 - ```networkx```
+- ```enum34```
 
 # Custom Environment Setup
 The default configuration puts all the required projects into
