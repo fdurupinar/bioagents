@@ -154,6 +154,8 @@ while (not defined($test_exit_code)) {
     $test_exit_code = $lisp->result(0);
   }
   STDOUT->flush();
+
+  CwcRun::avoid_polling_open_loop();
 }
 
 print("Test finished with exit code: $test_exit_code\n");
