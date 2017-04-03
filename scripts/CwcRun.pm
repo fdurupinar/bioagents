@@ -197,5 +197,34 @@ sub ipc_run {
   return $ipc;
 }
 
+# ------------------------------------------------------------
+# Cleanup
+
+sub cleanup_children {
+  my $children_ref = shift();
+  my @children = @$children_ref;
+
+  # Hack to try to flush any remaining output.
+  for (my $i = 0; $i < 100; ++$i) {
+    foreach my $child (@children) {
+      if (IPC::Run::pumpable($child)) {
+        IPC::Run::pump_nb($child);
+      }
+    }
+  }
+
+  print("Done flushing output, killing children.\n");
+  foreach my $child (@children) {
+    $child->kill_kill();
+  }
+
+  print("Waiting for children to finish.\n");
+  foreach my $child (@children) {
+    $child->finish();
+  }
+  print("Done cleaning up after the kids.\n");
+}
+
+
 # Evaluate to true so that the module can be loaded.
 1;
