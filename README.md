@@ -161,6 +161,8 @@ There may be other modules, but you definitely need to have:
 - ```DBI```
 - ```Set::Scalar```
 - ```File::Slurp```
+- ```XML::LibXML``` (needed by TRIPS EKBAgent)
+- ```List::Util``` (also needed by TRIPS EKBAgent)
 
 # Python Libraries
 The HMS bioagents are implemented in Python. They require Python 2.7.x and additional packages.
