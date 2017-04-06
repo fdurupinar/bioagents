@@ -122,6 +122,11 @@ push(@children,
                  [ "$python",
                    "bioagents/bionlg/bionlg_module.py", ]));
 
+push(@children,
+     start_child("BIOSENSE",
+                 [ "$python",
+                   "bioagents/biosense/biosense_module.py", ]));
+
 # Set up handlers and a loop to poll the children for output and exit
 # when told.
 my $done = 0;
