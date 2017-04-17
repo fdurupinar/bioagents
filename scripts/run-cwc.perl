@@ -81,6 +81,7 @@ my $script_start_time = Time::HiRes::time();
 # Values of what to run. These are set based on the $domain and used
 # below.
 my $which_trips;
+my $run_sbgnviz;
 my $run_bioagents;
 my $system_name;
 my $url;
@@ -94,6 +95,7 @@ if ($domain =~ /^(?:bio|biocuration)$/i) {
   }
   $which_trips = "bob";
   $run_bioagents = 1;
+  $run_sbgnviz = 1;
   $system_name = ":spg/bio";
   $url = "http://localhost:8000/bio";
 }
@@ -130,6 +132,12 @@ Timeout::fork_timeout_process($timeout_s);
 my $trips;
 if (defined($which_trips)) {
   $trips = CwcRun::start_trips($which_trips, $nouser);
+}
+
+if ($run_sbgnviz) {
+    CwcRun::start_sbgnviz();
+    sleep(5);
+    system("google-chrome http://localhost:3000 &");
 }
 
 # ------------------------------------------------------------
