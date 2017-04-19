@@ -82,6 +82,7 @@ sub handle_trips_events {
 sub start_sbgnviz {
     my $sbgnviz = CwcRun::ipc_run(Cwd::abs_path($FindBin::Bin . "/.."),
                                   [$FindBin::Bin . "/run-sbgnviz.perl"]);
+    return $sbgnviz
     }
 
 

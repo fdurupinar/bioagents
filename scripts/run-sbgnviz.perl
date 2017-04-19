@@ -6,12 +6,15 @@ use warnings;
 use FindBin;
 use lib ( $FindBin::Bin );  # for local modules
 use CwcConfig;
+use CwcRun;
 
 use Cwd;
 use IPC::Run;
 
+
 # Autoflush stdout.
 $| = 1;
+
 
 # ------------------------------------------------------------
 # No arguments allowed.
@@ -22,7 +25,7 @@ $| = 1;
 # ------------------------------------------------------------
 # First off, load the config.
 
-CwcConfig::load_config(1);
+CwcConfig::load_config(0);
 
 # ------------------------------------------------------------
 # Get to the place where we want to run.
@@ -33,6 +36,7 @@ print("In directory: $sbgnviz_dir\n");
 
 # ------------------------------------------------------------
 # Now, run sbgnviz
+
 
 my @children = ();
 push(@children,
@@ -52,28 +56,10 @@ while (not $done) {
   foreach my $child (@children) {
     IPC::Run::pump_nb($child);
   }
+  CwcRun::avoid_polling_open_loop();
 }
 
-# Hack to try to flush any remaining output.
-for (my $i = 0; $i < 100; ++$i) {
-  foreach my $child (@children) {
-    IPC::Run::pump_nb($child);
-  }
-}
-
-print("Done, killing children.\n");
-
-foreach my $child (@children) {
-  $child->kill_kill();
-}
-
-print("Waiting for children to finish.\n");
-
-foreach my $child (@children) {
-  $child->finish();
-}
-
-print("Done with children.\n");
+CwcRun::cleanup_children(\@children);
 exit(0);
 
 # End of main script.

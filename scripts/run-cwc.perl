@@ -134,10 +134,18 @@ if (defined($which_trips)) {
   $trips = CwcRun::start_trips($which_trips, $nouser);
 }
 
+my $sbgnviz_process;
 if ($run_sbgnviz) {
-    CwcRun::start_sbgnviz();
+    $sbgnviz_process = CwcRun::start_sbgnviz();
     sleep(5);
-    system("google-chrome http://localhost:3000 &");
+    my $sbgnviz_url = 'http://localhost:3000/';
+    if ($^O eq 'linux') {
+        system("xdg-open $sbgnviz_url");
+    } elsif ($^O eq 'darwin') {
+        system("open $sbgnviz_url");
+    } else {
+        die ("Don't know what to do on this platform: $^O");
+    }
 }
 
 # ------------------------------------------------------------
@@ -215,6 +223,15 @@ while (not $done) {
     else {
       # This should *not* have exited.
       die("TFTA exited unexpectedly.");
+    }
+  }
+  if (defined($sbgnviz_process)) {
+    if ($sbgnviz_process->pumpable()) {
+      $sbgnviz_process->pump_nb();
+    }
+    else {
+      # This should *not* have exited.
+      die("SBGNViz exited unexpectedly.");
     }
   }
 
