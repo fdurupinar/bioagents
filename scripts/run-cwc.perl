@@ -137,7 +137,7 @@ if (defined($which_trips)) {
 my $sbgnviz_process;
 if ($run_sbgnviz) {
     $sbgnviz_process = CwcRun::start_sbgnviz();
-    sleep(5);
+    sleep(10);
     my $sbgnviz_url = 'http://localhost:3000/';
     if ($^O eq 'linux') {
         system("xdg-open $sbgnviz_url");
