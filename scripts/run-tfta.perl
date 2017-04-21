@@ -38,7 +38,7 @@ CwcConfig::setup_python_path();
 # Make sure we have the drug_targets database.
 
 my $targets_db_filename =
-  "$tfta_dir/resources/TF_target.db";
+  "$tfta_dir/resources/TF_target_v2.db";
 if (not ((-e $targets_db_filename) and
          (0 < -s $targets_db_filename))) {
   my $targets_url =
