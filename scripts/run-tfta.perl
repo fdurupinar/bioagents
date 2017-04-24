@@ -42,7 +42,7 @@ my $targets_db_filename =
 if (not ((-e $targets_db_filename) and
          (0 < -s $targets_db_filename))) {
   my $targets_url =
-    "http://www.cochranlab.org/cwc/TF_target.db";
+    "http://www.cochranlab.org/cwc/TF_target_v2.db";
     # "https://www.dropbox.com/s/mti21pr0eoinqbq/TF_target.db?dl=0#";
   my @curl_cmd =
     (
