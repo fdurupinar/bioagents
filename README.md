@@ -207,7 +207,7 @@ their names to pip separated by spaces.
 Alternatively, there is a `cwc-integ/python_requirements.txt` file, which 
 you can use to install all python packages with a single command as:
 ```
-pip install -r python\_requirements.txt
+pip install -r python_requirements.txt
 ```
 
 On Debian, if a system installation is preferred, one can install these dependencies
