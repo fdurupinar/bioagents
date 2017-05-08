@@ -17,8 +17,8 @@ $| = 1;
 # ------------------------------------------------------------
 # No arguments allowed.
 
-(0 == scalar(@ARGV)) or
-  die("This script does not accept any arguments.");
+my $run_bsb = shift(@ARGV);
+print("Running bioagents: $run_bsb");
 
 # ------------------------------------------------------------
 # First off, load the config.
@@ -126,6 +126,13 @@ push(@children,
      start_child("BIOSENSE",
                  [ "$python",
                    "bioagents/biosense/biosense_module.py", ]));
+
+if ($run_bsb) {
+    push(@children,
+         start_child("BSB",
+                     [ "$python",
+                       "bioagents/bsb/bsb.py", ]));
+    }
 
 # Set up handlers and a loop to poll the children for output and exit
 # when told.

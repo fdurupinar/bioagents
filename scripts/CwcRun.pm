@@ -77,6 +77,15 @@ sub handle_trips_events {
   }
 }
 
+# SBGNViz
+
+sub start_sbgnviz {
+    my $sbgnviz = CwcRun::ipc_run(Cwd::abs_path($FindBin::Bin . "/.."),
+                                  [$FindBin::Bin . "/run-sbgnviz.perl"]);
+    return $sbgnviz
+    }
+
+
 # ------------------------------------------------------------
 # Bioagents
 

@@ -51,6 +51,9 @@ my $start_browser = 0;
 # Default to the bio domain.
 my $domain = "bio";
 
+# Don't launch SBGNViz by default
+my $run_sbgnviz = 0;
+
 # If set, use the raw-executive mockup instead of the full
 # TRIPS-enabled system.
 my $rem = 0;
@@ -66,7 +69,8 @@ GetOptions('v|verbose'          => \$verbose,
            'n|nouser'           => \$nouser,
            's|show-browser'     => \$start_browser,
            'r|rem|raw-exec-mockup' => \$rem,
-          )
+           'S|sbgnviz' => \$run_sbgnviz,
+       )
   or die("Error parsing arguments.");
 
 if (0 < scalar(@ARGV)) {
@@ -132,13 +136,27 @@ if (defined($which_trips)) {
   $trips = CwcRun::start_trips($which_trips, $nouser);
 }
 
+my $sbgnviz_process;
+if ($run_sbgnviz) {
+    $sbgnviz_process = CwcRun::start_sbgnviz();
+    sleep(10);
+    my $sbgnviz_url = 'http://localhost:3000/';
+    if ($^O eq 'linux') {
+        system("xdg-open $sbgnviz_url");
+    } elsif ($^O eq 'darwin') {
+        system("open $sbgnviz_url");
+    } else {
+        die ("Don't know what to do on this platform: $^O");
+    }
+}
+
 # ------------------------------------------------------------
 # Bioagents
 
 my $bioagents;
 my $tfta;
 if ($run_bioagents) {
-  ($bioagents, $tfta) = CwcRun::start_bioagents();
+  ($bioagents, $tfta) = CwcRun::start_bioagents($run_sbgnviz);
 }
 
 # ------------------------------------------------------------
@@ -207,6 +225,15 @@ while (not $done) {
     else {
       # This should *not* have exited.
       die("TFTA exited unexpectedly.");
+    }
+  }
+  if (defined($sbgnviz_process)) {
+    if ($sbgnviz_process->pumpable()) {
+      $sbgnviz_process->pump_nb();
+    }
+    else {
+      # This should *not* have exited.
+      die("SBGNViz exited unexpectedly.");
     }
   }
 
