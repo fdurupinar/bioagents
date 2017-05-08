@@ -61,16 +61,35 @@ The MRA expects this to be in
 ```/usr/local/share/BioNetGen```, so the downloaded archive needs to be extracted and
 renamed, removing the version number from the directory name.
 
-## SBGNViz
-The SBGNViz system is implemented in javascript. It has the following
-dependencies: redis, mongodb and nodejs (version 4.x works but the latest version, 7.x doesn't since it is incompatible with some dependencies). On Mac, these can be installed as
+## SBGNViz (optional)
+The biocuration system can optionally be launched with the SBGNViz 
+collaborative environment. To do this, launch the system as 
+`perl scripts/run-cwc.perl bio -sbgnviz`.
+Temporarily, you will need to check out the `collaborativeChise` branch
+of SBGNViz in the cwc-integ/Sbgnviz-Collaborative-Editor folder to use it.
+The SBGNViz system is implemented in JavaScript. It has the following
+dependencies: mongodb and nodejs (version 4.x works but the latest version, 7.x doesn't since it is incompatible with some dependencies). On Mac, these can be installed as
 ```
 brew install node@4
-brew install redis
 brew install mongodb
 ```
 Follow the instructions [here](https://github.com/fdurupinar/Sbgnviz-Collaborative-Editor)
 to install on Ubuntu/Debian.
+Mongodb needs to be running as a service when launching the system.
+
+## Kappa (optional)
+When using the system with the SBGNViz environment, visualizations using the
+Kappa Static Analyzer (KaSa) are generated. To make these available, Kappa
+needs to be installed locally. Follow these steps to install it:
+```
+opam init -a git://github.com/ocaml/opam-repository && eval $(opam config env)
+opam install -y conf-which base-bytes
+opam install -y ocamlbuild yojson
+git clone https://github.com/Kappa-Dev/KaSim.git
+cd KaSim
+make all
+export KAPPAPATH=`pwd`
+```
 
 # Getting Started
 1. Clone the cwc-integ project.
