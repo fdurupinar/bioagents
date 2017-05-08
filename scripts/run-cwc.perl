@@ -51,6 +51,9 @@ my $start_browser = 0;
 # Default to the bio domain.
 my $domain = "bio";
 
+# Don't launch SBGNViz by default
+my $run_sbgnviz = 0;
+
 # If set, use the raw-executive mockup instead of the full
 # TRIPS-enabled system.
 my $rem = 0;
@@ -66,7 +69,8 @@ GetOptions('v|verbose'          => \$verbose,
            'n|nouser'           => \$nouser,
            's|show-browser'     => \$start_browser,
            'r|rem|raw-exec-mockup' => \$rem,
-          )
+           'S|sbgnviz' => \$run_sbgnviz,
+       )
   or die("Error parsing arguments.");
 
 if (0 < scalar(@ARGV)) {
@@ -81,7 +85,6 @@ my $script_start_time = Time::HiRes::time();
 # Values of what to run. These are set based on the $domain and used
 # below.
 my $which_trips;
-my $run_sbgnviz;
 my $run_bioagents;
 my $system_name;
 my $url;
@@ -95,7 +98,6 @@ if ($domain =~ /^(?:bio|biocuration)$/i) {
   }
   $which_trips = "bob";
   $run_bioagents = 1;
-  $run_sbgnviz = 1;
   $system_name = ":spg/bio";
   $url = "http://localhost:8000/bio";
 }
@@ -154,7 +156,7 @@ if ($run_sbgnviz) {
 my $bioagents;
 my $tfta;
 if ($run_bioagents) {
-  ($bioagents, $tfta) = CwcRun::start_bioagents();
+  ($bioagents, $tfta) = CwcRun::start_bioagents($run_sbgnviz);
 }
 
 # ------------------------------------------------------------
