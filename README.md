@@ -199,7 +199,15 @@ ways to satisfy these dependencies.
 
 The easiest way to install packages is with `pip` such as:
 ```
-pip install sympy
+pip install sympy numpy scipy
+```
+As above, you can install multiple packages with a single command by passing
+their names to pip separated by spaces.
+
+Alternatively, there is a `cwc-integ/python_requirements.txt` file, which 
+you can use to install all python packages with a single command as:
+```
+pip install -r python\_requirements.txt
 ```
 
 On Debian, if a system installation is preferred, one can install these dependencies
@@ -241,6 +249,7 @@ is [here](http://www.alexandrejoseph.com/blog/2016-02-10-install-pygraphviz-mac-
 - ```ndex```
 - ```networkx```
 - ```enum34```
+- ```socketIO-client``` (optional, for SBGNViz integration)
 
 # Custom Environment Setup
 The default configuration puts all the required projects into

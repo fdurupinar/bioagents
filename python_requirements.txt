@@ -1,0 +1,16 @@
+sympy
+scipy
+numpy
+rdflib
+suds
+pandas
+requests
+future
+functools32
+ndex
+networkx
+enum32
+socketIO-client
+lxml
+matplotlib
+pygraphviz
