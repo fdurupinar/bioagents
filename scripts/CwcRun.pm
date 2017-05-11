@@ -90,6 +90,8 @@ sub start_sbgnviz {
 # Bioagents
 
 sub start_bioagents {
+  my $run_bsb = shift();
+  # TODO: $run_bsb needs to be passed as an argument to run-bioagents.perl
   my $bioagents = CwcRun::ipc_run(Cwd::abs_path($FindBin::Bin . "/.."),
                                   [$FindBin::Bin . "/run-bioagents.perl"]);
   my $tfta = CwcRun::ipc_run(Cwd::abs_path($FindBin::Bin . "/.."),
