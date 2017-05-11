@@ -91,9 +91,15 @@ sub start_sbgnviz {
 
 sub start_bioagents {
   my $run_bsb = shift();
-  # TODO: $run_bsb needs to be passed as an argument to run-bioagents.perl
+
+  # If $run_bsb is set, add the bsb argument to the bioagents command.
+  my @bioagents_cmd = ( $FindBin::Bin . "/run-bioagents.perl" );
+  if ($run_bsb) {
+    push(@bioagents_cmd, "--bsb");
+  }
+
   my $bioagents = CwcRun::ipc_run(Cwd::abs_path($FindBin::Bin . "/.."),
-                                  [$FindBin::Bin . "/run-bioagents.perl"]);
+                                  \@bioagents_cmd);
   my $tfta = CwcRun::ipc_run(Cwd::abs_path($FindBin::Bin . "/.."),
                              [$FindBin::Bin . "/run-tfta.perl"]);
   print("Sleeping a few seconds to let bioagents get started.\n");

@@ -69,7 +69,7 @@ GetOptions('v|verbose'          => \$verbose,
            'n|nouser'           => \$nouser,
            's|show-browser'     => \$start_browser,
            'r|rem|raw-exec-mockup' => \$rem,
-           'S|sbgnviz' => \$run_sbgnviz,
+           'S|sbgnviz'          => \$run_sbgnviz,
        )
   or die("Error parsing arguments.");
 

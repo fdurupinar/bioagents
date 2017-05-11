@@ -9,16 +9,24 @@ use CwcConfig;
 use CwcRun;
 
 use Cwd;
+use Getopt::Long;
 use IPC::Run;
 
 # Autoflush stdout.
 $| = 1;
 
 # ------------------------------------------------------------
-# No arguments allowed.
+# Global variables
 
-my $run_bsb = shift(@ARGV);
-print("Running bioagents: $run_bsb");
+# If set, we will run the BSB.
+my $run_bsb = 0;
+
+# ------------------------------------------------------------
+# Parse arguments
+
+GetOptions('bsb'          => \$run_bsb,
+          )
+  or die("Error parsing arguments.");
 
 # ------------------------------------------------------------
 # First off, load the config.
