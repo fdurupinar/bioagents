@@ -65,10 +65,9 @@ renamed, removing the version number from the directory name.
 The biocuration system can optionally be launched with the SBGNViz 
 collaborative environment. To do this, launch the system as 
 `perl scripts/run-cwc.perl bio -sbgnviz`.
-Temporarily, you will need to check out the `collaborativeChise` branch
-of SBGNViz in the cwc-integ/Sbgnviz-Collaborative-Editor folder to use it.
 The SBGNViz system is implemented in JavaScript. It has the following
-dependencies: mongodb and nodejs (version 4.x works but the latest version, 7.x doesn't since it is incompatible with some dependencies). On Mac, these can be installed as
+dependencies: mongodb and nodejs (version 4.x works but the latest version, 7.x doesn't since it is incompatible with some dependencies). 
+On Mac, these can be installed as
 ```
 brew install node@4
 brew install mongodb
