@@ -64,6 +64,9 @@ my $source_config_filename =
 # ------------------------------------------------------------
 # Parse arguments
 
+# We want case to matter for these arguments, so that show-browser and
+# sbgnviz do not collide.
+Getopt::Long::Configure("no_ignore_case");
 GetOptions('v|verbose'          => \$verbose,
            't|timeout=i'        => \$timeout_s,
            'n|nouser'           => \$nouser,
@@ -138,16 +141,17 @@ if (defined($which_trips)) {
 
 my $sbgnviz_process;
 if ($run_sbgnviz) {
-    $sbgnviz_process = CwcRun::start_sbgnviz();
-    sleep(10);
-    my $sbgnviz_url = 'http://localhost:3000/';
-    if ($^O eq 'linux') {
-        system("xdg-open $sbgnviz_url");
-    } elsif ($^O eq 'darwin') {
-        system("open $sbgnviz_url");
-    } else {
-        die ("Don't know what to do on this platform: $^O");
-    }
+  print("Starting sbgnviz.\n");
+  $sbgnviz_process = CwcRun::start_sbgnviz();
+  sleep(10);
+  my $sbgnviz_url = 'http://localhost:3000/';
+  if ($^O eq 'linux') {
+    system("xdg-open $sbgnviz_url");
+  } elsif ($^O eq 'darwin') {
+    system("open $sbgnviz_url");
+  } else {
+    die ("Don't know what to do on this platform: $^O");
+  }
 }
 
 # ------------------------------------------------------------
