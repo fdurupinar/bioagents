@@ -38,11 +38,11 @@ CwcConfig::setup_python_path();
 # Make sure we have the drug_targets database.
 
 my $targets_db_filename =
-  "$tfta_dir/resources/TF_target_v2.db";
+  "$tfta_dir/resources/TF_target_v3.db";
 if (not ((-e $targets_db_filename) and
          (0 < -s $targets_db_filename))) {
   my $targets_url =
-    "http://www.cochranlab.org/cwc/TF_target_v2.db";
+    "http://www.cochranlab.org/cwc/TF_target_v3.db";
     # "https://www.dropbox.com/s/mti21pr0eoinqbq/TF_target.db?dl=0#";
   my @curl_cmd =
     (
