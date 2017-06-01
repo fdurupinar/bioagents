@@ -88,7 +88,11 @@ instructions [here](https://github.com/fdurupinar/Sbgnviz-Collaborative-Editor).
 ## Kappa (optional)
 When using the system with the SBGNViz environment, visualizations using the
 Kappa Static Analyzer (KaSa) are generated. To make these available, Kappa
-needs to be installed locally. Follow these steps to install it:
+needs to be installed locally. [You need to have opam installed on your system 
+first.](https://opam.ocaml.org/doc/Install.html)
+
+
+Then follow these steps to install Kappa:
 ```
 opam init -a git://github.com/ocaml/opam-repository && eval $(opam config env)
 opam install -y conf-which base-bytes
