@@ -72,9 +72,18 @@ On Mac, these can be installed as
 brew install node@4
 brew install mongodb
 ```
-Follow the instructions [here](https://github.com/fdurupinar/Sbgnviz-Collaborative-Editor)
-to install on Ubuntu/Debian.
+then go into the cwc-integ/Sbgnviz-Collaborative-Editor folder and do
+```
+npm install
+cd public
+npm install
+```
+to install nodejs dependencies locally.
+
 Mongodb needs to be running as a service when launching the system.
+
+For detailed instructions and instructions for other platforms read
+instructions [here](https://github.com/fdurupinar/Sbgnviz-Collaborative-Editor).
 
 ## Kappa (optional)
 When using the system with the SBGNViz environment, visualizations using the
