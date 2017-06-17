@@ -234,14 +234,11 @@ sub get_repo_dir {
 }
 
 sub setup_python_path {
-  if (exists($ENV{PYTHONPATH})) {
-    $ENV{PYTHONPATH} .= ":";
-  }
-  $ENV{PYTHONPATH} .= "."; # Cwd::abs_path(".");
-  $ENV{PYTHONPATH} .= ":" . Cwd::abs_path(get_repo_dir("hms-indra"));
-  $ENV{PYTHONPATH} .= ":" . Cwd::abs_path(get_repo_dir("hms-pysb"));
-  $ENV{PYTHONPATH} .= ":" . Cwd::abs_path(get_repo_dir("hms-kqml"));
-
+  my $ppath = ".";
+  $ppath .= ":" . Cwd::abs_path(get_repo_dir("hms-indra"));
+  $ppath .= ":" . Cwd::abs_path(get_repo_dir("hms-pysb"));
+  $ppath .= ":" . Cwd::abs_path(get_repo_dir("hms-kqml"));
+  $ENV{PYTHONPATH} = $ppath . ":" . $ENV{PYTHONPATH};
   print("PYTHONPATH=$ENV{PYTHONPATH}\n");
 }
 
