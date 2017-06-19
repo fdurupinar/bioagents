@@ -9,7 +9,7 @@ future
 functools32
 ndex
 networkx
-enum32
+enum34
 socketIO-client
 lxml
 matplotlib
