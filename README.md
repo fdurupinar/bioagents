@@ -80,7 +80,13 @@ npm install
 ```
 to install nodejs dependencies locally.
 
-Mongodb needs to be running as a service when launching the system.
+MongoDB needs to be running as a service when launching the system. On Mac I was
+able to create an empty db and run MongoDB as:
+```
+cd Sbgnviz-Collaborative-Editor
+mkdir -p data/db
+mongod --dbpath data/db/
+```
 
 For detailed instructions and instructions for other platforms read
 instructions [here](https://github.com/fdurupinar/Sbgnviz-Collaborative-Editor).
