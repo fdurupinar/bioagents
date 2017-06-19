@@ -145,9 +145,7 @@ scripts/verify-trips-build.perl trips-bob
 These configure commands will assume the location of your geonames,
 enju, WordNet, and other linguistic resources, and you must make
    corrections as necessary; otherwise, TRIPS will not build or
-   execute reliably.
-
-If you want to force a reconfigure one of the above systems, delete
+   execute reliably. If you want to force a reconfigure one of the above systems, delete
    the ```trips/<system>/src/Makefile``` and then run the above perl
    script(s).
 
