@@ -238,7 +238,11 @@ sub setup_python_path {
   $ppath .= ":" . Cwd::abs_path(get_repo_dir("hms-indra"));
   $ppath .= ":" . Cwd::abs_path(get_repo_dir("hms-pysb"));
   $ppath .= ":" . Cwd::abs_path(get_repo_dir("hms-kqml"));
-  $ENV{PYTHONPATH} = $ppath . ":" . $ENV{PYTHONPATH};
+  if ($ENV{PYTHONPATH}) {
+    $ENV{PYTHONPATH} = $ppath . ":" . $ENV{PYTHONPATH};
+  } else {
+    $ENV{PYTHONPATH} = $ppath
+  }
   print("PYTHONPATH=$ENV{PYTHONPATH}\n");
 }
 
