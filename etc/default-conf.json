@@ -44,7 +44,11 @@
 
         { "name": "alexandria",
           "dir": "lisp-utils/alexandria",
-          "remote_url": "https://gitlab.common-lisp.net/alexandria/alexandria.git" },
+          // On 26 June 2017, this GitLab project was unavailable, so
+          // I switched to the GitHub mirror. I don't know if the
+          // GitHub mirror is completely up to date.
+          // "remote_url": "https://gitlab.common-lisp.net/alexandria/alexandria.git"
+          "dir": "https://github.com/keithj/alexandria.git" },
         { "name": "bordeaux-threads",
           "dir": "lisp-utils/bordeaux-threads",
           "remote_url": "https://github.com/sionescu/bordeaux-threads.git" },
