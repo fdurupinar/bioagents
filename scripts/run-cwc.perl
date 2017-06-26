@@ -102,7 +102,7 @@ if ($domain =~ /^(?:bio|biocuration)$/i) {
   $which_trips = "bob";
   $run_bioagents = 1;
   $system_name = ":spg/bio";
-  $url = "http://localhost:8000/bio";
+  $url = "http://localhost:8000/clic/bio";
 }
 elsif ($domain =~ /^(?:bw|blocksworld)$/i) {
   print("Running BLOCKSWORLD domain.\n");
@@ -120,7 +120,7 @@ elsif ($domain =~ /^(?:bw|blocksworld)$/i) {
     $system_name = ":spg/bw";
   }
   $run_bioagents = 0;
-  $url = "http://localhost:8000/bw";
+  $url = "http://localhost:8000/clic/bw";
 }
 else {
   die ("Do not understand domain: $domain");
