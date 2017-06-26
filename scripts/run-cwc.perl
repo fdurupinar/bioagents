@@ -54,10 +54,6 @@ my $domain = "bio";
 # Don't launch SBGNViz by default
 my $run_sbgnviz = 0;
 
-# If set, use the raw-executive mockup instead of the full
-# TRIPS-enabled system.
-my $rem = 0;
-
 my $source_config_filename =
   $FindBin::Bin . "/../cwc-source-config.lisp";
 
@@ -71,7 +67,6 @@ GetOptions('v|verbose'          => \$verbose,
            't|timeout=i'        => \$timeout_s,
            'n|nouser'           => \$nouser,
            's|show-browser'     => \$start_browser,
-           'r|rem|raw-exec-mockup' => \$rem,
            'S|sbgnviz'          => \$run_sbgnviz,
        )
   or die("Error parsing arguments.");
@@ -96,9 +91,6 @@ my $system_prefix = "SPG";
 
 if ($domain =~ /^(?:bio|biocuration)$/i) {
   print("Running BIO domain.\n");
-  if ($rem) {
-    die("SORRY! BIO domain currently cannot be run without TRIPS. Do not use the -r|-raw-exec-mockup argument.");
-  }
   $which_trips = "bob";
   $run_bioagents = 1;
   $system_name = ":spg/bio";
@@ -106,19 +98,8 @@ if ($domain =~ /^(?:bio|biocuration)$/i) {
 }
 elsif ($domain =~ /^(?:bw|blocksworld)$/i) {
   print("Running BLOCKSWORLD domain.\n");
-  if ($rem) {
-    $which_trips = undef;
-    $system_name = ":clic/bw";
-    @system_startup_commands =
-      ( "(clic:register-bw-rem-handlers)",
-        "(clic:init-clic-web-blocksworld)"
-      );
-    $system_prefix = "CLIC";
-  }
-  else {
-    $which_trips = "cabot";
-    $system_name = ":spg/bw";
-  }
+  $which_trips = "cabot";
+  $system_name = ":spg/bw";
   $run_bioagents = 0;
   $url = "http://localhost:8000/clic/bw";
 }
