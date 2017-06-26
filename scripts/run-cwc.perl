@@ -120,6 +120,9 @@ if (defined($which_trips)) {
   $trips = CwcRun::start_trips($which_trips, $nouser);
 }
 
+# ------------------------------------------------------------
+# SBGNViz
+
 my $sbgnviz_process;
 if ($run_sbgnviz) {
   print("Starting sbgnviz.\n");
@@ -142,6 +145,25 @@ my $bioagents;
 my $tfta;
 if ($run_bioagents) {
   ($bioagents, $tfta) = CwcRun::start_bioagents($run_sbgnviz);
+}
+
+# ------------------------------------------------------------
+# Plexus
+
+# Use netcat to check if a web server is already running on the
+# expected port. If not, we'll start one now. Note that the netcat
+# command will return 0 for success or nonzero if it fails to connect
+# to the port.
+my $plexus;
+my $web_server_check = system("nc",
+                              "-v", "-z",
+                              "localhost", "8000");
+if ($web_server_check) {
+  print("Starting node webserver.");
+  my @plexus_cmd = "clic/plexus/clic-plexus-server.js";
+  $plexus = CwcRun::ipc_run(Cwd::abs_path($FindBin::Bin . "/.."),
+                            \@plexus_cmd,
+                            "PLEXUS");
 }
 
 # ------------------------------------------------------------
@@ -219,6 +241,17 @@ while (not $done) {
     else {
       # This should *not* have exited.
       die("SBGNViz exited unexpectedly.");
+    }
+  }
+
+  # Try to pump web server.
+  if (defined($plexus)) {
+    if ($plexus->pumpable()) {
+      $plexus->pump_nb();
+    }
+    else {
+      # This should *not* have exited.
+      die("Plexus (web server) exited unexpectedly.");
     }
   }
 
