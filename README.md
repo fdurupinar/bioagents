@@ -26,7 +26,7 @@ brew install sbcl
 ## Perl
 This project uses several Perl scripts to facilitate tasks (e.g.,
 updating the environment, running tests). These scripts require
-several libraries. Before you begin, (and later if any of the Perl
+several libraries. Before you begin (and later if any of the Perl
 scripts fail with an indication that they cannot find a library),
 look at the [Perl Libraries](#perl-libraries) section below for
 guidance on how to install any libraries you don't already have.
@@ -36,6 +36,28 @@ The HMS Bioagents software is written in Python and relies on numerous
 Python libraries. Again, before you begin (and later if the Bioagents
 fail to find a library), see the [Python Libraries](#python-libraries)
 section below.
+
+## NodeJS
+This project uses NodeJS to host a webserver with pages for
+interacting with the integrated system. In addition, there is an
+optional web interface (SBGNViz) for the biocuration domain which also
+requires NodeJS. Some reports indicate that the SBGNViz tool requires
+Node 4 because Node 7 was incompatible with some dependencies. I used
+Node 8 and did not encounter any hard errors. To install NodeJS on
+Mac:
+```
+brew install node@4
+```
+or
+```
+sudo port install nodejs8
+sudo port install npm4
+```
+
+The verify-env script (described below) runs ```npm install``` in the
+directories which require it. For SBGNViz, this caused some headaches
+and errors. If you run into these sorts of problems, see the [SBGNViz
+section](#sbgnviz-optional) below for some hints.
 
 ## TRIPS prerequisites
 
@@ -64,24 +86,19 @@ renamed, removing the version number from the directory name.
 ## SBGNViz (optional)
 The biocuration system can optionally be launched with the SBGNViz 
 collaborative environment. To do this, launch the system as 
-`perl scripts/run-cwc.perl bio -sbgnviz`.
-The SBGNViz system is implemented in JavaScript. It has the following
-dependencies: mongodb and nodejs (version 4.x works but the latest version, 7.x doesn't since it is incompatible with some dependencies). 
-On Mac, these can be installed as
+`perl scripts/run-cwc.perl bio --sbgnviz`.
+The SBGNViz system is implemented in JavaScript using NodeJS. It also
+requires MongoDB. On Mac, this can be installed with:
 ```
-brew install node@4
 brew install mongodb
 ```
-then go into the cwc-integ/Sbgnviz-Collaborative-Editor folder and do
+or
 ```
-npm install
-cd public
-npm install
+sudo port install mongodb
 ```
-to install nodejs dependencies locally.
 
-MongoDB needs to be running as a service when launching the system. On Mac I was
-able to create an empty db and run MongoDB as:
+When starting SBGNViz, MongoDB needs to be running as a service. On
+Mac I was able to create an empty db and run MongoDB as:
 ```
 cd Sbgnviz-Collaborative-Editor
 mkdir -p data/db
@@ -90,6 +107,22 @@ mongod --dbpath data/db/
 
 For detailed instructions and instructions for other platforms read
 instructions [here](https://github.com/fdurupinar/Sbgnviz-Collaborative-Editor).
+
+To run the SBGNViz npm needs to install the required node modules in
+both the main SBGNViz directory and the SBGNViz/public directory. The
+public directory requires the ```libxmljs``` library. Installing
+```libxmljs``` does not always work perfectly. Here are some specific
+things to try if you encounter problems:
+
+1. Make sure that the ```python``` in your path is version 2.7.
+
+2. Make sure that the ```libtool``` in your path is
+   ```/usr/local/bin``` -- the ```libtool``` installed by MacPorts (in
+   ```/opt/local/libexec/gnubin/libtool```) does __not__ work.
+
+3. If you have encountered problems and are trying again, be sure to
+   remove the ```public/node_modules``` and maybe also run ```npm
+   rebuild``` in the ```public``` directory.
 
 ## Kappa (optional)
 When using the system with the SBGNViz environment, visualizations using the
@@ -216,7 +249,13 @@ There may be other modules, but you definitely need to have:
 - ```Algorithm::Diff``` (needed by TRIPS EKBAgent)
 
 # Python Libraries
-The HMS bioagents are implemented in Python. They require Python 2.7.x and additional packages.
+The HMS bioagents are implemented in Python. They require Python 2.7.x
+and additional packages. If you installed Python via MacPorts, you can
+set your default Python executable as in:
+```
+sudo port select python python27
+```
+
 As with the Perl libraries, there are potentially multiple 
 ways to satisfy these dependencies.
 
