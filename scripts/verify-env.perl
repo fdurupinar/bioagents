@@ -100,25 +100,13 @@ foreach my $repo_name (CwcConfig::get_svn_repo_names()) {
 # Make sure that all of the required node_modules are installed and up to date.
 
 if ($pass) {
-  print("Updating/installing node modules.\n");
-  if (not npm_install("plexus")) {
-    $pass = 0;
-  }
-  if (not npm_install("spire", "plexus/")) {
-    $pass = 0;
-  }
-  if (not npm_install("clic", "plexus/")) {
-    $pass = 0;
-  }
-  if (not npm_install("sbgnviz")) {
-    $pass = 0;
-  }
-  if (not npm_install("sbgnviz", "public")) {
+  print("Verifying node modules.\n");
+  if (not verify_node_modules()) {
     $pass = 0;
   }
 }
 else {
-  print("Found unfixed repo problems, skipping attempt to update/install node modules.\n");
+  print("Found unfixed problems, skipping attempt to verify node modules.\n");
 }
 
 # ------------------------------------------------------------
@@ -137,7 +125,7 @@ if ($pass) {
   }
 }
 else {
-  print("Found unfixed repo problems, skipping attempt to build TRIPS repos.\n");
+  print("Found unfixed problems, skipping attempt to build TRIPS repos.\n");
 }
 
 # ------------------------------------------------------------
@@ -704,59 +692,109 @@ sub would_update_conflict {
 # ------------------------------------------------------------
 # Node module support
 
-sub npm_install {
-  my $repo_name = shift();
-  my $package_dir = shift();
+sub verify_node_modules {
+  my $all_verified = 1;
 
-  my @results = ();
-
-  my $repo_ref = CwcConfig::get_repo_config_ref($repo_name);
-  my $repo_dir = $repo_ref->{dir};
-
-  my $install_dir = "$repo_dir/";
-  if (defined($package_dir)) {
-    $install_dir .= $package_dir;
+  my $plexus_repo_ref = CwcConfig::get_repo_config_ref("plexus");
+  my $plexus_dir = $plexus_repo_ref->{dir};
+  if (not verify_node_modules_installed($plexus_dir)) {
+    $all_verified = 0;
   }
 
-  if (exists($repo_ref->{skip}) and
-      $repo_ref->{skip}) {
-    push(@results, $SKIP);
+  my $spire_repo_ref = CwcConfig::get_repo_config_ref("spire");
+  my $spire_plexus_dir = $spire_repo_ref->{dir} . "/plexus";
+  if (verify_node_modules_installed($spire_plexus_dir)) {
+    # Verify the symlinks.
+    if (not verify_node_symlink($spire_plexus_dir, "plexus", $plexus_dir)) {
+      $all_verified = 0;
+    }
   }
-  elsif (not defined($repo_dir)) {
-    warn ("Repo config (for $repo_name) did not include dir.\n");
-    push(@results, $UNKNOWN);
-  }
-  elsif (not -d "$install_dir/node_modules") {
-    push(@results, $MISSING_DIR);
-  }
-
-  # Prepare and print the result statement.
-  my $problem_count = print_verification_result($repo_name, \@results);
-  my $success = 0;
-  if (0 == $problem_count) {
-    $success = 1;
+  else {
+    $all_verified = 0;
   }
 
+  my $clic_repo_ref = CwcConfig::get_repo_config_ref("clic");
+  my $clic_plexus_dir = $clic_repo_ref->{dir} . "/plexus";
+  if (verify_node_modules_installed($clic_plexus_dir)) {
+    # Verify the symlinks.
+    if (not verify_node_symlink($clic_plexus_dir, "plexus", $plexus_dir)) {
+      $all_verified = 0;
+    }
+    if (not verify_node_symlink($clic_plexus_dir, "spire-plexus", $spire_plexus_dir)) {
+      $all_verified = 0;
+    }
+  }
+  else {
+    $all_verified = 0;
+  }
+
+  my $sbgnviz_repo_ref = CwcConfig::get_repo_config_ref("sbgnviz");
+  my $sbgnviz_dir = $sbgnviz_repo_ref->{dir};
+  if (not verify_node_modules_installed($sbgnviz_dir)) {
+    $all_verified = 0;
+  }
+
+  my $sbgnviz_public_dir = $sbgnviz_dir . "/public";
+  if (not verify_node_modules_installed($sbgnviz_dir)) {
+    $all_verified = 0;
+  }
+
+  return $all_verified;
+}
+
+sub verify_node_modules_installed {
+  my $dir = shift();
+
+  print("  $dir\n");
   if ($fix) {
-    print("  installing/updating node modules in: $install_dir\n");
+    print("    Running 'npm install'\n");
+    my $success = run_fix_command($dir,
+                                  ["npm", "install"]);
+    if (not $success) {
+      return 0;
+    }
+  }
+  elsif (not -d "$dir/node_modules") {
+    print("    node_modules directory missing.\n");
+    return 0;
+  }
 
-    my $orig_working_dir = Cwd::cwd();
-    chdir($install_dir);
+  # node_modules existed, assume that it's okay?
+  return 1;
+}
 
-    my @npm_cmd = ( "npm", "install" );
-    my $result = system(@npm_cmd);
-    chdir($orig_working_dir);
+sub verify_node_symlink {
+  my $project_dir = shift();
+  my $module_name = shift();
+  my $expected_link_target = shift();
 
-    if ($result) {
-      # A non-zero exit code indicates a failure.
-      $success = 0;
+  my $link_okay = 0;
+
+  my $link_name = "$project_dir/node_modules/$module_name";
+  if (-e $link_name) {
+    # It exists. We won't overwrite it, so either it's okay or we'll
+    # fail.
+    my $link_target = readlink $link_name;
+
+    my $expected_link_target_quoted = quotemeta $expected_link_target;
+    my $expected_link_target_regex = qr/^$expected_link_target_quoted(?:\/?)$/;
+    if (-l $link_name and
+        ($link_target =~ $expected_link_target_regex)) {
+      $link_okay = 1;
     }
     else {
-      # Looks like we succeeded.
-      $success = 1;
+      print("    Node module ($module_name) exists in: $project_dir/node_modules\n");
+      print("      but isn't a symlink to: $expected_link_target\n");
+      $link_okay = 0;
     }
   }
-  return $success;
+  else {
+    print("    Missing node module symlink: $link_name\n");
+    if ($fix) {
+      $link_okay = symlink($expected_link_target, $link_name);
+    }
+  }
+  return $link_okay;
 }
 
 # ------------------------------------------------------------
