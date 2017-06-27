@@ -68,9 +68,9 @@ and the connection with Bob is under active development and can change,
 requiring re-configuration.
 Please keep this in mind before setting up SBGNViz with Bob.**
 
-To do this, launch the system as 
+To run with the SBGNViz front-end, launch the system as 
 `perl scripts/run-cwc.perl bio -sbgnviz`.
-The SBGNViz system is implemented in JavaScript. It has the following
+SBGNViz is implemented in JavaScript. It has the following
 dependencies: mongodb and nodejs. On Mac, these can be installed as
 ```
 brew install node
@@ -84,8 +84,9 @@ npm install
 ```
 to install nodejs dependencies locally.
 
-MongoDB needs to be running as a service when launching the system. On Mac I was
-able to create an empty db and run MongoDB as:
+MongoDB needs to be running as a service when launching the system. On Mac there
+are multiple ways to run MongoDB. 
+Either create an empty db and run mongod as:
 ```
 cd Sbgnviz-Collaborative-Editor
 mkdir -p data/db
@@ -101,7 +102,7 @@ On Linux on can start it as a service as
 sudo service mongod start
 ```
 
-For detailed SBGNViz instructions and instructions for other platforms
+For detailed SBGNViz instructions and instructions for other platforms read
 [this](https://github.com/fdurupinar/Sbgnviz-Collaborative-Editor).
 
 ## Kappa (optional)
