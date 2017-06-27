@@ -708,51 +708,55 @@ sub npm_install {
   my $repo_name = shift();
   my $package_dir = shift();
 
-  my $repo_ref = CwcConfig::get_repo_config_ref($repo_name);
-  if (exists($repo_ref->{skip}) and
-      $repo_ref->{skip}) {
-    # Treat skip as a success.
-    return 1;
-  }
+  my @results = ();
 
+  my $repo_ref = CwcConfig::get_repo_config_ref($repo_name);
   my $repo_dir = $repo_ref->{dir};
-  if (not defined($repo_dir)) {
-    print ("Repo config (for $repo_name) did not include dir.\n");
-    return 0;
-  }
 
   my $install_dir = "$repo_dir/";
   if (defined($package_dir)) {
     $install_dir .= $package_dir;
   }
 
-  if (not $fix) {
-    # Not supposed to fix anything. Don't try to install any modules,
-    # just check to see if there *are* modules.
-    if (-d "$install_dir/node_modules") {
-      return 1;
+  if (exists($repo_ref->{skip}) and
+      $repo_ref->{skip}) {
+    push(@results, $SKIP);
+  }
+  elsif (not defined($repo_dir)) {
+    warn ("Repo config (for $repo_name) did not include dir.\n");
+    push(@results, $UNKNOWN);
+  }
+  elsif (not -d "$install_dir/node_modules") {
+    push(@results, $MISSING_DIR);
+  }
+
+  # Prepare and print the result statement.
+  my $problem_count = print_verification_result($repo_name, \@results);
+  my $success = 0;
+  if (0 == $problem_count) {
+    $success = 1;
+  }
+
+  if ($fix) {
+    print("  installing/updating node modules in: $install_dir\n");
+
+    my $orig_working_dir = Cwd::cwd();
+    chdir($install_dir);
+
+    my @npm_cmd = ( "npm", "install" );
+    my $result = system(@npm_cmd);
+    chdir($orig_working_dir);
+
+    if ($result) {
+      # A non-zero exit code indicates a failure.
+      $success = 0;
     }
     else {
-      print ("Missing node_modules in: $install_dir\n");
-      return 0;
+      # Looks like we succeeded.
+      $success = 1;
     }
   }
-
-  print("  installing/updating node modules in: $install_dir\n");
-
-  my $orig_working_dir = Cwd::cwd();
-  chdir($install_dir);
-
-  my @npm_cmd = ( "npm", "install" );
-  my $result = system(@npm_cmd);
-  chdir($orig_working_dir);
-
-  if ($result) {
-    # A non-zero exit code indicates a failure.
-    return 0;
-  }
-  # Looks like we succeeded.
-  return 1;
+  return $success;
 }
 
 # ------------------------------------------------------------
