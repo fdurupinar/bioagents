@@ -7,6 +7,7 @@ use FindBin;
 use lib ( $FindBin::Bin );  # for local modules
 use CwcConfig;
 
+use Cwd;
 use Getopt::Long;
 use IPC::Open3;
 use Path::Class;
@@ -93,6 +94,31 @@ foreach my $repo_name (CwcConfig::get_svn_repo_names()) {
   if (not $verified_repo) {
     $pass = 0;
   }
+}
+
+# ------------------------------------------------------------
+# Make sure that all of the required node_modules are installed and up to date.
+
+if ($pass) {
+  print("Updating/installing node modules.\n");
+  if (not npm_install("plexus")) {
+    $pass = 0;
+  }
+  if (not npm_install("spire", "plexus/")) {
+    $pass = 0;
+  }
+  if (not npm_install("clic", "plexus/")) {
+    $pass = 0;
+  }
+  if (not npm_install("sbgnviz")) {
+    $pass = 0;
+  }
+  if (not npm_install("sbgnviz", "public")) {
+    $pass = 0;
+  }
+}
+else {
+  print("Found unfixed repo problems, skipping attempt to update/install node modules.\n");
 }
 
 # ------------------------------------------------------------
@@ -673,6 +699,60 @@ sub would_update_conflict {
   chdir($cwd);
 
   return $would_conflict;
+}
+
+# ------------------------------------------------------------
+# Node module support
+
+sub npm_install {
+  my $repo_name = shift();
+  my $package_dir = shift();
+
+  my $repo_ref = CwcConfig::get_repo_config_ref($repo_name);
+  if (exists($repo_ref->{skip}) and
+      $repo_ref->{skip}) {
+    # Treat skip as a success.
+    return 1;
+  }
+
+  my $repo_dir = $repo_ref->{dir};
+  if (not defined($repo_dir)) {
+    print ("Repo config (for $repo_name) did not include dir.\n");
+    return 0;
+  }
+
+  my $install_dir = "$repo_dir/";
+  if (defined($package_dir)) {
+    $install_dir .= $package_dir;
+  }
+
+  if (not $fix) {
+    # Not supposed to fix anything. Don't try to install any modules,
+    # just check to see if there *are* modules.
+    if (-d "$install_dir/node_modules") {
+      return 1;
+    }
+    else {
+      print ("Missing node_modules in: $install_dir\n");
+      return 0;
+    }
+  }
+
+  print("  installing/updating node modules in: $install_dir\n");
+
+  my $orig_working_dir = Cwd::cwd();
+  chdir($install_dir);
+
+  my @npm_cmd = ( "npm", "install" );
+  my $result = system(@npm_cmd);
+  chdir($orig_working_dir);
+
+  if ($result) {
+    # A non-zero exit code indicates a failure.
+    return 0;
+  }
+  # Looks like we succeeded.
+  return 1;
 }
 
 # ------------------------------------------------------------
