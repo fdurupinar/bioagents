@@ -83,13 +83,19 @@ The MRA expects this to be in
 ```/usr/local/share/BioNetGen```, so the downloaded archive needs to be extracted and
 renamed, removing the version number from the directory name.
 
-## SBGNViz (optional)
+## SBGNViz (optional/experimental)
 The biocuration system can optionally be launched with the SBGNViz 
-collaborative environment. To do this, launch the system as 
-`perl scripts/run-cwc.perl bio --sbgnviz`.
-The SBGNViz system is implemented in JavaScript using NodeJS. It also
-requires MongoDB. On Mac, this can be installed with:
+collaborative environment. **Installation instructions are not finalized
+and the connection with Bob is under active development and can change,
+requiring re-configuration.
+Please keep this in mind before setting up SBGNViz with Bob.**
+
+To run with the SBGNViz front-end, launch the system as 
+`perl scripts/run-cwc.perl bio -sbgnviz`.
+SBGNViz is implemented in JavaScript. It has the following
+dependencies: mongodb and nodejs. On Mac, these can be installed as
 ```
+brew install node
 brew install mongodb
 ```
 or
@@ -97,16 +103,26 @@ or
 sudo port install mongodb
 ```
 
-When starting SBGNViz, MongoDB needs to be running as a service. On
-Mac I was able to create an empty db and run MongoDB as:
+MongoDB needs to be running as a service when launching the system. On Mac there
+are multiple ways to run MongoDB. 
+Either create an empty db and run mongod as:
 ```
 cd Sbgnviz-Collaborative-Editor
 mkdir -p data/db
 mongod --dbpath data/db/
 ```
+alternatively you can
+```
+brew tap homebrew/services
+brew services start mongodb
+```
+On Linux on can start it as a service as
+```
+sudo service mongod start
+```
 
-For detailed instructions and instructions for other platforms read
-instructions [here](https://github.com/fdurupinar/Sbgnviz-Collaborative-Editor).
+For detailed SBGNViz instructions and instructions for other platforms read
+[this](https://github.com/fdurupinar/Sbgnviz-Collaborative-Editor).
 
 To run the SBGNViz npm needs to install the required node modules in
 both the main SBGNViz directory and the SBGNViz/public directory. The
