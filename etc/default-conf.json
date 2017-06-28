@@ -48,7 +48,7 @@
           // I switched to the GitHub mirror. I don't know if the
           // GitHub mirror is completely up to date.
           // "remote_url": "https://gitlab.common-lisp.net/alexandria/alexandria.git"
-          "dir": "https://github.com/keithj/alexandria.git" },
+          "remote_url": "https://github.com/keithj/alexandria.git" },
         { "name": "bordeaux-threads",
           "dir": "lisp-utils/bordeaux-threads",
           "remote_url": "https://github.com/sionescu/bordeaux-threads.git" },
