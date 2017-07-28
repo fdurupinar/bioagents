@@ -72,8 +72,15 @@ the first make (which may take a rather long time). Generally, after any
 update of the TRIPS environment (prerequisites, lisp implementation or version
 thereof, etc.), you will want to make clean and
 [re-configure](http://trips.ihmc.us/trac/drum/wiki/TripsDrumSystemInstallation#Configuringmakinginstalling)
-manually. On some platforms `xsltproc` needs to be installed as,
-for instance, `sudo apt-get install xsltproc`.
+manually. 
+
+On some Linux platforms `xsltproc` needs to be installed as,
+for instance, `sudo apt-get install xsltproc` to run Stanford CoreNLP.
+
+Enju does not provide executables anymore so you need to get a copy
+of a working enju package from someone in the project. On some Linux
+platforms `libc6-i386`, `lib32z1` and `lib32stdc++6` need to be installed to
+successfully run enju.
 
 ## BioNetGen
 The HMS Bioagents (the MRA in particular) require [BioNetGen](http://www.bionetgen.org/index.php/Main_Page) to generate model diagrams.
