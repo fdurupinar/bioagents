@@ -72,7 +72,8 @@ the first make (which may take a rather long time). Generally, after any
 update of the TRIPS environment (prerequisites, lisp implementation or version
 thereof, etc.), you will want to make clean and
 [re-configure](http://trips.ihmc.us/trac/drum/wiki/TripsDrumSystemInstallation#Configuringmakinginstalling)
-manually.
+manually. On some platforms `xsltproc` needs to be installed as,
+for instance, `sudo apt-get install xsltproc`.
 
 ## BioNetGen
 The HMS Bioagents (the MRA in particular) require [BioNetGen](http://www.bionetgen.org/index.php/Main_Page) to generate model diagrams.
