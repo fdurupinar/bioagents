@@ -32,7 +32,8 @@ look at the [Perl Libraries](#perl-libraries) section below for
 guidance on how to install any libraries you don't already have.
 
 ## Python
-The HMS Bioagents software is written in Python and relies on numerous
+The HMS Bioagents software is written in Python (currently only Python 2
+is supported) and relies on numerous
 Python libraries. Again, before you begin (and later if the Bioagents
 fail to find a library), see the [Python Libraries](#python-libraries)
 section below.
@@ -41,23 +42,43 @@ section below.
 This project uses NodeJS to host a webserver with pages for
 interacting with the integrated system. In addition, there is an
 optional web interface (SBGNViz) for the biocuration domain which also
-requires NodeJS. Some reports indicate that the SBGNViz tool requires
-Node 4 because Node 7 was incompatible with some dependencies. I used
-Node 8 and did not encounter any hard errors. To install NodeJS on
-Mac:
+requires NodeJS. 
+
+The verify-env script (described below) runs ```npm install``` in the
+directories which require it. There are multiple failure modes
+that one needs to be aware of, some described in this section, others
+in the [SBGNViz section](#sbgnviz) below for some hints.
+
+### NodeJS on Linux
+Many Linux distributions install old versions of NodeJS
+(e.g. 0.12) by default when doing `apt-get install nodejs`. To get NodeJS
+version 8, follow instructions on this page:
+https://nodejs.org/en/download/package-manager/
+For instance, on Debian, installing NodeJS 8 can be done by
 ```
-brew install node@4
+curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
+sudo apt-get install nodejs
+```
+This also makes `npm` available which can be used to install NodeJS packages.
+
+It appears that any globally installed `npm` packages can interfere with
+the locally installed ones within cwc-integ. Therefore a full cleanup of
+globally installed packages (i.e. `npm -g rm <package name>`) and
+removal of local packages (i.e. `rm -r plexus/node_modules`, and
+same for the `spire/plexus/node_modules` and `clic/plexus/node_modules`
+folders) is needed before running `verify-env.perl`.
+
+### NodeJS on Mac
+
+To install NodeJS on Mac, use Homebrew of Macports, that is:
+```
+brew install node
 ```
 or
 ```
 sudo port install nodejs8
 sudo port install npm4
 ```
-
-The verify-env script (described below) runs ```npm install``` in the
-directories which require it. For SBGNViz, this caused some headaches
-and errors. If you run into these sorts of problems, see the [SBGNViz
-section](#sbgnviz-optional) below for some hints.
 
 ## TRIPS prerequisites
 
@@ -100,10 +121,9 @@ Please keep this in mind before setting up SBGNViz with Bob.**
 
 To run with the SBGNViz front-end, launch the system as 
 `perl scripts/run-cwc.perl bio -sbgnviz`.
-SBGNViz is implemented in JavaScript. It has the following
-dependencies: mongodb and nodejs. On Mac, these can be installed as
+SBGNViz is implemented in JavaScript, and depends on `mongodb`.
+On Mac, MongoDB can be installed as
 ```
-brew install node
 brew install mongodb
 ```
 or
@@ -132,7 +152,7 @@ sudo service mongod start
 For detailed SBGNViz instructions and instructions for other platforms read
 [this](https://github.com/fdurupinar/Sbgnviz-Collaborative-Editor).
 
-To run the SBGNViz npm needs to install the required node modules in
+To run SBGNViz, `npm` needs to install the required node modules in
 both the main SBGNViz directory and the SBGNViz/public directory. The
 public directory requires the ```libxmljs``` library. Installing
 ```libxmljs``` does not always work perfectly. Here are some specific
