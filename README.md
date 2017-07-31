@@ -95,13 +95,33 @@ thereof, etc.), you will want to make clean and
 [re-configure](http://trips.ihmc.us/trac/drum/wiki/TripsDrumSystemInstallation#Configuringmakinginstalling)
 manually. 
 
+### TRIPS: Stanford CoreNLP
 On some Linux platforms `xsltproc` needs to be installed as,
 for instance, `sudo apt-get install xsltproc` to run Stanford CoreNLP.
 
+### TRIPS: Enju
 Enju does not provide executables anymore so you need to get a copy
-of a working enju package from someone in the project. On some Linux
+of a working enju package from
+- Enju 2.4.2 for Debian: https://www.dropbox.com/s/25533hj57p7wcdz/enju-2.4.2-debian.tar.gz?dl=0
+- Enju 2.4.2 for Mac: https://www.dropbox.com/s/ne6gueb10zu4x8e/enju-2.4.2-Mac.zip?dl=0
+
+On some Linux
 platforms `libc6-i386`, `lib32z1` and `lib32stdc++6` need to be installed to
 successfully run enju.
+
+### TRIPS: National File
+Some users have reported a change in the website to download the NationalFile.
+A working copy can be downloaded here:
+- National File: https://www.dropbox.com/s/ryy30bwbtobc7un/NationalFile_20150401.zip?dl=0
+
+### TRIPS: broken resource files
+Some resource files that TRIPS downloads during installation can be broken
+from time to time. In this case you need to obtain a copy from someone whith a
+working installation. Currently the following files are broken and can be
+obtained from the links below:
+- BrendaTissueOBO: https://www.dropbox.com/s/2o6261e71i6uqqo/BrendaTissueOBO?dl=0
+- cv_family.txt: https://www.dropbox.com/s/uydmjxc3w4i9si7/cv_family.txt?dl=0
+
 
 ## BioNetGen
 The HMS Bioagents (the MRA in particular) require [BioNetGen](http://www.bionetgen.org/index.php/Main_Page) to generate model diagrams.
