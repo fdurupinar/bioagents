@@ -23,35 +23,30 @@ class BSB(object):
         self.user_name = 'BOB'
 
         self.bob_port = bob_port
-        self.sbgnviz_port = sbgnviz_port
+        #  self.sbgnviz_port = sbgnviz_port
 
         # Startup sequences
         self.bob_startup()
-        self.sbgn_startup() 
+        #self.sbgn_startup()
         msg = '(tell :content (start-conversation))'
         self.socket_b.sendall(msg)
 
     def start(self):
         logger.info('Starting...')
         # Wait for things to happen
-        socks = [self.socket_b, self.socket_s._transport._connection.sock]
+
         while True:
             try:
-                ready_socks, _, _ = select.select(socks, [], [])
-                for sock in ready_socks:
-                    if sock == self.socket_s._transport._connection.sock:
-                        self.socket_s.wait(seconds=0.1)
-                    else:
-                        data, addr = sock.recvfrom(1000000)
-                        if data:
-                            parts = data.split('\n')
-                            for part in parts:
-                                if part:
-                                    self.on_bob_message(part)
-            except KeyboardInterrupt:
+                data, addr = self.socket_b.recvfrom(1000000)
+                if data:
+                    parts = data.split('\n')
+                    for part in parts:
+                        if part:
+                            self.on_bob_message(part)
+            except : #funda (KeyboardInterrupt):
                 break
-        self.socket_s.emit('disconnect')
-        self.socket_s.disconnect()
+
+
 
     def bob_startup(self):
         logger.info('Initializing Bob connection...')
@@ -69,64 +64,17 @@ class BSB(object):
         msg = '(tell :content (module-status ready))'
         self.socket_b.sendall(msg)
 
-    def sbgn_startup(self):
-        logger.info('Initializing SBGNViz connection...')
-        self.user_id = '%s' % uuid.uuid4()
-        # Initialize sockets
-        self.socket_s = SocketIO('localhost', self.sbgnviz_port)
-        self.socket_s.emit('agentCurrentRoomRequest', self.on_subscribe)
 
 
-    def on_subscribe(self, room):
-        event = 'subscribeAgent'
-        self.room_id = room
-        user_info = {'userName': self.user_name,
-                     'room': self.room_id,
-                     'userId': self.user_id}
-        self.socket_s.on('message', self.on_sbgnviz_message)
-        self.socket_s.emit(event, user_info)
-        self.socket_s.emit('agentNewFileRequest', {'room': self.room_id})
-        self.bob_to_sbgn_say('Hi there! Give me a minute to get started ' + 
-                             'and then tell me what you want to do.')
 
-    def on_user_list(self, user_list):
-        self.current_users = user_list
 
     def send_to_bob(self, msg):
-        self.socket_b.sendall(msg)
+        try:
+            self.socket_b.sendall(msg)
+        except:
+            print("Socket error")
 
-    def on_sbgnviz_message(self, data):
-        if not isinstance(data, dict):
-            return
-        # Check to see if the message is from BOB himself
-        # and don't relay if it is
-        user = data.get('userName')
-        if user.lower() == 'bob':
-            return
-        comment = data.get('comment')
-        if isinstance(comment, list):
-            comment = comment[0]
-        if isinstance(comment, dict):
-            comment = comment.get('text')
-        if comment and comment == 'reset bob':
-            msg = '(tell :content (start-conversation))'
-            self.send_to_bob(msg)
-        elif comment:
-            text = comment
-            msg = '(tell :content (started-speaking :mode text :uttnum 1 ' + \
-                    ':channel Desktop :direction input))'
-            self.send_to_bob(msg)
-            msg = '(tell :content (stopped-speaking :mode text :uttnum 1 ' + \
-                    ':channel Desktop :direction input))'
-            self.send_to_bob(msg)
-            msg = '(tell :content (word "%s" :uttnum %d :index 1 ' % (text, self.bob_uttnum) + \
-                    ':channel Desktop :direction input))'
-            self.send_to_bob(msg)
-            msg = '(tell :content (utterance :mode text :uttnum %d ' % self.bob_uttnum + \
-                    ':text "%s" ' % text + \
-                    ':channel Desktop :direction input))'
-            self.send_to_bob(msg)
-            self.bob_uttnum += 1
+
 
 
     def on_bob_message(self, data):
@@ -152,48 +100,29 @@ class BSB(object):
             stmts_json = content.gets('model')
             stmts = decode_indra_stmts(stmts_json)
             self.bob_to_sbgn_display(stmts)
-        elif content.head().lower() == 'display-image':
-            image_type = content.gets('type')
-            path = content.gets('path')
-            self.bob_show_image(path, image_type)
+        
 
     def bob_to_sbgn_say(self, spoken_phrase):
-        msg = {'room': self.room_id,
-               'comment': spoken_phrase,
-               'userName': self.user_name,
-               'userId': self.user_id,
-               'targets': '*',
-               'time': 1}
-        #print_json(msg)
-        self.socket_s.emit('agentMessage', msg)
+        msg = KQMLPerformative('tell')
+        content = KQMLList('spoken')
+        content.sets('what',spoken_phrase)
+        msg.set('content', content)
 
     def bob_to_sbgn_display(self, stmts):
         sa = SBGNAssembler()
         sa.add_statements(stmts)
         sbgn_content = sa.make_model()
-        self.socket_s.emit('agentNewFileRequest', {'room': self.room_id})
-        self.socket_s.wait(seconds=0.1)
-        logger.info('sbgn_content generated')
-        sbgn_params = {'graph': sbgn_content, 'type': 'sbgn',
-                       'room': self.room_id, 'userId': self.user_id}
-        self.socket_s.emit('agentMergeGraphRequest', sbgn_params)
 
-    def bob_show_image(self, file_name, image_type):
-        logger.info('showing image')
-        with open(file_name, 'rb') as fh:
-            img_content = fh.read()
-        try:
-            tab_id, tab_label = image_tab_map[image_type]
-        except KeyError:
-            logger.error('Unknown image type: %s' % image_type)
-            tab_id = 99
-            tab_label = 'Other'
-        img = base64.b64encode(img_content)
-        img = 'data:image/png;base64,%s' % img
-        image_params = {'img': img, 'fileName': file_name,
-                        'tabIndex': tab_id, 'tabLabel': tab_label,
-                        'room': self.room_id, 'userId': self.user_id}
-        self.socket_s.emit('agentSendImageRequest', image_params)
+
+        msg = KQMLPerformative('request')
+        content = KQMLList('display-sbgn')
+        content.sets('graph', sbgn_content)
+        msg.set('content', content)
+        self.socket_b.sendall(str(msg))
+
+
+
+
 
 def decode_indra_stmts(stmts_json_str):
     stmts_json = json.loads(stmts_json_str)
@@ -208,12 +137,6 @@ def get_spoken_phrase(content):
     say_what = content.gets('what')
     return say_what
 
-image_tab_map = {
-    'reactionnetwork': (1, 'RXN'),
-    'contactmap': (2, 'CM'),
-    'influencemap': (3, 'IM'),
-    'simulation': (4, 'SIM')
-    }
 
 if __name__ == '__main__':
     bsb = BSB()
